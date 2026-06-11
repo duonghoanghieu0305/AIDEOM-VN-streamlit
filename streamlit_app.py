@@ -1,94 +1,123 @@
-/* =============================================================
-   AIDEOM-VN · EXECUTIVE CLEAN SLATE MASTER THEME
-   ============================================================= */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+"""
+AIDEOM-VN Streamlit Wrapper.
+Serves 12 HTML pages with sidebar navigation.
+Hides duplicate HTML sidebar (Streamlit sidebar is used instead).
+"""
+import streamlit as st
+from pathlib import Path
+import streamlit.components.v1 as components
 
-:root {
-  /* Backgrounds */
-  --bg-body: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-surface: #f1f5f9;
-  --bg-hover: #e2e8f0;
+st.set_page_config(
+    page_title="AIDEOM-VN",
+    page_icon="🚀",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-  /* Typography */
-  --text-main: #0f172a;
-  --text-body: #334155;
-  --text-muted: #64748b;
+ROOT = Path(__file__).parent
 
-  /* Accents */
-  --color-primary: #1e40af;
-  --color-secondary: #6b21a8;
-  --color-tertiary: #9f1239;
-  --color-success: #047857;
-  --color-warning: #b45309;
+# Danh mục cấu trúc pipeline 12 bài tập đồng bộ hệ thống
+EXERCISES = [
+    {"id": 0,  "title": "🏠 Trang chủ",                  "file": "index.html",  "section": "Trang chủ"},
+    {"id": 1,  "title": "Bài 1 · Cobb-Douglas mở rộng",  "file": "bai01.html",  "section": "A · Cơ bản"},
+    {"id": 2,  "title": "Bài 2 · LP phân bổ ngân sách",  "file": "bai02.html",  "section": "A · Cơ bản"},
+    {"id": 3,  "title": "Bài 3 · LP priority 10 ngành",  "file": "bai03.html",  "section": "A · Cơ bản"},
+    {"id": 4,  "title": "Bài 4 · LP ngành-vùng 6×4",     "file": "bai04.html",  "section": "B · Trung bình"},
+    {"id": 5,  "title": "Bài 5 · MIP chọn 15 dự án",     "file": "bai05.html",  "section": "B · Trung bình"},
+    {"id": 6,  "title": "Bài 6 · TOPSIS 6 vùng",         "file": "bai06.html",  "section": "B · Trung bình"},
+    {"id": 7,  "title": "Bài 7 · NSGA-II Pareto",        "file": "bai07.html",  "section": "B · Trung bình"},
+    {"id": 8,  "title": "Bài 8 · Dynamic Programming",   "file": "bai08.html",  "section": "B · Trung bình"},
+    {"id": 9,  "title": "Bài 9 · AI Labor Impact",       "file": "bai09.html",  "section": "C · Khó"},
+    {"id": 10, "title": "Bài 10 · Stochastic 2-stage",    "file": "bai10.html",  "section": "C · Khó"},
+    {"id": 11, "title": "Bài 11 · Q-learning RL",        "file": "bai11.html",  "section": "C · Khó"},
+    {"id": 12, "title": "Bài 12 · AIDEOM Integration",   "file": "bai12.html",  "section": "D · Tổng kết"},
+]
 
-  --border-color: #e2e8f0;
-}
+# Khởi tạo thanh điều hướng Sidebar của riêng ứng dụng Streamlit công nghệ số
+st.sidebar.title("🚀 AIDEOM-VN")
+st.sidebar.caption("Mô hình Ra Quyết Định Kinh Tế")
 
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg-body);
-  color: var(--text-body);
-  line-height: 1.6;
-}
+selected_title = st.sidebar.radio(
+    "Danh mục bài tập hoạch định:",
+    options=[ex["title"] for ex in EXERCISES],
+    index=0
+)
 
-/* LAYOUT & CARDS */
-.layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
-.sidebar { background: var(--bg-card); border-right: 1px solid var(--border-color); padding: 24px 14px; position: sticky; top: 0; height: 100vh; }
-.main { padding: 32px 40px 80px; max-width: 1200px; }
+# Trích xuất file dữ liệu tương ứng với lựa chọn điều hướng
+current_ex = next(ex for ex in EXERCISES if ex["title"] == selected_title)
 
-.page-header {
-  background: var(--bg-card); border: 1px solid var(--border-color);
-  border-radius: 12px; padding: 24px; margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.page-header h1 { color: var(--text-main); font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+html_path = ROOT / current_ex["file"]
+if html_path.exists():
+    html_content = html_path.read_text(encoding="utf-8")
+else:
+    html_content = f"<h1>Lỗi hệ thống: Không tìm thấy tệp {current_ex['file']}</h1>"
 
-.card {
-  background: var(--bg-card); border: 1px solid var(--border-color);
-  border-radius: 12px; padding: 24px; margin-bottom: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
+def inline_assets(html):
+    # Cơ chế nhúng tài nguyên liên kết động styles.css
+    css_path = ROOT / "styles.css"
+    if css_path.exists():
+        css_text = css_path.read_text(encoding="utf-8")
+        html = html.replace('<link rel="stylesheet" href="styles.css">', f"<style>\n{css_text}\n</style>")
+    
+    # Cơ chế nhúng đồng bộ các tệp logic kịch bản mở rộng
+    scripts = ["data.js", "shared.js", "chart-animations.js", "chatbot.js"]
+    for script in scripts:
+        script_path = ROOT / script
+        if script_path.exists():
+            script_text = script_path.read_text(encoding="utf-8")
+            script_text = script_text.replace("</script>", "<\\/script>")
+            html = html.replace(f'<script src="{script}"></script>', f"<script>\n{script_text}\n</script>")
+    return html
 
-/* TYPOGRAPHY */
-h2 { color: var(--text-main); font-size: 20px; font-weight: 700; margin: 32px 0 16px; border-bottom: 2px solid var(--bg-hover); padding-bottom: 8px; }
-h4 { color: var(--text-main); font-size: 15px; font-weight: 700; margin: 16px 0 8px; }
+html_content = inline_assets(html_content)
 
-/* FIX DARK PATCHES: MATH, INSIGHTS, PRE */
-.math {
-  background: var(--bg-surface) !important;
-  border-left: 4px solid var(--color-secondary) !important;
-  color: var(--text-main) !important;
-  padding: 16px; border-radius: 0 8px 8px 0; margin: 12px 0; overflow-x: auto;
-}
+# Bổ sung mã đè điều hướng xử lý ẩn Sidebar HTML và ép hệ màu sáng Alabaster
+HIDE_HTML_SIDEBAR = (
+    "<style>"
+    ".sidebar{display:none!important;}"
+    ".layout{grid-template-columns:1fr!important;}"
+    ".main{padding:24px 32px 80px!important;max-width:100%!important;}"
+    "body{background:#faf8f5!important;}"
+    "</style>"
+)
+html_content = html_content.replace("</head>", HIDE_HTML_SIDEBAR + "</head>")
 
-.insight {
-  background: var(--bg-surface) !important;
-  border: 1px solid var(--border-color) !important;
-  border-left: 4px solid var(--color-primary) !important;
-  border-radius: 8px; padding: 16px; margin: 16px 0;
-  color: var(--text-body) !important;
-}
-.insight .insight-title { color: var(--color-primary); font-weight: 700; margin-bottom: 8px; }
+# Làm sạch và định dạng lại giao diện hiển thị lớp vỏ bọc Streamlit
+st.markdown(
+    """
+    <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    .block-container {padding: 0!important; max-width: 100%!important;}
+    
+    /* Thiết kế đồng bộ màu sáng McKinsey cho Sidebar Streamlit bên ngoài */
+    section[data-testid='stSidebar'] {
+        background-color: #ffffff !important;
+        border-right: 1px solid rgba(15, 23, 42, 0.08) !important;
+    }
+    
+    /* Tái cấu trúc kiểu dáng các nút bấm vô tuyến lựa chọn bài tập */
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label {
+        background: #f1f5f9 !important;
+        color: #334155 !important;
+        border: 1px solid rgba(15, 23, 42, 0.06) !important;
+        font-size: 13px !important;
+        padding: 8px 12px !important;
+        border-radius: 6px !important;
+        margin-bottom: 4px !important;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover {
+        background: rgba(30, 64, 175, 0.05) !important;
+        border-color: #1e40af !important;
+        color: #1e40af !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-pre {
-  background: var(--text-main) !important; /* Code blocks stay dark for syntax contrast */
-  color: #f8fafc !important;
-  padding: 16px; border-radius: 8px; margin: 12px 0; font-family: monospace;
-}
-
-/* TABLES */
-.table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-color); margin: 12px 0; }
-table { width: 100%; border-collapse: collapse; background: var(--bg-card); font-size: 13px; }
-thead tr { background: var(--bg-surface); }
-th { padding: 12px; text-align: left; font-weight: 700; color: var(--text-main); border-bottom: 2px solid var(--border-color); }
-td { padding: 12px; border-bottom: 1px solid var(--border-color); color: var(--text-body); }
-
-/* Q&A COLLAPSIBLE */
-details.qa { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; }
-details.qa summary { padding: 14px 16px; font-weight: 600; color: var(--text-main); cursor: pointer; border-bottom: 1px solid transparent; }
-details.qa[open] summary { border-bottom-color: var(--border-color); color: var(--color-primary); background: var(--bg-surface); }
-details.qa .qa-a { padding: 14px 16px; color: var(--text-body); }
-
-/* BUTTONS & TAGS */
-.tag { font-size: 11px; padding: 4px 10px; border-radius: 4px; font-weight: 600; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-body); margin-right: 6px; }
+# Kích hoạt cổng nhúng Sandbox Iframe vận hành đồ án
+components.html(html_content, height=2400, scrolling=True)
