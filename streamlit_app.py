@@ -90,29 +90,37 @@ st.markdown(
     footer {visibility: hidden;}
     .block-container {padding: 0!important; max-width: 100%!important;}
     
-    /* Thiết kế đồng bộ màu sáng McKinsey cho Sidebar Streamlit bên ngoài */
+    /* 1. Hạ nền Sidebar xuống màu xám kem nhạt (Slate 50) để triệt tiêu độ chói */
     section[data-testid='stSidebar'] {
-        background-color: #ffffff !important;
+        background-color: #f8fafc !important;
         border-right: 1px solid rgba(15, 23, 42, 0.08) !important;
     }
     
-    /* Tái cấu trúc kiểu dáng các nút bấm vô tuyến lựa chọn bài tập */
+    /* 2. Biến các lựa chọn bài tập thành các "Thẻ nổi" (Cards) màu trắng tinh tế */
     section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label {
-        background: #f1f5f9 !important;
+        background: #ffffff !important;
         color: #334155 !important;
         border: 1px solid rgba(15, 23, 42, 0.06) !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
         font-size: 13px !important;
-        padding: 8px 12px !important;
-        border-radius: 6px !important;
-        margin-bottom: 4px !important;
+        padding: 10px 12px !important;
+        border-radius: 8px !important;
+        margin-bottom: 6px !important;
         cursor: pointer;
         transition: all 0.2s ease;
     }
     
+    /* 3. Hiệu ứng Hover: Nổi viền xanh Sapphire và nhấc thẻ lên nhẹ */
     section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover {
-        background: rgba(30, 64, 175, 0.05) !important;
         border-color: #1e40af !important;
+        box-shadow: 0 4px 12px rgba(30, 64, 175, 0.08) !important;
+        transform: translateY(-1px);
         color: #1e40af !important;
+    }
+    
+    /* Tùy chỉnh làm đậm font chữ bên trong thẻ */
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label p {
+        font-weight: 500 !important;
     }
     </style>
     """,
