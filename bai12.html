@@ -7,59 +7,52 @@
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="chart-animations.js"></script>
-<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-<script>window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}};</script>
-<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
 <style>
+/* =============================================================
+   EXECUTIVE CLEAN SLATE INTERNAL STYLE - BÀI 12 (DASHBOARD)
+   ============================================================= */
 .tabs-nav { display: flex; gap: 8px; margin: 20px 0 24px; flex-wrap: wrap; }
-.tab-btn { padding: 10px 18px; background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 10px; color: var(--text-2); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-.tab-btn:hover { background: rgba(168,85,247,0.15); color: var(--text-0); }
-.tab-btn.active { background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); color: white; border-color: transparent; box-shadow: 0 4px 16px rgba(168,85,247,0.4); }
+.tab-btn { padding: 10px 18px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.tab-btn:hover { background: var(--bg-surface); color: var(--color-primary); border-color: var(--color-primary); }
+.tab-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2); }
 .tab-panel { display: none; animation: fadeIn 0.4s; }
 .tab-panel.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); }}
-.metric-big { background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-left: 4px solid var(--accent-pink); border-radius: 12px; padding: 18px 22px; }
-.metric-big .ml { font-size: 12px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
-.metric-big .mv { font-size: 32px; font-weight: 900; color: var(--accent-pink); margin-top: 6px; font-variant-numeric: tabular-nums; }
-.metric-big.green { border-left-color: var(--accent-green); } .metric-big.green .mv { color: var(--accent-green); }
-.metric-big.cyan { border-left-color: var(--accent-cyan); } .metric-big.cyan .mv { color: var(--accent-cyan); }
-.metric-big.purple { border-left-color: var(--accent-purple); } .metric-big.purple .mv { color: var(--accent-purple); }
 
-.slider-block { background: rgba(15,23,42,0.5); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 12px 0; }
-.slider-block label { display: flex; justify-content: space-between; align-items: center; color: var(--text-1); font-size: 13px; font-weight: 600; margin-bottom: 10px; }
-.slider-block .val { color: var(--accent-pink); font-weight: 800; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
-.slider-block input[type=range] { -webkit-appearance: none; width: 100%; height: 7px; border-radius: 4px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink)); outline: none; cursor: pointer; }
-.slider-block input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: white; border: 3px solid var(--accent-purple); cursor: grab; box-shadow: 0 4px 12px rgba(168,85,247,0.5); }
+.metric-big { background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid var(--color-primary); border-radius: 10px; padding: 18px 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.metric-big .ml { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.metric-big .mv { font-size: 32px; font-weight: 800; color: var(--text-main); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.metric-big.green { border-left-color: var(--color-success); } .metric-big.green .mv { color: var(--color-success); }
+.metric-big.cyan { border-left-color: var(--color-primary); } .metric-big.cyan .mv { color: var(--color-primary); }
+.metric-big.purple { border-left-color: #6b21a8; } .metric-big.purple .mv { color: #6b21a8; }
 
-.toggle-switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
-.toggle-switch input { display: none; }
-.toggle-switch .tk { width: 40px; height: 22px; background: rgba(148,163,184,0.3); border-radius: 11px; position: relative; transition: 0.3s; }
-.toggle-switch .tk::after { content:''; position: absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:white; transition:0.3s; }
-.toggle-switch input:checked + .tk { background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); }
-.toggle-switch input:checked + .tk::after { transform: translateX(18px); }
+.slider-block { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px 18px; margin: 12px 0; }
+.slider-block label { display: flex; justify-content: space-between; align-items: center; color: var(--text-main); font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+.slider-block .val { color: var(--color-primary); font-weight: 700; background: var(--bg-card); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border-color); }
+.slider-block input[type=range] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--border-color); outline: none; }
+.slider-block input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--color-primary); cursor: grab; }
 
-.btn-action { display: inline-block; padding: 10px 22px; background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); color: white; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; box-shadow: 0 4px 16px rgba(236,72,153,0.4); transition: transform 0.2s; }
-.btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(236,72,153,0.5); }
+.btn-action { display: inline-block; padding: 10px 22px; background: var(--color-primary); color: white; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; transition: transform 0.2s; box-shadow: 0 2px 6px rgba(30, 64, 175, 0.15); }
+.btn-action:hover { background: #1e3a8a; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25); }
 
-.heat-grid { display: grid; grid-template-columns: 100px repeat(4, 1fr); gap: 4px; margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-.heat-cell { padding: 14px 8px; text-align: center; border-radius: 6px; font-weight: 700; font-variant-numeric: tabular-nums; transition: all 0.4s; }
-.heat-head { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; }
-.heat-row-h { background: rgba(168,85,247,0.15); color: var(--text-1); text-align: left; padding-left: 12px; }
+/* Heatmap M3 */
+.heat-grid { display: grid; grid-template-columns: 120px repeat(4, 1fr); gap: 4px; margin-top: 12px; font-family: 'Inter', sans-serif; font-size: 12px; }
+.heat-cell { padding: 12px 8px; text-align: center; border-radius: 6px; font-weight: 600; font-variant-numeric: tabular-nums; transition: all 0.3s; border: 1px solid transparent; }
+.heat-head { background: var(--bg-hover); color: var(--text-main); font-weight: 700; border-color: var(--border-color); }
+.heat-row-h { background: var(--bg-surface); color: var(--text-main); text-align: left; padding-left: 12px; border-color: var(--border-color); }
 
-.alert-card { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.05)); border: 1px solid var(--accent-green); border-left: 6px solid var(--accent-green); border-radius: 10px; padding: 14px 18px; margin: 12px 0; }
-.alert-card.warning { background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(239,68,68,0.05)); border-color: var(--accent-orange); border-left-color: var(--accent-orange); }
-.alert-card.danger { background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(168,85,247,0.05)); border-color: #ef4444; border-left-color: #ef4444; }
-.alert-card .at { font-weight: 700; color: var(--text-0); margin-bottom: 4px; }
-.alert-card .ad { font-size: 13px; color: var(--text-2); }
+/* Alerts */
+.alert-card { background: rgba(4, 120, 87, 0.05); border: 1px solid rgba(4, 120, 87, 0.2); border-left: 4px solid var(--color-success); border-radius: 8px; padding: 14px 18px; margin: 12px 0; }
+.alert-card.warning { background: rgba(180, 83, 9, 0.05); border-color: rgba(180, 83, 9, 0.2); border-left-color: var(--color-warning); }
+.alert-card.danger { background: rgba(159, 18, 57, 0.05); border-color: rgba(159, 18, 57, 0.2); border-left-color: var(--color-tertiary); }
+.alert-card .at { font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+.alert-card .ad { font-size: 13px; color: var(--text-body); }
 
-.scenario-row.s-best { background: rgba(16,185,129,0.1) !important; }
-.scenario-row.s-best td { color: var(--accent-green); font-weight: 700; }
+.scenario-row.s-best { background: rgba(4, 120, 87, 0.05) !important; }
+.scenario-row.s-best td { color: var(--color-success); font-weight: 700; }
 
-.module-icon-cell { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); color: white; font-weight: 900; font-size: 14px; }
-
-.hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168,85,247,0.6); animation: float 8s infinite linear; }
-@keyframes float { from { transform: translateY(100vh); opacity: 0; } 10%,90% { opacity: 1; } to { transform: translateY(-100px); opacity: 0; }}
+.module-icon-cell { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; background: rgba(30, 64, 175, 0.1); color: var(--color-primary); font-weight: 800; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -67,196 +60,121 @@
   <aside class="sidebar" id="sidebar" data-current="12"></aside>
   <main class="main">
 
-    <div class="page-header" style="position:relative">
-      <div class="hero-particles" id="particles"></div>
+    <div class="page-header">
       <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần D · Đồ án</span> · <span>Bài 12</span></div>
       <h1>Bài 12. AIDEOM-VN Dashboard — Tích hợp 6 module</h1>
       <p class="subtitle">
-        Đồ án tổng kết: tích hợp 11 mô hình từ Bài 1-11 thành 1 dashboard tương tác.
-        4 tab chính: <strong>Tổng quan (M1-M2)</strong>, <strong>Phân bổ (M3)</strong>, <strong>5 Kịch bản (M6)</strong>, <strong>Cảnh báo rủi ro (M4-M5)</strong>.
+        Đồ án tổng kết: tích hợp 11 mô hình toán học (Từ Bài 1-11) thành 1 Master Dashboard hỗ trợ hoạch định chiến lược kinh tế số quốc gia.
       </p>
-      <div class="pills">
-        <span class="tag tag-cyan">6 Modules</span>
-        <span class="tag tag-purple">4 Tabs</span>
-        <span class="tag tag-pink">5 Scenarios</span>
-        <span class="tag tag-orange">Risk alerts</span>
-        <span class="tag tag-green">🎬 Dashboard interactive</span>
-      </div>
     </div>
 
-    <!-- TABS NAV -->
     <div class="tabs-nav">
-      <button class="tab-btn active" data-tab="tab1">📊 Tổng quan (M1-M2)</button>
-      <button class="tab-btn" data-tab="tab2">💰 Phân bổ (M3)</button>
-      <button class="tab-btn" data-tab="tab3">🎯 5 Kịch bản (M6)</button>
-      <button class="tab-btn" data-tab="tab4">⚠ Cảnh báo rủi ro (M4-M5)</button>
+      <button class="tab-btn active" data-tab="tab1">📊 Tổng quan Vĩ mô (M1-M2)</button>
+      <button class="tab-btn" data-tab="tab2">💰 Tối ưu Phân bổ (M3)</button>
+      <button class="tab-btn" data-tab="tab3">🎯 Kịch bản Chiến lược (M6)</button>
+      <button class="tab-btn" data-tab="tab4">⚠ Cảnh báo Rủi ro (M4-M5)</button>
     </div>
 
-    <!-- TAB 1: M1 + M2 -->
     <div class="tab-panel active" id="tab1">
-      <h2>M1 — Dự báo kinh tế (Cobb-Douglas)</h2>
-      <div class="card solution-card">
+      <h2>M1 — Dự báo kinh tế (Cobb-Douglas Mở rộng)</h2>
+      <div class="card">
         <div class="stats-grid">
-          <div class="metric-big cyan"><div class="ml">MAPE (Cobb-Douglas)</div><div class="mv">6.42%</div></div>
-          <div class="metric-big purple"><div class="ml">Hệ số $A$ (TFP)</div><div class="mv">30.9444</div></div>
-          <div class="metric-big"><div class="ml">Y 2030 dự báo</div><div class="mv">16,159 ng.tỷ</div></div>
+          <div class="metric-big cyan"><div class="ml">MAPE Mô hình</div><div class="mv">6.42%</div></div>
+          <div class="metric-big purple"><div class="ml">Hệ số TFP ($A$)</div><div class="mv">30.94</div></div>
+          <div class="metric-big"><div class="ml">GDP 2030 (Dự báo)</div><div class="mv">16.159 nghìn tỷ</div></div>
         </div>
-        <h4 style="margin-top:20px">Phân rã đóng góp tăng trưởng 2026-2030</h4>
-        <div class="chart-container" style="height:340px"><canvas id="chartM1"></canvas></div>
+        <h4 style="margin-top:20px; color:var(--color-primary)">Phân rã đóng góp tăng trưởng 2026-2030</h4>
+        <div class="chart-container" style="height:300px"><canvas id="chartM1"></canvas></div>
       </div>
 
-      <h2>M2 — Đánh giá sẵn sàng số (TOPSIS)</h2>
-      <div class="card solution-card">
+      <h2>M2 — Đánh giá năng lực số 6 Vùng (TOPSIS)</h2>
+      <div class="card">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
           <div>
-            <h4 style="color:var(--accent-cyan)">TOPSIS Expert</h4>
+            <h4 style="color:var(--color-primary)">TOPSIS (Trọng số Chuyên gia)</h4>
             <div class="table-wrap"><table>
-              <thead><tr><th>Xếp hạng</th><th>Vùng</th><th class="num">TOPSIS score</th></tr></thead>
+              <thead><tr><th>Xếp hạng</th><th>Vùng</th><th class="num">Score $C^*$</th></tr></thead>
               <tbody>
-                <tr><td><span class="rank-badge rank-1">1</span></td><td><strong>Đông Nam Bộ</strong></td><td class="num">0.9402</td></tr>
-                <tr><td><span class="rank-badge rank-2">2</span></td><td><strong>Đồng bằng sông Hồng</strong></td><td class="num">0.8981</td></tr>
-                <tr><td><span class="rank-badge rank-3">3</span></td><td>BTB+DH miền Trung</td><td class="num">0.3597</td></tr>
-                <tr><td>4</td><td>Đồng bằng sông Cửu Long</td><td class="num">0.1710</td></tr>
-                <tr><td>5</td><td>Trung du miền núi phía Bắc</td><td class="num">0.0993</td></tr>
-                <tr><td>6</td><td>Tây Nguyên</td><td class="num">0.0312</td></tr>
+                <tr><td><span class="rank-badge rank-1">1</span></td><td><strong>Đông Nam Bộ</strong></td><td class="num">0.940</td></tr>
+                <tr><td><span class="rank-badge rank-2">2</span></td><td><strong>Đồng bằng sông Hồng</strong></td><td class="num">0.898</td></tr>
+                <tr><td><span class="rank-badge rank-3">3</span></td><td>BTB+DH miền Trung</td><td class="num">0.360</td></tr>
               </tbody>
             </table></div>
           </div>
           <div>
-            <h4 style="color:var(--accent-pink)">TOPSIS Entropy</h4>
+            <h4 style="color:var(--color-primary)">TOPSIS (Trọng số Entropy)</h4>
             <div class="table-wrap"><table>
-              <thead><tr><th>Xếp hạng</th><th>Vùng</th><th class="num">TOPSIS score</th></tr></thead>
+              <thead><tr><th>Xếp hạng</th><th>Vùng</th><th class="num">Score $C^*$</th></tr></thead>
               <tbody>
-                <tr><td><span class="rank-badge rank-1">1</span></td><td><strong>Đồng bằng sông Hồng</strong></td><td class="num">0.7218</td></tr>
-                <tr><td><span class="rank-badge rank-2">2</span></td><td><strong>Đông Nam Bộ</strong></td><td class="num">0.6845</td></tr>
-                <tr><td><span class="rank-badge rank-3">3</span></td><td>BTB+DH miền Trung</td><td class="num">0.3120</td></tr>
-                <tr><td>4</td><td>Trung du miền núi phía Bắc</td><td class="num">0.0512</td></tr>
-                <tr><td>5</td><td>Đồng bằng sông Cửu Long</td><td class="num">0.0398</td></tr>
-                <tr><td>6</td><td>Tây Nguyên</td><td class="num">0.0118</td></tr>
+                <tr><td><span class="rank-badge rank-1">1</span></td><td><strong>Đồng bằng sông Hồng</strong></td><td class="num">0.722</td></tr>
+                <tr><td><span class="rank-badge rank-2">2</span></td><td><strong>Đông Nam Bộ</strong></td><td class="num">0.684</td></tr>
+                <tr><td><span class="rank-badge rank-3">3</span></td><td>BTB+DH miền Trung</td><td class="num">0.312</td></tr>
               </tbody>
             </table></div>
           </div>
         </div>
-        <div class="insight">
-          <div class="insight-title">💡 So sánh 2 phương pháp</div>
-          <p>Top-3 ổn định (ĐNB, ĐBSH, BTB+DH). Entropy đẩy ĐBSH lên #1 vì FDI biến thiên cao gắt hơn. Tây Nguyên cuối bảng cả 2 phương pháp.</p>
-        </div>
       </div>
     </div>
 
-    <!-- TAB 2: M3 -->
     <div class="tab-panel" id="tab2">
-      <h2>M3 — Tối ưu phân bổ ngân sách (LP 6 vùng × 4 hạng mục)</h2>
-      <div class="card solution-card special-glow">
+      <h2>M3 — Tối ưu phân bổ ngân sách (LP)</h2>
+      <div class="card">
         <div class="slider-block">
           <label>💰 Ngân sách (tỷ VND) <span class="val" id="m3Bval">50,000</span></label>
           <input type="range" id="m3B" min="20000" max="100000" step="1000" value="50000">
         </div>
-        <div style="display:flex;align-items:center;gap:14px;margin:10px 0">
-          <label class="toggle-switch">
-            <input type="checkbox" id="m3Fair" checked>
-            <span class="tk"></span>
-            <span style="color:var(--text-1);font-size:13px;font-weight:600">Bật ràng buộc công bằng vùng (C5)</span>
-          </label>
-        </div>
+        
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
-          <div class="metric-big"><div class="ml">$Z^*$ GDP gain</div><div class="mv" id="m3Z">60,760 tỷ VND</div></div>
+          <div class="metric-big"><div class="ml">$Z^*$ GDP gain</div><div class="mv" id="m3Z">60,760 tỷ</div></div>
           <div class="metric-big green"><div class="ml">Tổng phân bổ</div><div class="mv" id="m3T">50,000</div></div>
         </div>
 
-        <h4 style="margin-top:18px">Phân bổ tối ưu theo ngành-vùng (tỷ VND) — Heatmap</h4>
+        <h4 style="margin-top:24px; color:var(--color-primary)">Ma trận Phân bổ Ngành-Vùng (tỷ VND)</h4>
         <div class="heat-grid">
-          <div class="heat-cell heat-head">Vùng \\ Hạng</div>
+          <div class="heat-cell heat-head">Vùng \ Hạng</div>
           <div class="heat-cell heat-head">I (Hạ tầng)</div>
-          <div class="heat-cell heat-head">D (CĐS DN)</div>
+          <div class="heat-cell heat-head">D (Số hóa)</div>
           <div class="heat-cell heat-head">AI</div>
           <div class="heat-cell heat-head">H (Nhân lực)</div>
         </div>
-        <div class="heat-grid" id="heatM3"></div>
-
-        <div class="insight">
-          <div class="insight-title">💡 Phân tích phân bổ</div>
-          <p id="m3Insight">ĐNB và ĐBSH nhận tối đa 12.000 tỷ (binding trần). Vùng nghèo TDMNPB, Tây Nguyên, ĐBSCL nhận sàn 5.000 tỷ. Với fairness, Tây Nguyên ưu tiên D + H. Bỏ fairness, vốn chảy hết về ĐNB + ĐBSH.</p>
-        </div>
+        <div class="heat-grid" id="heatM3" style="margin-top:0"></div>
       </div>
     </div>
 
-    <!-- TAB 3: 5 SCENARIOS -->
     <div class="tab-panel" id="tab3">
-      <h2>So sánh 5 kịch bản chính sách (Mục 15 của bài báo nguồn)</h2>
-      <div class="card solution-card special-glow">
+      <h2>M6 — So sánh 5 Kịch bản Chính sách</h2>
+      <div class="card">
         <div class="slider-block">
-          <label>💰 Tổng ngân sách kịch bản (tỷ VND) <span class="val" id="m6Bval">80,000</span></label>
+          <label>💰 Ngân sách kịch bản (tỷ VND) <span class="val" id="m6Bval">80,000</span></label>
           <input type="range" id="m6B" min="50000" max="120000" step="5000" value="80000">
         </div>
-        <button class="btn-action" onclick="runScenarios()" style="margin:10px 0">🎯 Chạy 5 kịch bản</button>
+        <button class="btn-action" onclick="runScenarios()" style="margin-bottom:16px">🎯 Chạy 5 kịch bản mô phỏng</button>
 
-        <h4 style="margin-top:14px">Bảng so sánh 5 kịch bản theo 4 mục tiêu</h4>
         <div class="table-wrap"><table>
-          <thead><tr>
-            <th>Kịch bản</th>
-            <th class="num">GDP_gain</th>
-            <th class="num">Phát thải</th>
-            <th class="num">Rủi ro ròng</th>
-            <th class="num">NetJob</th>
-          </tr></thead>
+          <thead><tr><th>Kịch bản</th><th class="num">GDP gain (tỷ)</th><th class="num">Phát thải CO₂</th><th class="num">Rủi ro an ninh</th><th class="num">Việc làm mới</th></tr></thead>
           <tbody id="scenarioTable"></tbody>
         </table></div>
 
-        <h4 style="margin-top:18px">GDP gain theo kịch bản</h4>
-        <div class="chart-container" style="height:300px"><canvas id="chartScenarios"></canvas></div>
-
-        <div class="insight">
-          <div class="insight-title">💡 Bubble: GDP × Phát thải × NetJob × Rủi ro</div>
-          <p><strong>S5 (Tối ưu cân bằng)</strong> đứng đầu cả 4 chiều — minh chứng cho việc tối ưu đa mục tiêu (NSGA-II Bài 7) vượt các kịch bản đơn chiều. <strong>S1 (Truyền thống)</strong> tăng GDP nhanh nhưng phát thải cao gấp 2.5x S5 — không bền vững.</p>
-        </div>
+        <h4 style="margin-top:24px; color:var(--color-primary)">Tăng trưởng GDP theo từng kịch bản</h4>
+        <div class="chart-container" style="height:280px"><canvas id="chartScenarios"></canvas></div>
       </div>
     </div>
 
-    <!-- TAB 4: M4 + M5 -->
     <div class="tab-panel" id="tab4">
-      <h2>M4 — Mô phỏng lao động (NetJob)</h2>
-      <div class="card solution-card">
-        <div class="alert-card">
-          <div class="at">✓ Cảnh báo</div>
-          <div class="ad">Không có cảnh báo nghiêm trọng. Tổng NetJob = +1.245 ngàn việc (dương).</div>
-        </div>
+      <h2>M4 & M5 — Quản trị Rủi ro và An sinh</h2>
+      <div class="card">
         <div class="alert-card warning">
-          <div class="at">⚠ Cảnh báo tốc độ tự động hóa</div>
-          <div class="ad">Ngành Tài chính-NH có tốc độ AI displacement 52% — vượt năng lực đào tạo lại 45%. Cần tăng x_H thêm 350 tỷ.</div>
+          <div class="at">⚠ Tốc độ thay thế lao động ngành Tài chính - Ngân hàng</div>
+          <div class="ad">Ngành Tài chính có mức thay thế 52% (Vượt năng lực tái đào tạo hiện tại là 45%). Yêu cầu phân bổ thêm 350 tỷ VND vào quỹ Reskilling (H).</div>
         </div>
         <div class="alert-card danger">
-          <div class="at">🚨 Cảnh báo rủi ro chu kỳ chính trị</div>
-          <div class="ad">Hệ số chiết khấu ρ = 0.97 phụ thuộc cam kết dài hạn. Nếu chính phủ thay đổi → R&D sụp 40-60%.</div>
+          <div class="at">🚨 Rủi ro phụ thuộc công nghệ lõi (Dependency Risk)</div>
+          <div class="ad">Điểm rủi ro đạt mức 5.8/10. Hệ thống cảnh báo thiếu tự chủ về hạ tầng điện toán đám mây AI. Khuyến nghị kích hoạt dự án P13 (Bán dẫn) ở Bài 5.</div>
         </div>
-      </div>
-
-      <h2>M5 — Rủi ro hệ thống (Stochastic + NSGA-II)</h2>
-      <div class="card solution-card">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
-          <div class="metric-big cyan"><div class="ml">Rủi ro Cyber</div><div class="mv">2.1/10</div></div>
-          <div class="metric-big green"><div class="ml">Rủi ro Environment</div><div class="mv">3.5/10</div></div>
-          <div class="metric-big purple"><div class="ml">Rủi ro Dependency</div><div class="mv">5.8/10</div></div>
+        <div class="alert-card">
+          <div class="at">✓ Cân bằng Phát thải NetZero</div>
+          <div class="ad">Quỹ đạo hiện tại đáp ứng mục tiêu giảm phát thải của COP26 đến năm 2030 trong kịch bản S5 (Cân bằng).</div>
         </div>
-        <p style="font-size:13px;color:var(--text-2);margin-top:12px">
-          Rủi ro Dependency (phụ thuộc công nghệ nước ngoài) là cao nhất — phù hợp với
-          QĐ 127/QĐ-TTg về xây dựng năng lực AI nội địa.
-        </p>
-      </div>
-
-      <h2>Tóm tắt thiết kế hệ thống AIDEOM-VN</h2>
-      <div class="card">
-        <div class="table-wrap"><table>
-          <thead><tr><th>Module</th><th>Tên</th><th>Đầu vào</th><th>Đầu ra</th><th>Kỹ thuật</th></tr></thead>
-          <tbody>
-            <tr><td><span class="module-icon-cell">M1</span></td><td>Dự báo kinh tế</td><td>Macro 2020-2025</td><td>GDP, TFP 2030</td><td>Cobb-Douglas (Bài 1)</td></tr>
-            <tr><td><span class="module-icon-cell">M2</span></td><td>Sẵn sàng số</td><td>Sectors, Regions</td><td>Digital + AI Index</td><td>TOPSIS (Bài 6)</td></tr>
-            <tr><td><span class="module-icon-cell">M3</span></td><td>Tối ưu phân bổ</td><td>Budget, β-matrix</td><td>Phân bổ ngành-vùng</td><td>LP (Bài 4) + Dynamic (Bài 8)</td></tr>
-            <tr><td><span class="module-icon-cell">M4</span></td><td>Lao động</td><td>x_AI, x_H</td><td>NetJob từng ngành</td><td>LP (Bài 9)</td></tr>
-            <tr><td><span class="module-icon-cell">M5</span></td><td>Rủi ro</td><td>Risk params</td><td>Cyber, Env, Dependency</td><td>NSGA-II (Bài 7) + SP (Bài 10)</td></tr>
-            <tr><td><span class="module-icon-cell">M6</span></td><td>Dashboard</td><td>Outputs M1-M5</td><td>Trực quan kịch bản</td><td>Streamlit + Plotly</td></tr>
-          </tbody>
-        </table></div>
       </div>
     </div>
 
@@ -267,181 +185,108 @@
 <script src="data.js"></script>
 <script src="shared.js"></script>
 <script>
-// Particles
-(function() { var c = document.getElementById('particles'); if(!c) return; for(var i=0;i<15;i++){var p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*8+'s';p.style.background=['rgba(168,85,247,0.6)','rgba(6,182,212,0.6)','rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];c.appendChild(p);}})();
+Chart.defaults.color = '#64748b';
 
 // TABS
-document.querySelectorAll('.tab-btn').forEach(function(btn){
+document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', function(){
-    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     this.classList.add('active');
     document.getElementById(this.dataset.tab).classList.add('active');
   });
 });
 
-// CHART M1 - Phân rã đóng góp tăng trưởng
+// M1 CHART
 new Chart(document.getElementById('chartM1'), {
   type: 'bar',
   data: {
-    labels: ['TFP (A)', 'Vốn (K)', 'Lao động (L)', 'Số hóa (D)', 'AI', 'Nhân lực số (H)'],
-    datasets: [{
-      data: [3.2, 2.1, 0.5, 1.4, 2.6, 1.1],
-      backgroundColor: ['#a855f7','#06b6d4','#94a3b8','#f97316','#ec4899','#10b981'],
-      borderRadius: 8
-    }]
+    labels: ['TFP', 'Vốn (K)', 'Lao động (L)', 'Số hóa (D)', 'AI', 'Nhân lực số'],
+    datasets: [{ data: [3.2, 2.1, 0.5, 1.4, 2.6, 1.1], backgroundColor: ['#475569','#1e40af','#94a3b8','#b45309','#9f1239','#047857'], borderRadius: 6 }]
   },
-  options: { responsive: true, maintainAspectRatio: false,
-    plugins: { legend:{display:false}, title:{display:true,text:'Đóng góp vào tăng trưởng GDP 2026-2030 (pp)',color:'#f8fafc'}},
-    scales: { x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(148,163,184,0.1)'}}, y:{title:{display:true,text:'pp/năm',color:'#94a3b8'},ticks:{color:'#94a3b8'},grid:{color:'rgba(148,163,184,0.1)'}}}
-  }
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false}, title:{display:true, text:'Đóng góp tăng trưởng GDP (pp)', color:'#0f172a', font:{size:14}} }, scales: { x:{grid:{color:'#e2e8f0'}}, y:{grid:{color:'#e2e8f0'}} } }
 });
 
-// M3 — LP heatmap interactive
-var REGIONS_M3 = ['TDMNPB','ĐBSH','BTB+DH','Tây Nguyên','ĐNB','ĐBSCL'];
-function solveM3(B, fair) {
-  var n = REGIONS_M3.length;
-  // β matrix 6x4 (I, D, AI, H)
-  var beta = [
-    [1.15, 0.85, 0.55, 1.30],  // TDMNPB
-    [0.95, 1.25, 1.40, 1.05],  // ĐBSH
-    [1.05, 0.95, 0.85, 1.15],  // BTB+DH
-    [1.20, 0.85, 0.45, 1.35],  // Tây Nguyên
-    [0.90, 1.30, 1.55, 1.00],  // ĐNB
-    [1.10, 0.90, 0.65, 1.25]   // ĐBSCL
-  ];
-  var minR = Math.max(2000, B * 0.08);
-  var maxR = Math.min(B * 0.30, B / 4);
-  var alloc = REGIONS_M3.map(function(){ return [0,0,0,0]; });
-  var totals = REGIONS_M3.map(function(){ return minR; });
-  var remaining = B - n * minR;
-  // Greedy by max beta sum
-  var ranked = REGIONS_M3.map(function(_, i){
-    return { i: i, score: beta[i].reduce(function(s,v){return s+v;}, 0)};
-  }).sort(function(a,b){ return b.score - a.score; });
-  ranked.forEach(function(r){
-    if (remaining <= 0) return;
-    var can = Math.min(maxR - minR, remaining);
-    totals[r.i] += can;
-    remaining -= can;
+// M3 LOGIC
+const REGIONS_M3 = ['TDMNPB','ĐBSH','BTB+DH','Tây Nguyên','ĐNB','ĐBSCL'];
+function solveM3(B) {
+  const beta = [[1.15,0.85,0.55,1.30],[0.95,1.25,1.40,1.05],[1.05,0.95,0.85,1.15],[1.20,0.85,0.45,1.35],[0.90,1.30,1.55,1.00],[1.10,0.90,0.65,1.25]];
+  const minR = Math.max(2000, B * 0.08); const maxR = Math.min(B * 0.30, B / 4);
+  let alloc = REGIONS_M3.map(() => [0,0,0,0]); let totals = REGIONS_M3.map(() => minR);
+  let remaining = B - 6 * minR;
+  const ranked = REGIONS_M3.map((_, i) => ({ i, score: beta[i].reduce((s,v)=>s+v, 0)})).sort((a,b) => b.score - a.score);
+  
+  ranked.forEach(r => { if (remaining <= 0) return; const can = Math.min(maxR - minR, remaining); totals[r.i] += can; remaining -= can; });
+  
+  REGIONS_M3.forEach((_, i) => {
+    const t = totals[i];
+    if (i === 3 || i === 0) { alloc[i][1] = t * 0.3; alloc[i][3] = t * 0.7; } 
+    else { const topJ = beta[i].indexOf(Math.max(...beta[i])); alloc[i][topJ] = t; }
   });
-  // Within each region, allocate to top-beta item
-  REGIONS_M3.forEach(function(_, i){
-    var t = totals[i];
-    var items = beta[i].map(function(b, j){ return {j:j, b:b}; }).sort(function(a,b){ return b.b - a.b; });
-    if (fair && i === 3) { // Tây Nguyên fair → D + H
-      alloc[i][1] = t * 0.3; alloc[i][3] = t * 0.7;
-    } else if (fair && i === 0) { // TDMNPB
-      alloc[i][1] = t * 0.3; alloc[i][3] = t * 0.7;
-    } else {
-      alloc[i][items[0].j] = t;
-    }
-  });
-  // Compute Z*
-  var Z = 0;
-  alloc.forEach(function(row, i){ row.forEach(function(v, j){ Z += v * beta[i][j]; }); });
-  return { alloc: alloc, Z: Z, totals: totals };
+  let Z = 0; alloc.forEach((row, i) => row.forEach((v, j) => Z += v * beta[i][j]));
+  return { alloc, Z, totals };
 }
 
 function renderM3() {
-  var B = parseInt(document.getElementById('m3B').value);
-  var fair = document.getElementById('m3Fair').checked;
+  const B = parseInt(document.getElementById('m3B').value);
   document.getElementById('m3Bval').textContent = B.toLocaleString('vi-VN');
-  var res = solveM3(B, fair);
-  document.getElementById('m3Z').textContent = Math.round(res.Z).toLocaleString('vi-VN') + ' tỷ VND';
-  document.getElementById('m3T').textContent = res.totals.reduce(function(s,v){return s+v;},0).toLocaleString('vi-VN');
+  const res = solveM3(B);
+  document.getElementById('m3Z').textContent = Math.round(res.Z).toLocaleString('vi-VN');
+  document.getElementById('m3T').textContent = res.totals.reduce((s,v)=>s+v,0).toLocaleString('vi-VN');
 
-  // Render heatmap
-  var maxVal = Math.max.apply(null, res.alloc.flat());
-  var html = '';
-  REGIONS_M3.forEach(function(name, i){
-    html += '<div class="heat-cell heat-row-h">' + name + '</div>';
-    for (var j = 0; j < 4; j++) {
-      var v = res.alloc[i][j];
-      var intensity = maxVal > 0 ? v / maxVal : 0;
-      var bg;
-      if (v === 0) bg = 'rgba(15,23,42,0.4)';
-      else if (j === 0) bg = 'rgba(6,182,212,' + (0.2 + intensity*0.7) + ')';
-      else if (j === 1) bg = 'rgba(168,85,247,' + (0.2 + intensity*0.7) + ')';
-      else if (j === 2) bg = 'rgba(236,72,153,' + (0.2 + intensity*0.7) + ')';
-      else bg = 'rgba(16,185,129,' + (0.2 + intensity*0.7) + ')';
-      html += '<div class="heat-cell" style="background:' + bg + ';color:' + (intensity > 0.5 ? 'white' : 'var(--text-1)') + '">' + Math.round(v).toLocaleString('vi-VN') + '</div>';
+  const maxVal = Math.max(...res.alloc.flat());
+  document.getElementById('heatM3').innerHTML = REGIONS_M3.map((name, i) => {
+    let html = `<div class="heat-cell heat-row-h">${name}</div>`;
+    for (let j = 0; j < 4; j++) {
+      const v = res.alloc[i][j]; const intensity = maxVal > 0 ? v / maxVal : 0;
+      const bg = v === 0 ? 'var(--bg-surface)' : `rgba(30, 64, 175, ${0.1 + intensity*0.8})`;
+      const col = intensity > 0.4 ? 'white' : 'var(--text-main)';
+      html += `<div class="heat-cell" style="background:${bg};color:${col}">${Math.round(v).toLocaleString('vi-VN')}</div>`;
     }
-  });
-  document.getElementById('heatM3').innerHTML = html;
+    return html;
+  }).join('');
 }
 document.getElementById('m3B').addEventListener('input', renderM3);
-document.getElementById('m3Fair').addEventListener('change', renderM3);
 setTimeout(renderM3, 100);
 
-// SCENARIOS M6
-var SCENARIOS = [
+// M6 LOGIC
+const SCENARIOS = [
   { name: 'S1. Truyền thống',     ratio: { gdp: 1.05, em: 1.85, risk: 0.07, job: -0.075 } },
   { name: 'S2. Số hóa nhanh',     ratio: { gdp: 1.02, em: 0.92, risk: 8.78, job: -0.086 } },
   { name: 'S3. AI dẫn dắt',       ratio: { gdp: 1.00, em: 1.50, risk: -9.05, job: 8.78 } },
   { name: 'S4. Bao trùm số',      ratio: { gdp: 1.08, em: 0.92, risk: -10.68, job: -9.05 } },
   { name: 'S5. Tối ưu cân bằng',  ratio: { gdp: 1.085, em: 0.70, risk: 0.0, job: -10.68 } }
 ];
-var chartScenariosObj = null;
+let chartScenariosObj = null;
 function runScenarios() {
-  var B = parseInt(document.getElementById('m6B').value);
+  const B = parseInt(document.getElementById('m6B').value);
   document.getElementById('m6Bval').textContent = B.toLocaleString('vi-VN');
-  // Compute scenario metrics
-  var base = B * 0.001;
-  var results = SCENARIOS.map(function(s){
-    return {
-      name: s.name,
-      gdp: Math.round(base * s.ratio.gdp * 1000),
-      em: Math.round(base * s.ratio.em * 200),
-      risk: Math.round(s.ratio.risk * 800),
-      job: Math.round(s.ratio.job * 800)
-    };
-  });
-  // Find best by combined score
-  var bestIdx = 0; var bestScore = -Infinity;
-  results.forEach(function(r, i){
-    var s = r.gdp - r.em*0.3 - Math.abs(r.risk)*0.5 + r.job*0.3;
-    if (s > bestScore) { bestScore = s; bestIdx = i; }
-  });
+  const base = B * 0.001;
+  const results = SCENARIOS.map(s => ({
+    name: s.name, gdp: Math.round(base * s.ratio.gdp * 1000), em: Math.round(base * s.ratio.em * 200),
+    risk: Math.round(s.ratio.risk * 800), job: Math.round(s.ratio.job * 800)
+  }));
+  
+  let bestIdx = 0, bestScore = -Infinity;
+  results.forEach((r, i) => { const s = r.gdp - r.em*0.3 - Math.abs(r.risk)*0.5 + r.job*0.3; if(s>bestScore){bestScore=s; bestIdx=i;} });
 
-  // Render table
-  var html = '';
-  results.forEach(function(r, i){
-    var cls = i === bestIdx ? 'scenario-row s-best' : '';
-    html += '<tr class="' + cls + '">' +
-      '<td><strong>' + r.name + '</strong></td>' +
-      '<td class="num">' + r.gdp.toLocaleString('vi-VN') + '</td>' +
-      '<td class="num">' + r.em.toLocaleString('vi-VN') + '</td>' +
-      '<td class="num">' + r.risk.toLocaleString('vi-VN') + '</td>' +
-      '<td class="num">' + r.job.toLocaleString('vi-VN') + '</td>' +
-    '</tr>';
-  });
-  document.getElementById('scenarioTable').innerHTML = html;
+  document.getElementById('scenarioTable').innerHTML = results.map((r, i) => `
+    <tr class="${i === bestIdx ? 'scenario-row s-best' : ''}">
+      <td><strong>${r.name}</strong></td><td class="num">${r.gdp.toLocaleString('vi-VN')}</td>
+      <td class="num">${r.em.toLocaleString('vi-VN')}</td><td class="num">${r.risk.toLocaleString('vi-VN')}</td>
+      <td class="num">${r.job.toLocaleString('vi-VN')}</td>
+    </tr>
+  `).join('');
 
-  // Chart
   if (chartScenariosObj) chartScenariosObj.destroy();
   chartScenariosObj = new Chart(document.getElementById('chartScenarios'), {
     type: 'bar',
-    data: {
-      labels: results.map(function(r){ return r.name; }),
-      datasets: [{
-        label: 'GDP gain (tỷ VND)',
-        data: results.map(function(r){ return r.gdp; }),
-        backgroundColor: results.map(function(_, i){ return i === bestIdx ? '#10b981' : '#a855f7'; }),
-        borderRadius: 6
-      }]
-    },
-    options: { responsive: true, maintainAspectRatio: false,
-      plugins:{ legend:{display:false}},
-      scales:{ x:{ticks:{color:'#94a3b8'},grid:{color:'rgba(148,163,184,0.1)'}}, y:{ticks:{color:'#94a3b8'},grid:{color:'rgba(148,163,184,0.1)'}}}}
+    data: { labels: results.map(r=>r.name), datasets: [{ label: 'GDP gain (tỷ)', data: results.map(r=>r.gdp), backgroundColor: results.map((_,i)=>i===bestIdx?'#047857':'#1e40af'), borderRadius: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{display:false}}, scales:{ x:{grid:{color:'#e2e8f0'}}, y:{grid:{color:'#e2e8f0'}} }}
   });
 }
-document.getElementById('m6B').addEventListener('input', function(){
-  document.getElementById('m6Bval').textContent = parseInt(this.value).toLocaleString('vi-VN');
-});
+document.getElementById('m6B').addEventListener('input', runScenarios);
 setTimeout(runScenarios, 200);
-
-setTimeout(function(){ if(window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }, 500);
 </script>
 <script src="chatbot.js"></script>
 </body>
