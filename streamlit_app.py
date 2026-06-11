@@ -82,7 +82,9 @@ HIDE_HTML_SIDEBAR = (
 )
 html_content = html_content.replace("</head>", HIDE_HTML_SIDEBAR + "</head>")
 
-# Làm sạch và định dạng lại giao diện hiển thị lớp vỏ bọc Streamlit
+# ==============================================================================
+# BỘ LỌC GIAO DIỆN STREAMLIT - "NUKE ALL BLUE" (Loại bỏ 100% màu xanh, ép font đậm)
+# ==============================================================================
 st.markdown(
     """
     <style>
@@ -90,38 +92,37 @@ st.markdown(
     footer {visibility: hidden;}
     .block-container {padding: 0!important; max-width: 100%!important;}
     
-    /* 1. Nền Sidebar và thiết lập Font hệ thống chuẩn Apple/Inter */
+    /* 1. Nền Sidebar và Font hệ thống chuẩn */
     section[data-testid='stSidebar'] {
         background-color: #f8fafc !important;
         border-right: 1px solid #e2e8f0 !important;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     }
     
-    /* 2. Tiêu đề Logo và Caption cực kỳ sắc nét */
+    /* 2. Tiêu đề Logo sắc nét (Màu đen tuyền) */
     section[data-testid='stSidebar'] h1, 
     section[data-testid='stSidebar'] h2, 
-    section[data-testid='stSidebar'] h3,
-    section[data-testid='stSidebar'] [data-testid="stMarkdownContainer"] p {
+    section[data-testid='stSidebar'] h3 {
         color: #0f172a !important;
-        font-weight: 800 !important;
+        font-weight: 900 !important;
     }
     section[data-testid='stSidebar'] caption,
     section[data-testid='stSidebar'] .stCaption {
-        color: #64748b !important;
-        font-weight: 500 !important;
+        color: #475569 !important;
+        font-weight: 600 !important;
     }
     
-    /* 3. Chỉnh sửa chữ "Danh mục bài tập hoạch định" thành dạng Dashboard Label */
+    /* 3. Dòng chữ Danh mục (Xám khói) */
     section[data-testid='stSidebar'] [data-testid="stWidgetLabel"] p {
-        color: #475569 !important;
+        color: #64748b !important;
         font-weight: 700 !important;
-        font-size: 13px !important;
+        font-size: 12px !important;
         text-transform: uppercase !important;
         letter-spacing: 0.5px !important;
-        margin-bottom: 14px !important;
+        margin-bottom: 16px !important;
     }
     
-    /* 4. Thẻ bài tập mặc định: Viền bạc tinh tế, chữ xám chì đậm nét */
+    /* 4. Khối Thẻ Bài Tập - Xóa màu xanh, tăng độ dày nét chữ */
     section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label {
         background-color: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
@@ -132,32 +133,41 @@ st.markdown(
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label *,
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label p {
+    
+    /* 🔥 ÉP BUỘC MÀU XÁM CHÌ CỰC ĐẬM (#334155) CHO TẤT CẢ CHỮ CƠ BẢN */
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label p,
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label span,
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label div {
         color: #334155 !important;
-        font-weight: 600 !important; /* Dày dặn hơn, không còn mỏng manh */
-        font-size: 14px !important; /* To rõ ràng */
+        font-weight: 600 !important; /* Font chữ dày, mạnh mẽ */
+        font-size: 14px !important;
     }
     
-    /* 5. Hiệu ứng Hover: Nổi bật bằng màu Xám Đen (Charcoal), bỏ xanh dương */
+    /* 5. Hiệu ứng Hover - Đổi viền sang xám khói, nhấc thẻ lên */
     section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover {
-        border-color: #cbd5e1 !important;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+        border-color: #94a3b8 !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06) !important;
         transform: translateY(-2px);
+        background-color: #f8fafc !important;
     }
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover * {
-        color: #0f172a !important; /* Đen tuyền sang trọng */
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover p,
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover span {
+        color: #0f172a !important; /* Đen tuyền hoàng gia */
     }
     
-    /* 6. Trạng thái Đang Chọn (Active): Viền sẫm quyền lực, nền nổi khối */
+    /* 6. 🔥 TRẠNG THÁI ĐANG CHỌN (ACTIVE) - ĐEN TUYỀN, KHÔNG XANH DƯƠNG */
     section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] [data-checked="true"] {
-        border-color: #0f172a !important; /* Viền đen tuyền */
-        background-color: #f1f5f9 !important; /* Nền xám khói siêu nhạt */
-        box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03) !important;
+        border-color: #0f172a !important; 
+        background-color: #f1f5f9 !important; 
+        box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05) !important;
     }
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] [data-checked="true"] * {
-        color: #0f172a !important;
-        font-weight: 800 !important; /* Nét cực đậm, khẳng định vị trí */
+    
+    /* Quét sạch mọi thẻ chữ bên trong Active, ép thành đen 100% và cực đậm */
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] [data-checked="true"] p,
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] [data-checked="true"] span,
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] [data-checked="true"] div {
+        color: #000000 !important; /* Đen nguyên chất */
+        font-weight: 800 !important; /* Nét Extra-bold dứt khoát */
     }
     </style>
     """,
