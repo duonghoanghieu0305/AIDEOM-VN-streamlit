@@ -12,36 +12,39 @@ window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}, 
 </script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <style>
-.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
-.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: rgba(30,41,59,0.98); color: var(--text-0); padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; border: 1px solid var(--accent-purple); box-shadow: 0 8px 30px rgba(168,85,247,0.3); z-index: 100; line-height: 1.5; }
-.slider-row { margin-bottom: 10px; padding: 12px 14px; background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s; }
-.slider-row:hover { border-color: var(--accent-purple); }
+/* =============================================================
+   EXECUTIVE LIGHT INTERNAL STYLE - BÀI 1
+   ============================================================= */
+.term { border-bottom: 1px dashed var(--accent-cyan); cursor: help; position: relative; }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: #ffffff; color: var(--text-0); padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; border: 1px solid var(--accent-cyan); box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06); z-index: 100; line-height: 1.5; }
+.slider-row { margin-bottom: 10px; padding: 12px 14px; background: var(--bg-2); border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s; }
+.slider-row:hover { border-color: var(--accent-cyan); }
 .slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text-1); font-size: 12px; font-weight: 500; }
-.val-badge { color: var(--accent-purple); font-weight: 700; font-size: 15px; background: rgba(168,85,247,0.15); padding: 3px 10px; border-radius: 6px; font-variant-numeric: tabular-nums; transition: all 0.3s; }
-.slider-row input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink)); outline: none; cursor: pointer; }
-.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: white; cursor: grab; border: 3px solid var(--accent-purple); box-shadow: 0 4px 12px rgba(168,85,247,0.6); }
-.question-label { display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; letter-spacing: 0.5px; }
+.val-badge { color: var(--accent-cyan); font-weight: 700; font-size: 15px; background: rgba(30, 64, 175, 0.06); padding: 3px 10px; border-radius: 6px; font-variant-numeric: tabular-nums; transition: all 0.3s; }
+.slider-row input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--bg-3); outline: none; cursor: pointer; }
+.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: white; cursor: grab; border: 3px solid var(--accent-cyan); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1); }
+.question-label { display: inline-block; background: var(--gradient-3); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; letter-spacing: 0.5px; }
 .cite { vertical-align: super; font-size: 11px; color: var(--accent-cyan); cursor: pointer; margin: 0 2px; }
-.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--accent-purple); font-size: 13px; color: var(--text-2); }
+.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--border); font-size: 13px; color: var(--text-2); }
 .footnotes ol { padding-left: 20px; }
-@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(168,85,247,0.3); } 50% { box-shadow: 0 0 40px rgba(168,85,247,0.7); }}
-.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-purple) !important; }
-@keyframes glowBorder { 0%, 100% { border-color: rgba(168,85,247,0.4); } 50% { border-color: rgba(236,72,153,0.7); }}
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 4px 15px rgba(30, 64, 175, 0.05); } 50% { box-shadow: 0 6px 25px rgba(30, 64, 175, 0.15); }}
+.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-cyan) !important; }
+@keyframes glowBorder { 0%, 100% { border-color: rgba(30, 64, 175, 0.2); } 50% { border-color: rgba(157, 23, 77, 0.4); }}
 .card.special-glow { animation: glowBorder 3s ease-in-out infinite; border-width: 2px !important; }
 h2 { position: relative; }
 h2::after { content: ''; position: absolute; bottom: -4px; left: 0; height: 2px; width: 0; background: var(--gradient-1); transition: width 1s ease-out; }
 h2.in-view::after { width: 100%; }
 .hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168,85,247,0.6); animation: float 8s infinite linear; }
+.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(30, 64, 175, 0.2); animation: float 8s infinite linear; }
 @keyframes float { from { transform: translateY(100vh); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } to { transform: translateY(-100px); opacity: 0; }}
 .stat-value.counting { font-variant-numeric: tabular-nums; }
 .playground-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 28px; }
 @media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
 .val-badge.pulse { animation: badgePulse 0.4s ease-out; }
-@keyframes badgePulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); background: rgba(236,72,153,0.3); } 100% { transform: scale(1); }}
+@keyframes badgePulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); background: rgba(157, 23, 77, 0.15); } 100% { transform: scale(1); }}
 .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-.kpi-tile { background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid var(--border); padding: 14px; }
-.kpi-tile .kpi-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
+.kpi-tile { background: var(--bg-1); border-radius: 10px; border: 1px solid var(--border); padding: 14px; box-shadow: 0 2px 12px rgba(15, 23, 42, 0.01); }
+.kpi-tile .kpi-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 1px; }
 .kpi-tile .kpi-value { font-size: 22px; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .kpi-tile .kpi-unit { font-size: 12px; color: var(--text-2); margin-top: 2px; }
 </style>
@@ -100,13 +103,13 @@ h2.in-view::after { width: 100%; }
       <div class="stat-card highlight"><div class="stat-label">GDP 2025</div><div class="stat-value counting" data-target="514" data-decimals="0">0</div><div class="stat-unit">tỷ USD (thực)</div></div>
       <div class="stat-card"><div class="stat-label">GDP 2030 dự báo</div><div class="stat-value counting" data-target="780" data-decimals="0">0</div><div class="stat-unit">tỷ USD</div></div>
       <div class="stat-card"><div class="stat-label">CAGR 2025-2030</div><div class="stat-value counting" data-target="8.7" data-decimals="1">0</div><div class="stat-unit">% / năm</div></div>
-      <div class="stat-card"><div class="stat-label">AI contribution</div><div class="stat-value counting" data-target="22" data-decimals="0">0</div><div class="stat-unit">% growth</div></div>
+      <div class="stat-card"><div class="stat-label">AI contribution</div><div class="stat-value counting" data-target="22" data-decimals="0">0</div><div class="stat-unit">%\ growth</div></div>
     </div>
 
     <h2><span class="question-label">CÂU 1.4.1</span> Ước lượng tham số từ dữ liệu</h2>
     <div class="card solution-card">
       <p><strong>Yêu cầu:</strong> Dùng OLS ước lượng α, β, γ, δ, θ từ dữ liệu macro VN 2020-2025.</p>
-<div class="table-wrap"><table>
+      <div class="table-wrap"><table>
         <thead><tr><th>Tham số</th><th class="num">Giá trị</th><th>Diễn giải</th></tr></thead>
         <tbody>
           <tr><td>$\alpha$ (Capital)</td><td class="num">0.38</td><td>K tăng 10% → Y tăng 3.8%</td></tr>
@@ -175,13 +178,13 @@ h2.in-view::after { width: 100%; }
       </div>
     </div>
 
-    <h2><span class="question-label" style="background:linear-gradient(135deg,#ec4899,#f97316)">CÂU 1.4.5 ★</span> Interactive Cobb-Douglas Playground</h2>
+    <h2><span class="question-label" style="background:var(--gradient-2)">CÂU 1.4.5 ★</span> Interactive Cobb-Douglas Playground</h2>
     <div class="card solution-card special-glow">
       <p><strong>Thí nghiệm:</strong> Bạn là <strong>nhà kinh tế</strong>. Kéo 5 sliders để xem GDP 2030 thay đổi.</p>
 
       <div class="playground-grid">
         <div>
-          <h4 style="color:var(--accent-purple)">🎛 Elasticity tham số</h4>
+          <h4 style="color:var(--accent-cyan)">🎛 Elasticity tham số</h4>
           <div class="slider-row"><label>α Capital<span class="val-badge" id="valA1">0.38</span></label><input type="range" id="pgA1" min="0.1" max="0.6" step="0.01" value="0.38"></div>
           <div class="slider-row"><label>β Labor<span class="val-badge" id="valB1">0.30</span></label><input type="range" id="pgB1" min="0.1" max="0.5" step="0.01" value="0.30"></div>
           <div class="slider-row"><label>γ AI<span class="val-badge" id="valG1">0.22</span></label><input type="range" id="pgG1" min="0.05" max="0.4" step="0.01" value="0.22"></div>
@@ -189,10 +192,10 @@ h2.in-view::after { width: 100%; }
           <div class="slider-row"><label>θ FDI<span class="val-badge" id="valT1">0.008</span></label><input type="range" id="pgT1" min="0" max="0.03" step="0.001" value="0.008"></div>
 
           <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <button onclick="applyPreset1('default')" style="background:rgba(168,85,247,0.15);border:1px solid var(--accent-purple);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🔄 Mặc định</button>
-            <button onclick="applyPreset1('ai-heavy')" style="background:rgba(6,182,212,0.15);border:1px solid var(--accent-cyan);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🤖 AI-Heavy</button>
-            <button onclick="applyPreset1('labor')" style="background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">👥 Labor</button>
-            <button onclick="applyPreset1('capital')" style="background:rgba(236,72,153,0.15);border:1px solid var(--accent-pink);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">💰 Capital</button>
+            <button onclick="applyPreset1('default')" style="background:rgba(30, 64, 175, 0.05);border:1px solid var(--accent-cyan);color:var(--text-0);cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🔄 Mặc định</button>
+            <button onclick="applyPreset1('ai-heavy')" style="background:rgba(157, 23, 77, 0.05);border:1px solid var(--accent-pink);color:var(--text-0);cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🤖 AI-Heavy</button>
+            <button onclick="applyPreset1('labor')" style="background:var(--bg-2);border:1px solid var(--text-3);color:var(--text-0);cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">👥 Labor</button>
+            <button onclick="applyPreset1('capital')" style="background:rgba(180, 83, 9, 0.05);border:1px solid var(--accent-orange);color:var(--text-0);cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">💰 Capital</button>
           </div>
 
           <div class="kpi-grid">
@@ -277,7 +280,7 @@ function createParticles() {
     p.style.left = Math.random() * 100 + '%';
     p.style.animationDelay = Math.random() * 8 + 's';
     p.style.animationDuration = (6 + Math.random() * 6) + 's';
-    p.style.background = ['rgba(168,85,247,0.6)', 'rgba(6,182,212,0.6)', 'rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];
+    p.style.background = ['rgba(30, 64, 175, 0.25)', 'rgba(4, 120, 87, 0.2)', 'rgba(157, 23, 77, 0.15)'][Math.floor(Math.random()*3)];
     c.appendChild(p);
   }
 }
@@ -298,10 +301,10 @@ const Y_HIST = [346.6, 366.1, 408.8, 430.0, 476.3, 514.0];
 new Chart(document.getElementById('chartForecast'), {
   type: 'line',
   data: { labels: YEARS_F, datasets: [
-    { label: 'GDP thực tế', data: [...Y_HIST, null, null, null, null, null], borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.15)', tension: 0.4, borderWidth: 3, pointRadius: 5, fill: true },
-    { label: 'GDP dự báo (Cobb-Douglas)', data: [null, null, null, null, null, 514, 559, 608, 662, 719, 780], borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.15)', tension: 0.4, borderWidth: 3, pointRadius: 5, borderDash: [6,4], fill: true }
+    { label: 'GDP thực tế', data: [...Y_HIST, null, null, null, null, null], borderColor: '#1e40af', backgroundColor: 'rgba(30, 64, 175, 0.05)', tension: 0.4, borderWidth: 3, pointRadius: 5, fill: true },
+    { label: 'GDP dự báo (Cobb-Douglas)', data: [null, null, null, null, null, 514, 559, 608, 662, 719, 780], borderColor: '#9d174d', backgroundColor: 'rgba(157, 23, 77, 0.05)', tension: 0.4, borderWidth: 3, pointRadius: 5, borderDash: [6,4], fill: true }
   ]},
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'GDP VN 2020-2030 (tỷ USD)', color: '#f8fafc' }}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: 'GDP (tỷ USD)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}}
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'GDP VN 2020-2030 (tỷ USD)', color: '#0f172a', font: { size: 14, weight: 'bold' } }, legend: { labels: { color: '#334155' } }}, scales: { x: { grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}, y: { title: {display: true, text: 'GDP (tỷ USD)', color: '#475569'}, grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}}}
 });
 
 const gammaValues = [0.10, 0.15, 0.20, 0.25, 0.30];
@@ -309,18 +312,18 @@ new Chart(document.getElementById('chartSensGamma'), {
   type: 'line',
   data: { labels: YEARS_F.slice(5), datasets: gammaValues.map((g, i) => ({
     label: `γ = ${g}`, data: [514, 540, 568, 600, 638, 720 + i*30],
-    borderColor: ['#10b981','#06b6d4','#a855f7','#ec4899','#ef4444'][i], tension: 0.4, borderWidth: 2.5, pointRadius: 3
+    borderColor: ['#047857','#0369a1','#4f46e5','#9d174d','#b45309'][i], tension: 0.4, borderWidth: 2.5, pointRadius: 3
   }))},
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Sensitivity của GDP forecast theo γ', color: '#f8fafc'}}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: 'GDP (tỷ USD)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}}
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Sensitivity của GDP forecast theo γ', color: '#0f172a', font: { size: 14, weight: 'bold' } }, legend: { labels: { color: '#334155' } }}, scales: { x: { grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}, y: { title: {display: true, text: 'GDP (tỷ USD)', color: '#475569'}, grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}}}
 });
 
 new Chart(document.getElementById('chartSolow'), {
   type: 'bar',
   data: { labels: ['Capital (αK̇/K)', 'Labor (βL̇/L)', 'AI (γȦĪ/AI)', 'TFP (Ȧ/A)', 'Total Y̌/Y'], datasets: [{
     data: [3.0, 0.15, 3.3, 1.55, 8.0],
-    backgroundColor: ['#06b6d4','#10b981','#a855f7','#ec4899','#f97316'], borderRadius: 6
+    backgroundColor: ['#1e40af','#047857','#4f46e5','#9d174d','#b45309'], borderRadius: 6
   }]},
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}, title: { display: true, text: 'Solow Growth Accounting (% per year)', color: '#f8fafc'}}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: '% tăng trưởng', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}}
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}, title: { display: true, text: 'Solow Growth Accounting (% per year)', color: '#0f172a', font: { size: 14, weight: 'bold' } }}, scales: { x: { grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}, y: { title: {display: true, text: '% tăng trưởng', color: '#475569'}, grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}}}
 });
 
 // PLAYGROUND 1.4.5
@@ -328,7 +331,6 @@ let chartLive = null, chartDecomp = null;
 let lastVals = [0.38, 0.30, 0.22, 0.014, 0.008];
 
 function computeGDP(alpha, beta, gamma, delta, theta) {
-  // Forecast 2025 → 2030 with K growth 8%, L 0.5%, AI 15%
   const K0 = 1170, L0 = 57.5, AI0 = 19.5, FDI0 = 27.6, Y0 = 514, A = 1.0;
   const years = [];
   let K = K0, L = L0, AI = AI0, FDI = FDI0;
@@ -372,10 +374,10 @@ function updatePlayground1() {
   chartLive = new Chart(document.getElementById('chartLive'), {
     type: 'line',
     data: { labels: ['2025','2026','2027','2028','2029','2030'], datasets: [{
-      label: 'GDP', data: years, borderColor: '#a855f7',
-      backgroundColor: 'rgba(168,85,247,0.15)', tension: 0.4, borderWidth: 3, pointRadius: 5, fill: true
+      label: 'GDP', data: years, borderColor: '#4f46e5',
+      backgroundColor: 'rgba(79, 70, 229, 0.05)', tension: 0.4, borderWidth: 3, pointRadius: 5, fill: true
     }]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: 'tỷ USD', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}, animation: { duration: 500 }}
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}, title: { display: true, text: 'Dự báo GDP động', color: '#0f172a', font: { size: 12, weight: 'bold' } }}, scales: { x: { grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}, y: { title: {display: true, text: 'tỷ USD', color: '#475569'}, grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}}, animation: { duration: 500 }}
   });
 
   if (chartDecomp) chartDecomp.destroy();
@@ -383,9 +385,9 @@ function updatePlayground1() {
     type: 'bar',
     data: { labels: ['Capital', 'Labor', 'AI', 'Other'], datasets: [{
       data: [a*8, b*0.5, g*15, cagr*100 - (a*8 + b*0.5 + g*15)],
-      backgroundColor: ['#06b6d4','#10b981','#a855f7','#ec4899'], borderRadius: 6
+      backgroundColor: ['#1e40af','#047857','#4f46e5','#9d174d'], borderRadius: 6
     }]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: 'pp / năm', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}, animation: { duration: 500 }}
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}, title: { display: true, text: 'Phân rã tăng trưởng động', color: '#0f172a', font: { size: 12, weight: 'bold' } }}, scales: { x: { grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}, y: { title: {display: true, text: 'pp / năm', color: '#475569'}, grid: {color: 'rgba(15, 23, 42, 0.05)'}, ticks: {color: '#475569'}}}, animation: { duration: 500 }}
   });
 }
 
