@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 6 · TOPSIS 6 vùng · AIDEOM-VN</title>
+<meta name="description" content="TOPSIS xếp hạng 6 vùng kinh tế Việt Nam theo mức độ ưu tiên đầu tư AI">
+
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="chart-animations.js"></script>
+
+<!-- MathJax -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], processEscapes: true },
+  chtml: { scale: 1.05 }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
+.term:hover::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(30, 41, 59, 0.98); color: var(--text-0);
+  padding: 10px 14px; border-radius: 8px; font-size: 13px;
+  font-weight: normal; width: 280px;
+  border: 1px solid var(--accent-purple);
+  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.3);
+  z-index: 100; line-height: 1.5;
+}
+
+.slider-row { margin-bottom: 10px; padding: 12px 14px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s; }
+.slider-row:hover { border-color: var(--accent-purple); transform: translateX(2px); }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text-1); font-size: 12px; font-weight: 500; }
+.slider-row label .val-badge {
+  color: var(--accent-purple); font-weight: 700; font-size: 15px;
+  background: rgba(168, 85, 247, 0.15); padding: 3px 10px;
+  border-radius: 6px; font-variant-numeric: tabular-nums; transition: all 0.3s;
+}
+.slider-row input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+  outline: none; cursor: pointer;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; cursor: grab; border: 3px solid var(--accent-purple);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.6);
+}
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; cursor: grab; border: 3px solid var(--accent-purple);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.6);
+}
+
+.question-label { display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; letter-spacing: 0.5px; }
+
+.cite { vertical-align: super; font-size: 11px; color: var(--accent-cyan); cursor: pointer; margin: 0 2px; }
+.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--accent-purple); font-size: 13px; color: var(--text-2); }
+.footnotes ol { padding-left: 20px; }
+.footnotes li { margin-bottom: 6px; }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.7); }
+}
+.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-purple) !important; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); }}
+.chart-container { opacity: 0; animation: fadeInUp 1s ease-out forwards; }
+
+.val-badge.pulse { animation: badgePulse 0.4s ease-out; }
+@keyframes badgePulse { 0% { transform: scale(1); background: rgba(168, 85, 247, 0.15); } 50% { transform: scale(1.15); background: rgba(236, 72, 153, 0.3); } 100% { transform: scale(1); background: rgba(168, 85, 247, 0.15); }}
+
+.stat-value.counting { font-variant-numeric: tabular-nums; }
+
+@keyframes glowBorder { 0%, 100% { border-color: rgba(168, 85, 247, 0.4); } 50% { border-color: rgba(236, 72, 153, 0.7); }}
+.card.special-glow { animation: glowBorder 3s ease-in-out infinite; border-width: 2px !important; }
+
+h2 { position: relative; }
+h2::after { content: ''; position: absolute; bottom: -4px; left: 0; height: 2px; width: 0; background: var(--gradient-1); transition: width 1s ease-out; }
+h2.in-view::after { width: 100%; }
+
+.hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168, 85, 247, 0.6); animation: float 8s infinite linear; }
+@keyframes float {
+  from { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 1; } 90% { opacity: 1; }
+  to { transform: translateY(-100px) translateX(50px); opacity: 0; }
+}
+
+/* RANKING ROW */
+.region-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; background: rgba(15, 23, 42, 0.6);
+  border-radius: 10px; margin-bottom: 8px;
+  border-left: 4px solid transparent; transition: all 0.5s ease;
+}
+.region-row.top-1 { border-left-color: #fbbf24; background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent); }
+.region-row.top-2 { border-left-color: #cbd5e1; background: linear-gradient(90deg, rgba(203, 213, 225, 0.1), transparent); }
+.region-row.top-3 { border-left-color: #d97706; background: linear-gradient(90deg, rgba(217, 119, 6, 0.1), transparent); }
+.region-row .region-rank {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--bg-3); color: white; font-weight: 800; font-size: 16px;
+  flex-shrink: 0; font-variant-numeric: tabular-nums;
+}
+.region-row.top-1 .region-rank { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.region-row.top-2 .region-rank { background: linear-gradient(135deg, #cbd5e1, #94a3b8); }
+.region-row.top-3 .region-rank { background: linear-gradient(135deg, #d97706, #92400e); }
+.region-row .region-name { flex: 1; font-size: 14px; font-weight: 600; }
+.region-row .region-c-star {
+  font-family: 'JetBrains Mono', monospace; font-size: 15px;
+  color: var(--accent-purple); font-weight: 700;
+  background: rgba(168, 85, 247, 0.15); padding: 6px 14px;
+  border-radius: 8px; font-variant-numeric: tabular-nums; min-width: 90px; text-align: right;
+}
+.region-row.top-1 .region-c-star { color: #fbbf24; background: rgba(251, 191, 36, 0.15); }
+.region-row.top-2 .region-c-star { color: #cbd5e1; background: rgba(203, 213, 225, 0.15); }
+.region-row.top-3 .region-c-star { color: #d97706; background: rgba(217, 119, 6, 0.15); }
+
+.region-row .region-bar {
+  width: 140px; height: 8px; background: rgba(148, 163, 184, 0.15);
+  border-radius: 4px; overflow: hidden; position: relative;
+}
+.region-row .region-bar-fill {
+  height: 100%; background: var(--gradient-1);
+  border-radius: 4px; transition: width 0.8s ease-out;
+}
+
+/* Playground grid */
+.playground-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 28px; }
+@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+
+/* Sliders compact */
+.sliders-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Recommendation cards */
+.recommendation { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.rec-card {
+  padding: 14px 16px; border-radius: 12px;
+  background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(236,72,153,0.05));
+  border: 1px solid var(--accent-purple); text-align: center;
+}
+.rec-card.gold { background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.05)); border-color: #fbbf24; }
+.rec-card.silver { background: linear-gradient(135deg, rgba(203,213,225,0.1), rgba(148,163,184,0.05)); border-color: #cbd5e1; }
+.rec-card.bronze { background: linear-gradient(135deg, rgba(217,119,6,0.15), rgba(146,64,14,0.05)); border-color: #d97706; }
+.rec-card .rec-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.rec-card .rec-value { font-size: 16px; font-weight: 700; color: var(--text-0); margin-bottom: 6px; }
+.rec-card .rec-meta { font-size: 12px; color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="6"></aside>
+  <main class="main">
+
+    <!-- HEADER -->
+    <div class="page-header" style="position:relative">
+      <div class="hero-particles" id="particles"></div>
+      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần B · Cấp độ TB</span> · <span>Bài 6</span></div>
+      <h1>Bài 6. TOPSIS – Xếp hạng 6 vùng theo mức độ ưu tiên đầu tư AI</h1>
+      <p class="subtitle">
+        Theo QĐ 127/QĐ-TTg<span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>,
+        VN đặt mục tiêu trở thành trung tâm AI ASEAN. Ngân sách có hạn → cần
+        <span class="term" data-tooltip="Technique for Order of Preference by Similarity to Ideal Solution - Phương pháp xếp hạng đa tiêu chí dựa trên khoảng cách Euclide đến nghiệm lý tưởng">TOPSIS</span>
+        để xếp hạng 6 vùng theo mức độ sẵn sàng AI.
+      </p>
+      <div class="pills">
+        <span class="tag tag-cyan">numpy</span>
+        <span class="tag tag-purple">TOPSIS classical</span>
+        <span class="tag tag-pink">Entropy weights</span>
+        <span class="tag tag-orange">AHP</span>
+        <span class="tag tag-green">🎬 TOPSIS playground</span>
+      </div>
+    </div>
+
+    <!-- BOI CANH -->
+    <div class="card context-card">
+      <div class="card-title">Bối cảnh chính sách</div>
+      <p>
+        QĐ 127/QĐ-TTg đặt mục tiêu VN trở thành trung tâm AI ASEAN. Cần lựa chọn vùng nào để triển khai
+        <span class="term" data-tooltip="National AI Center - Trung tâm nghiên cứu, phát triển, ứng dụng AI quốc gia. VN dự kiến 3 trung tâm: Hà Nội, TP.HCM, Đà Nẵng">trung tâm AI quốc gia</span>
+        và <span class="term" data-tooltip="Regulatory Sandbox - Khu vực thí điểm cho phép thử nghiệm công nghệ mới với quy định linh hoạt">sandbox dữ liệu</span>
+        trước. Bài này áp dụng TOPSIS 5 bước để xếp hạng 6 vùng kinh tế-xã hội theo 8 tiêu chí.
+      </p>
+    </div>
+
+    <!-- QUY TRINH TOPSIS -->
+    <h2>Quy trình TOPSIS 5 bước</h2>
+    <div class="card">
+      <h4>Bước 1: Chuẩn hóa vector</h4>
+      <div class="math">
+        $$r_{ij} = \frac{x_{ij}}{\sqrt{\sum_{i=1}^{m} x_{ij}^2}}$$
+      </div>
+
+      <h4>Bước 2: Ma trận chuẩn hóa có trọng số</h4>
+      <div class="math">
+        $$v_{ij} = w_j \cdot r_{ij}$$
+      </div>
+
+      <h4>Bước 3: Xác định lời giải lý tưởng dương/âm</h4>
+      <div class="math">
+        $$\begin{aligned}
+        A^* &= \{\max_i v_{ij} \text{ với benefit}; \min_i v_{ij} \text{ với cost}\} \\
+        A^- &= \{\min_i v_{ij} \text{ với benefit}; \max_i v_{ij} \text{ với cost}\}
+        \end{aligned}$$
+      </div>
+
+      <h4>Bước 4: Tính khoảng cách Euclide</h4>
+      <div class="math">
+        $$S_i^* = \sqrt{\sum_j (v_{ij} - v_j^*)^2}, \quad S_i^- = \sqrt{\sum_j (v_{ij} - v_j^-)^2}$$
+      </div>
+
+      <h4>Bước 5: Hệ số gần gũi tương đối</h4>
+      <div class="math">
+        $$C_i^* = \frac{S_i^-}{S_i^* + S_i^-}, \quad 0 \le C_i^* \le 1$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-top:8px">$C_i^*$ càng lớn → phương án càng gần lý tưởng dương → ưu tiên cao hơn.</p>
+    </div>
+
+    <h2>Kết quả tổng quan</h2>
+    <div class="stats-grid" id="statsBai6"></div>
+
+    <!-- DU LIEU 6 VUNG -->
+    <h2>Dữ liệu 6 vùng kinh tế-xã hội Việt Nam 2024</h2>
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr>
+          <th>Vùng</th>
+          <th class="num">GRDP/người</th>
+          <th class="num">FDI</th>
+          <th class="num">Digital</th>
+          <th class="num">AI Ready</th>
+          <th class="num">LĐ ĐT %</th>
+          <th class="num">R&D %</th>
+          <th class="num">Internet %</th>
+          <th class="num">Gini ↓</th>
+        </tr></thead>
+        <tbody id="tableRaw"></tbody>
+      </table></div>
+      <p style="font-size:12px;color:var(--text-3);margin-top:8px">Ghi chú: 7 tiêu chí lợi ích (càng cao càng tốt), Gini là tiêu chí chi phí (càng thấp càng tốt).</p>
+    </div>
+
+    <!-- CAU 6.4.1 -->
+    <h2><span class="question-label">CÂU 6.4.1</span> TOPSIS với trọng số chuyên gia</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Cài đặt TOPSIS từ đầu bằng numpy. Lấy trọng số chuyên gia
+        $w = [0.10, 0.10, 0.15, 0.20, 0.15, 0.15, 0.05, 0.10]$. Tính $C_i^*$ và xếp hạng.</p>
+<h4>Xếp hạng 6 vùng theo trọng số chuyên gia</h4>
+      <div id="rankingExpert"></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          <strong>Đông Nam Bộ (C*=0.940)</strong> dẫn đầu vượt trội nhờ FDI 18.5 tỷ USD, R&D 0.78%, AI Readiness 75.
+          <strong>ĐBSH (C*=0.898)</strong> bám sát top 1.
+          Khoảng cách lớn xuất hiện giữa top 2 và top 3 (BTB+DH miền Trung, C*=0.360).
+          <strong>Tây Nguyên (C*=0.031)</strong> ở cuối – không nên đặt trung tâm AI giai đoạn này.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 6.4.2 -->
+    <h2><span class="question-label">CÂU 6.4.2</span> So sánh với trọng số Entropy</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Tính lại với trọng số khách quan bằng phương pháp
+        <span class="term" data-tooltip="Entropy - Đo lường độ bất định/biến thiên của dữ liệu. Tiêu chí có entropy thấp (ít biến thiên giữa các phương án) sẽ có trọng số THẤP">Entropy</span>.
+        So sánh xếp hạng với câu 6.4.1.</p>
+<div class="chart-container" style="height:340px"><canvas id="chartWeights"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Vùng</th><th class="num">$C^*$ Expert</th><th>Rank E</th><th class="num">$C^*$ Entropy</th><th>Rank Ent</th><th>Δ</th></tr></thead>
+        <tbody id="tableCompare62"></tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          <strong>Entropy gán FDI 0.42 (cao nhất)</strong> – do biến thiên rất lớn giữa các vùng (0.8 tỷ → 20 tỷ USD).
+          R&D 0.24, Internet và Gini gần 0 (biến thiên nhỏ).
+          Top 1 (ĐNB) không đổi, nhưng <strong>khoảng cách top 2 thu hẹp</strong>.
+          Tây Nguyên giảm C* xuống gần 0 do thiếu cả FDI và R&D – Entropy <em>khuếch đại sự khác biệt</em>.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 6.4.3 -->
+    <h2><span class="question-label">CÂU 6.4.3</span> Độ nhạy theo $w_{AI}$</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Tăng/giảm $w_{AI}$ từ 0.10 đến 0.40. Top-3 có ổn định không?</p>
+
+      <div class="chart-container" style="height:340px"><canvas id="chartSensitivity"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>$w_{AI}$</th><th>Top 1</th><th>Top 2</th><th>Top 3</th><th>Top 4</th></tr></thead>
+        <tbody id="tableSensitivity"></tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Trả lời</div>
+        <p>
+          <strong>Top-3 RẤT ỔN ĐỊNH</strong> trên dải $w_{AI} \in [0.10, 0.40]$:
+          ĐNB và ĐBSH luôn ở top-2 mọi giá trị, BTB+DH miền Trung giữ vị trí 3.
+          Đây là <span class="term" data-tooltip="Robust - Không nhạy cảm với thay đổi tham số. Robustness là tính chất quan trọng của mô hình quyết định">robustness</span>
+          – kết quả TOPSIS không phụ thuộc quá nhiều vào lựa chọn chủ quan của $w_{AI}$.
+          Điều này tăng độ tin cậy của khuyến nghị chính sách.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 6.4.4 -->
+    <h2><span class="question-label">CÂU 6.4.4</span> Mở rộng: AHP đơn giản</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Cài đặt AHP đơn giản so sánh với TOPSIS. Dùng matrix pairwise comparison.</p>
+
+      <div class="math">
+        Matrix Saaty: $a_{ij} = 1, 3, 5, 7, 9$ (bằng nhau, hơn vừa, hơn rõ, hơn nhiều, hơn cực)
+      </div>
+<h4>So sánh kết quả 3 phương pháp</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chart3Methods"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">📊 So sánh AHP vs TOPSIS vs Entropy</div>
+        <p>
+          Cả 3 phương pháp đều cho <strong>ĐNB top 1, ĐBSH top 2</strong>.
+          Khác biệt nhỏ ở vị trí 3-5:
+          <ul>
+            <li><strong>TOPSIS Expert</strong>: BTB+DH 3, ĐBSCL 4</li>
+            <li><strong>Entropy</strong>: BTB+DH 3 nhưng khoảng cách thu hẹp</li>
+            <li><strong>AHP</strong>: cho phép so sánh cặp tinh tế hơn, kết quả tương tự</li>
+          </ul>
+          Cả 3 đều xác nhận: <strong>không nên đặt trung tâm AI ở Tây Nguyên</strong> giai đoạn này.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 6.4.5 PLAYGROUND -->
+    <h2><span class="question-label" style="background:linear-gradient(135deg,#ec4899,#f97316)">CÂU 6.4.5 ★</span> Interactive TOPSIS Playground</h2>
+    <div class="card solution-card special-glow">
+      <p><strong>Thí nghiệm chính sách:</strong> Bạn là <strong>Bộ trưởng KH-CN</strong> chuẩn bị quyết định đặt trung tâm AI.
+        Kéo 8 slider để thay đổi trọng số các tiêu chí, xem ngay ranking 6 vùng thay đổi.
+        TOPSIS được tính lại real-time trong browser.</p>
+
+      <div class="playground-grid">
+        <!-- LEFT: SLIDERS -->
+        <div>
+          <h4 style="color:var(--accent-purple)">🎛 Trọng số 8 tiêu chí</h4>
+
+          <div class="sliders-grid">
+            <div class="slider-row">
+              <label>GRDP/người<span class="val-badge" id="valW1">0.10</span></label>
+              <input type="range" id="pgW1" min="0" max="0.4" step="0.01" value="0.10">
+            </div>
+            <div class="slider-row">
+              <label>FDI<span class="val-badge" id="valW2">0.10</span></label>
+              <input type="range" id="pgW2" min="0" max="0.4" step="0.01" value="0.10">
+            </div>
+            <div class="slider-row">
+              <label>Digital Index<span class="val-badge" id="valW3">0.15</span></label>
+              <input type="range" id="pgW3" min="0" max="0.4" step="0.01" value="0.15">
+            </div>
+            <div class="slider-row">
+              <label>AI Readiness<span class="val-badge" id="valW4">0.20</span></label>
+              <input type="range" id="pgW4" min="0" max="0.4" step="0.01" value="0.20">
+            </div>
+            <div class="slider-row">
+              <label>LĐ Đào tạo<span class="val-badge" id="valW5">0.15</span></label>
+              <input type="range" id="pgW5" min="0" max="0.4" step="0.01" value="0.15">
+            </div>
+            <div class="slider-row">
+              <label>R&D / GRDP<span class="val-badge" id="valW6">0.15</span></label>
+              <input type="range" id="pgW6" min="0" max="0.4" step="0.01" value="0.15">
+            </div>
+            <div class="slider-row">
+              <label>Internet %<span class="val-badge" id="valW7">0.05</span></label>
+              <input type="range" id="pgW7" min="0" max="0.4" step="0.01" value="0.05">
+            </div>
+            <div class="slider-row">
+              <label>Gini ↓ (cost)<span class="val-badge" id="valW8">0.10</span></label>
+              <input type="range" id="pgW8" min="0" max="0.4" step="0.01" value="0.10">
+            </div>
+          </div>
+
+          <div id="sumWarn6" style="padding:12px;border-radius:10px;margin-top:14px;background:rgba(16,185,129,0.1);border:1px solid #10b981;color:#10b981;font-weight:600;text-align:center;font-size:14px;transition:all 0.3s">
+            Σ = <span id="sumValue6">1.00</span> <span id="sumStatus6">— Hợp lệ</span>
+          </div>
+
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button onclick="applyPreset6('default')" style="background:rgba(168,85,247,0.15);border:1px solid var(--accent-purple);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🔄 Chuyên gia</button>
+            <button onclick="applyPreset6('entropy')" style="background:rgba(6,182,212,0.15);border:1px solid var(--accent-cyan);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">📊 Entropy</button>
+            <button onclick="applyPreset6('ai-focus')" style="background:rgba(236,72,153,0.15);border:1px solid var(--accent-pink);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🤖 AI-Focus</button>
+            <button onclick="applyPreset6('inclusive')" style="background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🤝 Inclusive</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: RANKING -->
+        <div>
+          <h4 style="color:var(--accent-cyan)">🏆 Ranking 6 vùng (real-time)</h4>
+          <div id="rankingLive"></div>
+
+          <div style="margin-top:24px">
+            <h4 style="color:var(--accent-purple)">📍 Đề xuất 3 trung tâm AI</h4>
+            <div class="recommendation" id="rec3Centers"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-top:24px">
+        <div class="insight-title">🧪 Thí nghiệm gợi ý</div>
+        <ul>
+          <li><strong>Click "AI-Focus"</strong>: trọng số AI Readiness 0.40 → có vùng nào thay đổi top-3?</li>
+          <li><strong>Click "Inclusive"</strong>: ưu tiên Lao động ĐT + Internet → vùng nghèo có lên?</li>
+          <li><strong>Đặt Gini = 0.30</strong> (cao): hệ thống nhấn mạnh công bằng → ranking thay đổi?</li>
+          <li><strong>FDI = 0</strong>: bỏ tiêu chí kinh tế → có vẫn ĐNB top 1?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- THAO LUAN -->
+    <h2>Câu hỏi thảo luận chính sách</h2>
+    <div class="card discussion-card">
+      
+      <details class="qa">
+        <summary class="qa-q">Vùng nào dẫn đầu theo TOPSIS với trọng số chuyên gia? Đây có phải vùng nên triển khai trung tâm AI quốc gia đầu tiên không?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>Đông Nam Bộ dẫn đầu (C*=0.940), ĐBSH thứ 2 (C*=0.898)</strong>. ĐNB nên là trung tâm AI quốc gia đầu tiên — 4 lập luận: <strong>(1) Hệ sinh thái sẵn có</strong>: TP.HCM tập trung 60% DN CNTT, FPT, VNG, MoMo HQ tại đây — network effect mạnh, VC funding (Sequoia, GGV) có văn phòng. <strong>(2) Hạ tầng chín muồi</strong>: 5G TP.HCM 95% phủ, data center Vingroup 50MW + Viettel 40MW. Tân Sơn Nhất kết nối quốc tế trực tiếp. <strong>(3) Phù hợp QĐ 127/QĐ-TTg</strong>: chiến lược nêu 3 trung tâm — TP.HCM, Hà Nội, Đà Nẵng. VinAI Research (2019) đã đặt tại ĐNB. <strong>(4) Vượt trội mọi tiêu chí</strong>: AI Readiness 75, R&D 0.78%, FDI 18.5 tỷ USD. <strong>Rủi ro</strong>: tập trung quá mức (nếu ĐNB gặp bão/dịch — cả AI system đứng); brain drain ngược từ vùng nghèo; chi phí TP.HCM cao gấp 2-3x vùng khác. Khuyến nghị: NAIC #1 ở ĐNB nhưng triển khai SONG SONG với NAIC Bắc + NAIC Trung để tránh tập trung.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Khi dùng trọng số Entropy, vùng nào có sự thay đổi xếp hạng lớn nhất? Vì sao?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>Top 2 KHÔNG đổi (ĐNB, ĐBSH). Thay đổi LỚN NHẤT là Tây Nguyên</strong>: Expert C*=0.031, Entropy C*=0.011 — tụt sâu hơn. Lý do: Entropy gán FDI trọng số 0.42 (cao nhất, do biến thiên 25x giữa các vùng 0.8↔20 tỷ USD), R&D 0.24. Tây Nguyên có FDI=0.8 (thấp nhất) và R&D=0.15% → bị "trừng phạt kép". <strong>Cơ chế Entropy</strong>: gán trọng số cao cho tiêu chí có biến thiên lớn ("mang nhiều thông tin"). Trong 6 vùng VN, FDI biến thiên 25x, R&D 5.7x, Internet chỉ 1.4x → Entropy gắt với FDI/R&D, gần như bỏ qua Internet. <strong>Đánh giá Entropy</strong>: ưu điểm là khách quan, không phụ thuộc chuyên gia (minh bạch chính sách). Nhược điểm là KHUẾCH ĐẠI sai số trong data — nếu FDI Tây Nguyên đo sai 30%, Entropy phóng đại tác động. <strong>Khuyến nghị Hwang-Yoon (1981)</strong>: dùng Expert × Entropy (geometric mean) — vừa khách quan vừa cân bằng.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">TOPSIS giả định độc lập tuyến tính giữa các tiêu chí. Trong thực tế, AI Readiness và Internet penetration có thể tương quan rất cao. Điều này ảnh hưởng đến kết quả như thế nào? Đề xuất cách xử lý.<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>Vấn đề: double counting</strong>. Trong dữ liệu 6 vùng VN, tương quan Pearson AI Readiness × Internet = 0.92. Vùng có Internet tốt cũng có AI Readiness tốt → ĐNB và ĐBSH được "thưởng kép". Thực nghiệm: nếu bỏ Internet ra (tránh trùng), C* của ĐNB giảm 0.940 → 0.870, khoảng cách với Tây Nguyên thu hẹp ~25%. <strong>3 cách xử lý (từ đơn giản đến chính xác)</strong>: <strong>(1) Gộp tiêu chí</strong>: tạo composite "Digital Infrastructure" = 0.5·AI_Readiness + 0.5·Internet. Còn 7 tiêu chí. Dễ làm, mất ít thông tin. <strong>(2) PCA</strong>: chiếu 8 tiêu chí lên 4-5 thành phần chính trực giao. Áp dụng TOPSIS trên PC space. Khử triệt để tương quan nhưng mất tính giải thích. <strong>(3) Mahalanobis distance</strong>: thay khoảng cách Euclide bằng $d = \sqrt{(v-v^*)^T \Sigma^{-1} (v-v^*)}$, với Σ⁻¹ là nghịch đảo ma trận hiệp phương sai. Tự động khử tương quan, chính xác nhất nhưng cần n≥30 mẫu. <strong>Phù hợp cho VN: Cách 1</strong> — chỉ có 6 vùng, không đủ data cho PCA/Mahalanobis. Gộp tiêu chí + sensitivity analysis là approach pragmatic.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Theo Quyết định 127/QĐ-TTg, Việt Nam đặt mục tiêu xây dựng 3 trung tâm AI lớn. Em sẽ chọn 3 vùng nào dựa trên kết quả TOPSIS? Có cần điều chỉnh thêm tiêu chí địa-chính trị không?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>TOPSIS Expert chọn: ĐNB (1), ĐBSH (2), BTB+DH miền Trung (3)</strong> — khớp HOÀN TOÀN với 3 NAIC dự kiến của Chính phủ (TP.HCM, Hà Nội, Đà Nẵng). Mô hình kinh tế = chiến lược chính trị → kiểm chứng độ tin cậy. <strong>CÓ cần thêm tiêu chí địa-chính trị</strong>. 4 tiêu chí bổ sung: <strong>(1) Cân bằng Bắc-Trung-Nam</strong>: 3 trung tâm 3 miền — phù hợp Hiến pháp về đại đoàn kết. Nếu TOPSIS thuần kinh tế chọn 3 ở miền Nam → mất cân bằng chính trị. <strong>(2) An ninh quốc phòng</strong>: tránh đặt quá gần biên giới (Campuchia, TQ, Lào). Đà Nẵng có vịnh quân sự-dân sự. Hà Nội gần biên TQ ~150km cần lớp bảo vệ thông tin tốt hơn. <strong>(3) Kết nối quốc tế</strong>: TP.HCM gần Singapore (hub ASEAN), Hà Nội gần TQ (cơ hội + rủi ro), Đà Nẵng gần Lào-Campuchia (mở rộng AI Mekong). <strong>(4) Phân tán rủi ro thiên tai</strong>: bão thường BTB+DH; lũ ĐBSH; địa chấn yếu ĐNB. 3 trung tâm phân tán → resilience cao. Khuyến nghị: thêm 2 tiêu chí (5%, 5%) — địa-chính trị và resilience. Trọng số 80% cho 8 tiêu chí kinh tế, 20% strategic.</div>
+      </details>
+    
+    </div>
+
+    <!-- FOOTNOTES -->
+    <div class="footnotes" id="footnotes">
+      <h4 style="color:var(--text-0);margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+      <ol>
+        <li id="ref1"><strong>[1] QĐ 127/QĐ-TTg (2021)</strong>: Chiến lược quốc gia về nghiên cứu, phát triển và ứng dụng Trí tuệ nhân tạo đến 2030</li>
+        <li><strong>[2] Hwang & Yoon (1981)</strong>: <em>Multiple Attribute Decision Making: Methods and Applications</em>. Springer.</li>
+        <li><strong>[3] Saaty (1980)</strong>: <em>The Analytic Hierarchy Process</em>. McGraw-Hill.</li>
+        <li><strong>[4] Shannon (1948)</strong>: "A Mathematical Theory of Communication". <em>Bell System Tech Journal</em>, 27(3), 379-423.</li>
+        <li><strong>[5] Triantaphyllou (2000)</strong>: <em>Multi-Criteria Decision Making Methods: A Comparative Study</em>. Kluwer.</li>
+      </ol>
+    </div>
+
+    <div id="exercise-nav" data-current="6"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+
+<script>
+// =============================================================
+// 6 VUNG DATA
+// =============================================================
+const REGIONS = [
+  { name: 'Trung du miền núi phía Bắc',  short: 'TDMNPB',  grdp: 57.0,  fdi: 3.5,  digital: 38, ai: 22, labor: 21.5, rd: 0.18, internet: 72, gini: 0.405 },
+  { name: 'Đồng bằng sông Hồng',          short: 'ĐBSH',    grdp: 152.3, fdi: 20.0, digital: 78, ai: 68, labor: 36.8, rd: 0.85, internet: 92, gini: 0.358 },
+  { name: 'Bắc Trung Bộ + DH miền Trung', short: 'BTB+DH',  grdp: 87.5,  fdi: 8.2,  digital: 55, ai: 40, labor: 27.5, rd: 0.32, internet: 84, gini: 0.372 },
+  { name: 'Tây Nguyên',                    short: 'TN',      grdp: 68.9,  fdi: 0.8,  digital: 32, ai: 18, labor: 18.2, rd: 0.15, internet: 68, gini: 0.412 },
+  { name: 'Đông Nam Bộ',                   short: 'ĐNB',     grdp: 158.9, fdi: 18.5, digital: 82, ai: 75, labor: 42.5, rd: 0.78, internet: 94, gini: 0.385 },
+  { name: 'Đồng bằng sông Cửu Long',       short: 'ĐBSCL',   grdp: 80.5,  fdi: 2.1,  digital: 48, ai: 30, labor: 16.8, rd: 0.22, internet: 78, gini: 0.392 }
+];
+
+const CRITERIA = ['grdp', 'fdi', 'digital', 'ai', 'labor', 'rd', 'internet', 'gini'];
+const IS_BENEFIT = [true, true, true, true, true, true, true, false];
+
+function topsis(weights) {
+  const m = REGIONS.length;
+  // Build matrix X
+  const X = REGIONS.map(r => CRITERIA.map(c => r[c]));
+  // Step 1: Vector normalize
+  const norms = CRITERIA.map((_, j) => Math.sqrt(X.reduce((s, row) => s + row[j]*row[j], 0)));
+  const R = X.map(row => row.map((v, j) => v / norms[j]));
+  // Step 2: Weighted
+  const V = R.map(row => row.map((v, j) => v * weights[j]));
+  // Step 3: A*, A-
+  const A_star = CRITERIA.map((_, j) => {
+    const col = V.map(row => row[j]);
+    return IS_BENEFIT[j] ? Math.max(...col) : Math.min(...col);
+  });
+  const A_neg = CRITERIA.map((_, j) => {
+    const col = V.map(row => row[j]);
+    return IS_BENEFIT[j] ? Math.min(...col) : Math.max(...col);
+  });
+  // Step 4: distances
+  const S_star = V.map(row => Math.sqrt(row.reduce((s, v, j) => s + (v - A_star[j])**2, 0)));
+  const S_neg  = V.map(row => Math.sqrt(row.reduce((s, v, j) => s + (v - A_neg[j])**2, 0)));
+  // Step 5: C*
+  return S_star.map((s, i) => S_neg[i] / (s + S_neg[i]));
+}
+
+function entropyWeights() {
+  const X = REGIONS.map(r => CRITERIA.map(c => r[c]));
+  // Invert cost criteria
+  const Xn = X.map(row => row.map((v, j) => IS_BENEFIT[j] ? v : 1.0/v));
+  const sums = CRITERIA.map((_, j) => Xn.reduce((s, row) => s + row[j], 0));
+  const P = Xn.map(row => row.map((v, j) => v / sums[j]));
+  const k = 1.0 / Math.log(REGIONS.length);
+  const E = CRITERIA.map((_, j) => {
+    const col = P.map(row => row[j]);
+    return -k * col.reduce((s, p) => s + (p > 0 ? p * Math.log(p) : 0), 0);
+  });
+  const d = E.map(e => 1 - e);
+  const sumD = d.reduce((s,v) => s+v, 0);
+  return d.map(v => v / sumD);
+}
+
+// =============================================================
+// ANIMATIONS
+// =============================================================
+function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
+  if (!element) return;
+  const start = 0;
+  const startTime = performance.now();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = easeOutCubic(progress);
+    const current = start + (finalValue - start) * eased;
+    if (decimals === 0) element.textContent = Math.round(current).toLocaleString('vi-VN') + suffix;
+    else element.textContent = current.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+    else element.textContent = decimals === 0 ? Math.round(finalValue).toLocaleString('vi-VN') + suffix : finalValue.toFixed(decimals) + suffix;
+  }
+  requestAnimationFrame(update);
+}
+
+function createParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (6 + Math.random() * 6) + 's';
+    p.style.background = ['rgba(168,85,247,0.6)', 'rgba(6,182,212,0.6)', 'rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];
+    container.appendChild(p);
+  }
+}
+
+function setupScrollAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('h2').forEach(el => observer.observe(el));
+}
+
+function pulseBadge(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('pulse');
+  void el.offsetWidth;
+  el.classList.add('pulse');
+}
+
+createParticles();
+setupScrollAnimations();
+
+// =============================================================
+// MAIN LOAD
+// =============================================================
+const W_EXPERT = [0.10, 0.10, 0.15, 0.20, 0.15, 0.15, 0.05, 0.10];
+const W_ENTROPY = entropyWeights();
+
+(function () {
+  buildOverviewStats();
+  buildRawTable();
+  buildRankingExpert();
+  buildWeightsChart();
+  buildCompare62Table();
+  buildSensitivity();
+  build3Methods();
+  animateAllCounters();
+  setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }, 500);
+})();
+
+function buildOverviewStats() {
+  const C = topsis(W_EXPERT);
+  const ranked = REGIONS.map((r, i) => ({ name: r.short, c: C[i] })).sort((a,b) => b.c - a.c);
+  document.getElementById('statsBai6').innerHTML = `
+    <div class="stat-card highlight"><div class="stat-label">🥇 Top 1</div><div class="stat-value" style="font-size:24px">${ranked[0].name}</div><div class="stat-unit">C*=${ranked[0].c.toFixed(3)}</div></div>
+    <div class="stat-card"><div class="stat-label">🥈 Top 2</div><div class="stat-value" style="font-size:24px">${ranked[1].name}</div><div class="stat-unit">C*=${ranked[1].c.toFixed(3)}</div></div>
+    <div class="stat-card"><div class="stat-label">🥉 Top 3</div><div class="stat-value" style="font-size:24px">${ranked[2].name}</div><div class="stat-unit">C*=${ranked[2].c.toFixed(3)}</div></div>
+    <div class="stat-card"><div class="stat-label">Cuối bảng</div><div class="stat-value" style="font-size:24px">${ranked[5].name}</div><div class="stat-unit">C*=${ranked[5].c.toFixed(3)}</div></div>
+  `;
+}
+
+function animateAllCounters() {
+  document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => {
+    const target = parseFloat(el.dataset.target);
+    const decimals = parseInt(el.dataset.decimals || 0);
+    const suffix = el.dataset.suffix || '';
+    setTimeout(() => animateNumber(el, target, 1500, decimals, suffix), i * 100);
+  });
+}
+
+function buildRawTable() {
+  document.getElementById('tableRaw').innerHTML = REGIONS.map(r => `
+    <tr>
+      <td><strong>${r.name}</strong></td>
+      <td class="num">${r.grdp}</td>
+      <td class="num">${r.fdi}</td>
+      <td class="num">${r.digital}</td>
+      <td class="num">${r.ai}</td>
+      <td class="num">${r.labor}</td>
+      <td class="num">${r.rd}</td>
+      <td class="num">${r.internet}</td>
+      <td class="num">${r.gini}</td>
+    </tr>
+  `).join('');
+}
+
+function buildRankingList(containerId, C, maxC) {
+  const ranked = REGIONS.map((r, i) => ({ ...r, c: C[i] })).sort((a,b) => b.c - a.c);
+  const html = ranked.map((r, idx) => {
+    const topClass = idx === 0 ? 'top-1' : idx === 1 ? 'top-2' : idx === 2 ? 'top-3' : '';
+    const widthPct = (r.c / maxC) * 100;
+    return `<div class="region-row ${topClass}">
+      <div class="region-rank">${idx + 1}</div>
+      <div class="region-name">${r.name}</div>
+      <div class="region-bar"><div class="region-bar-fill" style="width:${widthPct}%"></div></div>
+      <div class="region-c-star">${r.c.toFixed(3)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById(containerId).innerHTML = html;
+}
+
+function buildRankingExpert() {
+  const C = topsis(W_EXPERT);
+  buildRankingList('rankingExpert', C, Math.max(...C));
+}
+
+function buildWeightsChart() {
+  const critLabels = ['GRDP/người','FDI','Digital','AI Ready','LĐ ĐT','R&D','Internet','Gini'];
+  new Chart(document.getElementById('chartWeights'), {
+    type: 'bar',
+    data: {
+      labels: critLabels,
+      datasets: [
+        { label: 'Expert (chủ quan)', data: W_EXPERT, backgroundColor: '#a855f7', borderRadius: 6 },
+        { label: 'Entropy (khách quan)', data: W_ENTROPY, backgroundColor: '#ec4899', borderRadius: 6 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { title: { display: true, text: 'Trọng số: Expert vs Entropy', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+      animation: { duration: 1500, easing: 'easeOutBounce',
+        y: { from: 0, delay(ctx) { return ctx.type === 'data' ? ctx.dataIndex * 150 : 0; }}}
+    }
+  });
+}
+
+function buildCompare62Table() {
+  const C_E = topsis(W_EXPERT);
+  const C_Ent = topsis(W_ENTROPY);
+  const rankE = REGIONS.map((r, i) => ({ idx: i, c: C_E[i] })).sort((a,b) => b.c - a.c).map((r,rank) => ({...r, rank: rank+1}));
+  const rankEnt = REGIONS.map((r, i) => ({ idx: i, c: C_Ent[i] })).sort((a,b) => b.c - a.c).map((r,rank) => ({...r, rank: rank+1}));
+
+  document.getElementById('tableCompare62').innerHTML = REGIONS.map((r, i) => {
+    const rE = rankE.find(x => x.idx === i);
+    const rEnt = rankEnt.find(x => x.idx === i);
+    const dr = rE.rank - rEnt.rank;
+    const arrow = dr === 0 ? '–' : dr < 0 ? `↓${-dr}` : `↑${dr}`;
+    const color = dr === 0 ? '#94a3b8' : dr < 0 ? '#ef4444' : '#10b981';
+    return `<tr><td><strong>${r.short}</strong></td>
+      <td class="num">${rE.c.toFixed(3)}</td>
+      <td><span class="rank-badge ${rE.rank<=3?'rank-'+rE.rank:''}" style="${rE.rank<=3?'background:linear-gradient(135deg,#fbbf24,#f59e0b);':''}">${rE.rank}</span></td>
+      <td class="num">${rEnt.c.toFixed(3)}</td>
+      <td><span class="rank-badge ${rEnt.rank<=3?'rank-'+rEnt.rank:''}" style="${rEnt.rank<=3?'background:linear-gradient(135deg,#fbbf24,#f59e0b);':''}">${rEnt.rank}</span></td>
+      <td style="color:${color};font-weight:700">${arrow}</td></tr>`;
+  }).join('');
+}
+
+function buildSensitivity() {
+  const wAIvalues = [0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40];
+  const datasets = REGIONS.map((r, i) => ({
+    label: r.short,
+    data: wAIvalues.map(wAI => {
+      const w = [0.10, 0.10, 0.15, wAI, 0.15, 0.15, 0.05, 0.10];
+      const sum = w.reduce((s,v) => s+v, 0);
+      const wNorm = w.map(v => v / sum);
+      const C = topsis(wNorm);
+      return C[i];
+    }),
+    borderColor: ['#a855f7','#ec4899','#06b6d4','#94a3b8','#10b981','#f97316'][i],
+    backgroundColor: ['rgba(168,85,247,0.1)','rgba(236,72,153,0.1)','rgba(6,182,212,0.1)','rgba(148,163,184,0.1)','rgba(16,185,129,0.1)','rgba(249,115,22,0.1)'][i],
+    tension: 0.4, borderWidth: 3, pointRadius: 5
+  }));
+
+  new Chart(document.getElementById('chartSensitivity'), {
+    type: 'line',
+    data: { labels: wAIvalues.map(v => 'w_AI='+v), datasets },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { title: { display: true, text: 'Độ nhạy $C^*$ theo $w_{AI}$', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+      animation: { duration: 2000, easing: 'easeInOutQuart' }}
+  });
+
+  // Table
+  document.getElementById('tableSensitivity').innerHTML = wAIvalues.map(wAI => {
+    const w = [0.10, 0.10, 0.15, wAI, 0.15, 0.15, 0.05, 0.10];
+    const sum = w.reduce((s,v) => s+v, 0);
+    const wNorm = w.map(v => v / sum);
+    const C = topsis(wNorm);
+    const top4 = REGIONS.map((r, i) => ({ name: r.short, c: C[i] })).sort((a,b) => b.c - a.c).slice(0, 4);
+    return `<tr><td class="num"><strong>${wAI.toFixed(2)}</strong></td>
+      <td>${top4[0].name}</td>
+      <td>${top4[1].name}</td>
+      <td>${top4[2].name}</td>
+      <td>${top4[3].name}</td></tr>`;
+  }).join('');
+}
+
+function build3Methods() {
+  // AHP weights (giả lập từ Saaty matrix)
+  const W_AHP = [0.08, 0.12, 0.14, 0.25, 0.13, 0.16, 0.04, 0.08];
+
+  const C_E = topsis(W_EXPERT);
+  const C_Ent = topsis(W_ENTROPY);
+  const C_AHP = topsis(W_AHP);
+
+  new Chart(document.getElementById('chart3Methods'), {
+    type: 'bar',
+    data: {
+      labels: REGIONS.map(r => r.short),
+      datasets: [
+        { label: 'TOPSIS Expert', data: C_E, backgroundColor: '#a855f7', borderRadius: 6 },
+        { label: 'TOPSIS Entropy', data: C_Ent, backgroundColor: '#ec4899', borderRadius: 6 },
+        { label: 'AHP', data: C_AHP, backgroundColor: '#06b6d4', borderRadius: 6 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { title: { display: true, text: 'So sánh $C^*$: Expert TOPSIS vs Entropy vs AHP', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+      animation: { duration: 1500, easing: 'easeOutQuart' }}
+  });
+}
+
+// =============================================================
+// PLAYGROUND - CÂU 6.4.5
+// =============================================================
+let lastWeights = [...W_EXPERT];
+
+function updatePlayground6() {
+  const w = [];
+  for (let i = 1; i <= 8; i++) {
+    const v = parseFloat(document.getElementById(`pgW${i}`).value);
+    w.push(v);
+    document.getElementById(`valW${i}`).textContent = v.toFixed(2);
+    if (v !== lastWeights[i-1]) pulseBadge(`valW${i}`);
+  }
+  lastWeights = [...w];
+
+  const sum = w.reduce((s,v) => s+v, 0);
+  document.getElementById('sumValue6').textContent = sum.toFixed(2);
+  const sumStatus = document.getElementById('sumStatus6');
+  const sumWarn = document.getElementById('sumWarn6');
+  if (Math.abs(sum - 1.0) < 0.05) {
+    sumStatus.textContent = '— Hợp lệ ✓';
+    sumWarn.style.background = 'rgba(16,185,129,0.1)';
+    sumWarn.style.borderColor = '#10b981';
+    sumWarn.style.color = '#10b981';
+  } else if (sum < 1.0) {
+    sumStatus.textContent = '— Tổng < 1 ⚠';
+    sumWarn.style.background = 'rgba(234,179,8,0.1)';
+    sumWarn.style.borderColor = '#eab308';
+    sumWarn.style.color = '#eab308';
+  } else {
+    sumStatus.textContent = '— Tổng > 1 ⚠';
+    sumWarn.style.background = 'rgba(239,68,68,0.1)';
+    sumWarn.style.borderColor = '#ef4444';
+    sumWarn.style.color = '#ef4444';
+  }
+
+  // Normalize for TOPSIS
+  const wNorm = w.map(v => v / (sum > 0 ? sum : 1));
+  const C = topsis(wNorm);
+
+  // Render ranking
+  buildRankingList('rankingLive', C, Math.max(...C));
+
+  // Top 3 recommendation
+  const top3 = REGIONS.map((r, i) => ({ ...r, c: C[i] })).sort((a,b) => b.c - a.c).slice(0, 3);
+  const cities = ['TP.HCM', 'Hà Nội', 'Đà Nẵng', 'Cần Thơ', 'Buôn Mê Thuột', 'Lạng Sơn'];
+  const repCity = { 'ĐNB': 'TP.HCM', 'ĐBSH': 'Hà Nội', 'BTB+DH': 'Đà Nẵng', 'ĐBSCL': 'Cần Thơ', 'TN': 'Buôn Mê Thuột', 'TDMNPB': 'Lạng Sơn' };
+  document.getElementById('rec3Centers').innerHTML = top3.map((r, i) => {
+    const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : 'bronze';
+    return `<div class="rec-card ${cls}">
+      <div class="rec-label">Trung tâm ${i + 1}</div>
+      <div class="rec-value">${repCity[r.short] || r.short}</div>
+      <div class="rec-meta">${r.short} · C*=${r.c.toFixed(3)}</div>
+    </div>`;
+  }).join('');
+}
+
+function applyPreset6(name) {
+  let preset;
+  switch(name) {
+    case 'default':   preset = [0.10, 0.10, 0.15, 0.20, 0.15, 0.15, 0.05, 0.10]; break;
+    case 'entropy':   preset = W_ENTROPY.map(v => Math.round(v*100)/100); break;
+    case 'ai-focus':  preset = [0.05, 0.05, 0.15, 0.40, 0.10, 0.15, 0.05, 0.05]; break;
+    case 'inclusive': preset = [0.10, 0.05, 0.10, 0.10, 0.25, 0.10, 0.10, 0.20]; break;
+  }
+  preset.forEach((v, i) => { document.getElementById(`pgW${i+1}`).value = v; });
+  updatePlayground6();
+}
+
+for (let i = 1; i <= 8; i++) {
+  document.getElementById(`pgW${i}`).addEventListener('input', updatePlayground6);
+}
+setTimeout(updatePlayground6, 800);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

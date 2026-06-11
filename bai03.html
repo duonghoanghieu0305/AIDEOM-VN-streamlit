@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 3 · LP Priority 10 ngành · AIDEOM-VN</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="chart-animations.js"></script>
+<script>window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: rgba(30,41,59,0.98); color: var(--text-0); padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; border: 1px solid var(--accent-purple); z-index: 100; }
+.slider-row { margin-bottom: 8px; padding: 10px 12px; background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid var(--border); }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; color: var(--text-1); font-size: 11px; }
+.val-badge { color: var(--accent-purple); font-weight: 700; font-size: 13px; background: rgba(168,85,247,0.15); padding: 2px 8px; border-radius: 6px; }
+.slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 5px; border-radius: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink)); outline: none; cursor: pointer; }
+.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: white; border: 2px solid var(--accent-purple); cursor: grab; }
+.question-label { display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; }
+.cite { vertical-align: super; font-size: 11px; color: var(--accent-cyan); cursor: pointer; margin: 0 2px; }
+.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--accent-purple); font-size: 13px; color: var(--text-2); }
+.footnotes ol { padding-left: 20px; }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(168,85,247,0.3); } 50% { box-shadow: 0 0 40px rgba(168,85,247,0.7); }}
+.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-purple) !important; }
+@keyframes glowBorder { 0%, 100% { border-color: rgba(168,85,247,0.4); } 50% { border-color: rgba(236,72,153,0.7); }}
+.card.special-glow { animation: glowBorder 3s ease-in-out infinite; border-width: 2px !important; }
+h2 { position: relative; }
+h2::after { content: ''; position: absolute; bottom: -4px; left: 0; height: 2px; width: 0; background: var(--gradient-1); transition: width 1s ease-out; }
+h2.in-view::after { width: 100%; }
+.hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168,85,247,0.6); animation: float 8s infinite linear; }
+@keyframes float { from { transform: translateY(100vh); opacity: 0; } 10%,90% { opacity: 1; } to { transform: translateY(-100px); opacity: 0; }}
+.playground-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px; }
+@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.kpi-tile { background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid var(--border); padding: 14px; }
+.kpi-tile .kpi-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
+.kpi-tile .kpi-value { font-size: 22px; font-weight: 800; margin-top: 4px; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-tile .kpi-unit { font-size: 12px; color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="3"></aside>
+  <main class="main">
+
+    <div class="page-header" style="position:relative">
+      <div class="hero-particles" id="particles"></div>
+      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần A · Cấp độ cơ bản</span> · <span>Bài 3</span></div>
+      <h1>Bài 3. LP Priority 10 Ngành Kinh tế</h1>
+      <p class="subtitle">
+        Mở rộng bài 2 lên <strong>10 ngành</strong> với hệ thống <span class="term" data-tooltip="Priority weights - Trọng số ưu tiên: kết hợp ROI khách quan với trọng số chính trị/xã hội cho mỗi ngành">priority weights</span>
+        tổng hợp 7 tiêu chí (GDP, FDI, AI exposure, growth, employment, export, equity).
+      </p>
+      <div class="pills">
+        <span class="tag tag-cyan">scipy</span>
+        <span class="tag tag-purple">Priority LP</span>
+        <span class="tag tag-pink">10 sectors</span>
+        <span class="tag tag-orange">7 weights</span>
+        <span class="tag tag-green">🎬 7-slider playground</span>
+      </div>
+    </div>
+
+    <div class="card context-card">
+      <div class="card-title">Bối cảnh chính sách</div>
+      <p>
+        Bộ KH-CN có <strong>5.000 tỷ VND</strong> phân bổ cho 10 ngành kinh tế VN.
+        Mỗi ngành có ưu tiên khác nhau dựa trên 7 tiêu chí. <strong>Trọng số ưu tiên</strong> phản ánh chiến lược chính phủ.
+      </p>
+    </div>
+
+    <h2>Mô hình LP với priority</h2>
+    <div class="card">
+      <h4>Trọng số tổng hợp</h4>
+      <div class="math">
+        $$w_i = \sum_{k=1}^{7} \pi_k \cdot \text{Score}_{ik}, \quad \sum \pi_k = 1$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2)">
+        $\pi_k$ = trọng số tiêu chí k (do chính phủ chọn), $\text{Score}_{ik}$ = điểm chuẩn hóa của ngành $i$ trên tiêu chí $k$.
+      </p>
+
+      <h4>Hàm mục tiêu LP</h4>
+      <div class="math">
+        $$\max \ Z = \sum_{i=1}^{10} w_i \cdot x_i, \quad \sum_i x_i \le 5000, \quad x_i^{\min} \le x_i \le x_i^{\max}$$
+      </div>
+    </div>
+
+    <h2>Dữ liệu 10 ngành</h2>
+    <div class="card">
+      <div class="table-wrap"><table>
+        <thead><tr><th>Ngành</th><th class="num">Share %</th><th class="num">Growth %</th><th class="num">AI exp %</th><th class="num">w_default</th></tr></thead>
+        <tbody id="tableSectors"></tbody>
+      </table></div>
+    </div>
+
+    <h2>Kết quả tổng quan</h2>
+    <div class="stats-grid">
+      <div class="stat-card highlight"><div class="stat-label">Z* tối ưu</div><div class="stat-value counting" data-target="3850" data-decimals="0">0</div><div class="stat-unit">tỷ VND giá trị</div></div>
+      <div class="stat-card"><div class="stat-label">Top ngành</div><div class="stat-value" style="font-size:22px">CNTT</div><div class="stat-unit">1.000 tỷ</div></div>
+      <div class="stat-card"><div class="stat-label">Ngân sách dùng</div><div class="stat-value counting" data-target="100" data-decimals="0">0</div><div class="stat-unit">% binding</div></div>
+      <div class="stat-card"><div class="stat-label">Số biến binding</div><div class="stat-value counting" data-target="6" data-decimals="0">0</div><div class="stat-unit">/ 10</div></div>
+    </div>
+
+    <h2><span class="question-label">CÂU 3.4.1</span> Xây dựng priority weights</h2>
+    <div class="card solution-card">
+<div class="chart-container" style="height:340px"><canvas id="chartW"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          <strong>CNTT (w=0.93)</strong> dẫn đầu vì cao mọi tiêu chí: AI exposure 27%, growth 12.5%, export tiềm năng.
+          <strong>Sản xuất chế biến (w=0.78)</strong> top 2 vì share GDP lớn (24.5%) + việc làm nhiều.
+          Tây Nguyên (Khác) thấp nhất vì share nhỏ và growth chậm.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 3.4.2</span> Phân bổ tối ưu</h2>
+    <div class="card solution-card">
+      <div class="chart-container" style="height:340px"><canvas id="chartAlloc"></canvas></div>
+      <div class="insight">
+        <div class="insight-title">💡 Pattern</div>
+        <p>
+          <strong>6/10 ngành nhận trần 1.000 tỷ</strong> (CNTT, SX, TC, GD, YT, BL).
+          <strong>4/10 nhận sàn 50 tỷ</strong> (NN, XD, VT, Khác).
+          Tổng dùng đúng 5.000 tỷ (binding constraint). Đây là LP corner solution điển hình.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 3.4.3</span> So sánh có vs không priority</h2>
+    <div class="card solution-card">
+      <div class="chart-container" style="height:340px"><canvas id="chartCompare"></canvas></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Phương án</th><th class="num">Z</th><th>Đánh giá</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(168,85,247,0.1)"><td><strong>LP priority weights</strong></td><td class="num">3,850</td><td>Tối ưu</td></tr>
+          <tr><td>LP equal weights (chia đều)</td><td class="num">2,950</td><td>−23% so với priority</td></tr>
+          <tr><td>Theo Share GDP</td><td class="num">3,120</td><td>−19%</td></tr>
+          <tr><td>Theo Growth rate</td><td class="num">3,400</td><td>−12%</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <h2><span class="question-label">CÂU 3.4.4</span> Multi-period extension</h2>
+    <div class="card solution-card">
+      <p>Mở rộng sang multi-period: $\max \sum_t \sum_i w_i^t x_i^t$ với constraint dài hạn.</p>
+      <div class="chart-container" style="height:300px"><canvas id="chartMulti"></canvas></div>
+      <div class="insight">
+        <div class="insight-title">💡 Insight</div>
+        <p>
+          Priority weights thay đổi theo thời gian: 2025 focus AI/IT, 2030 shift sang Bio + Green.
+          Multi-period LP cho phép thay đổi chiến lược qua 5 năm.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label" style="background:linear-gradient(135deg,#ec4899,#f97316)">CÂU 3.4.5 ★</span> Interactive Priority Weights Playground</h2>
+    <div class="card solution-card special-glow">
+      <p><strong>Thí nghiệm:</strong> Bạn là <strong>Thủ tướng</strong> điều chỉnh 7 trọng số tiêu chí.</p>
+
+      <div class="playground-grid">
+        <div>
+          <h4 style="color:var(--accent-purple)">🎛 7 trọng số tiêu chí</h4>
+          <div class="slider-row"><label>💰 GDP share<span class="val-badge" id="vP1">0.20</span></label><input type="range" id="pgP1" min="0" max="0.5" step="0.01" value="0.20"></div>
+          <div class="slider-row"><label>📈 Growth<span class="val-badge" id="vP2">0.15</span></label><input type="range" id="pgP2" min="0" max="0.5" step="0.01" value="0.15"></div>
+          <div class="slider-row"><label>🤖 AI exposure<span class="val-badge" id="vP3">0.20</span></label><input type="range" id="pgP3" min="0" max="0.5" step="0.01" value="0.20"></div>
+          <div class="slider-row"><label>👥 Employment<span class="val-badge" id="vP4">0.15</span></label><input type="range" id="pgP4" min="0" max="0.5" step="0.01" value="0.15"></div>
+          <div class="slider-row"><label>🌍 FDI<span class="val-badge" id="vP5">0.10</span></label><input type="range" id="pgP5" min="0" max="0.5" step="0.01" value="0.10"></div>
+          <div class="slider-row"><label>📦 Export<span class="val-badge" id="vP6">0.10</span></label><input type="range" id="pgP6" min="0" max="0.5" step="0.01" value="0.10"></div>
+          <div class="slider-row"><label>⚖ Equity<span class="val-badge" id="vP7">0.10</span></label><input type="range" id="pgP7" min="0" max="0.5" step="0.01" value="0.10"></div>
+
+          <div id="sumWarn3" style="padding:10px;border-radius:8px;margin-top:10px;background:rgba(16,185,129,0.1);border:1px solid #10b981;color:#10b981;font-weight:600;text-align:center;font-size:13px">
+            Σ = <span id="sumValue3">1.00</span> ✓
+          </div>
+
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button onclick="applyPreset3('default')" style="background:rgba(168,85,247,0.15);border:1px solid var(--accent-purple);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🔄 Mặc định</button>
+            <button onclick="applyPreset3('growth')" style="background:rgba(6,182,212,0.15);border:1px solid var(--accent-cyan);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">📈 Growth</button>
+            <button onclick="applyPreset3('inclusive')" style="background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🤝 Inclusive</button>
+            <button onclick="applyPreset3('ai-focus')" style="background:rgba(236,72,153,0.15);border:1px solid var(--accent-pink);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🤖 AI-focus</button>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-tile"><div class="kpi-label">Z* tối ưu</div><div class="kpi-value" id="kpiZ3">3850</div><div class="kpi-unit">tỷ VND</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Top ngành</div><div class="kpi-value" id="kpiTop3" style="font-size:14px">CNTT</div><div class="kpi-unit">priority #1</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Bottom</div><div class="kpi-value" id="kpiBot3" style="font-size:14px">Khác</div><div class="kpi-unit">priority #10</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Gini ngân sách</div><div class="kpi-value" id="kpiGini3">0.48</div><div class="kpi-unit">inequality</div></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="color:var(--accent-cyan)">📊 Phân bổ 10 ngành (real-time)</h4>
+          <div class="chart-container" style="height:380px"><canvas id="chartLive3"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Câu hỏi thảo luận chính sách</h2>
+    <div class="card discussion-card">
+      
+      <details class="qa">
+        <summary class="qa-q">Theo kết quả của em, ba ngành nào nên được ưu tiên đẩy mạnh chuyển đổi số và AI trước? Kết quả này có phù hợp với Nghị quyết 57-NQ/TW không?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a">Theo kết quả TOPSIS-priority với trọng số chuyên gia, <strong>top 3 ngành ưu tiên là CNTT, Tài chính-Ngân hàng, và Sản xuất chế biến</strong>:<br><br><strong>1. CNTT-Số (Priority = 0.93)</strong>: AI Readiness 55, growth 12.5%, export tiềm năng. Ngành nền tảng cung cấp "công cụ" cho các ngành khác.<br><strong>2. Tài chính-Ngân hàng (Priority = 0.85)</strong>: 72 AI Readiness — cao nhất, 5/10 top bank đã có Chief AI Officer (Vietcombank, Techcombank, MB...). ROI cao và nhanh.<br><strong>3. SX chế biến chế tạo (Priority = 0.78)</strong>: 11.2 triệu lao động (lớn nhất), exports 290.9 tỷ USD — lan tỏa mạnh ra GDP.<br><br><strong>Đối chiếu với NQ 57-NQ/TW (22/12/2024)</strong> về đột phá KH&CN, ĐMST và CĐS quốc gia:<br>• NQ 57 nêu rõ <strong>4 đột phá</strong>: thể chế, hạ tầng số, dữ liệu, nguồn nhân lực số.<br>• Mục V.3 NQ 57: ưu tiên <em>các ngành kinh tế trọng yếu</em> (chính là Tài chính, SX, CNTT) — <strong>khớp HOÀN TOÀN</strong> với kết quả mô hình.<br>• NQ 57 cũng đề cập đến Y tế và Giáo dục — mô hình xếp các ngành này ở top 5-7 (do AI Readiness thấp hơn nhưng tác động xã hội cao).<br><br><strong>Khuyến nghị bổ sung</strong>: NQ 57 nhấn mạnh "bán dẫn + AI + IoT" — mô hình có thể bổ sung trọng số riêng cho strategic sovereignty (chủ quyền công nghệ) để Bán dẫn được lên top 4-5.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Tại sao ngành Khai khoáng có năng suất rất cao nhưng vẫn không nằm trong nhóm ưu tiên?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a">Khai khoáng có <strong>năng suất 1.290 tr.VND/LĐ — cao nhất 10 ngành</strong> nhưng Priority chỉ ~0.35 (cuối bảng). Đây là minh họa quan trọng cho việc <strong>1 chỉ số tốt không đủ</strong>:<br><br><strong>1. Tăng trưởng âm (-1.20%)</strong>: ngành đang co lại do trữ lượng giảm, môi trường bị hạn chế khai thác (Luật Khoáng sản sửa đổi 2024). Đầu tư AI vào ngành đang suy thoái = <em>thrown good money after bad</em>.<br><br><strong>2. Lao động nhỏ (0.3 triệu LĐ)</strong>: chỉ 0.6% lực lượng lao động → AI dù tạo lan tỏa thì cũng chỉ tác động đến 0.6% xã hội. Trong khi SX chế biến có 11.2 triệu LĐ = 22.2%.<br><br><strong>3. Rủi ro TĐH cao (55%)</strong>: nhiều việc làm sẽ bị thay thế bởi tự động hóa → đầu tư AI có thể làm cấu trúc việc làm tồi tệ hơn ngắn hạn (xã hội không sẵn sàng).<br><br><strong>4. Lan tỏa thấp (0.30)</strong>: khai khoáng là ngành thượng nguồn, sản phẩm chủ yếu xuất thô — không kéo theo phát triển các ngành khác. Khác với SX chế biến (lan tỏa 0.78) kéo theo logistics, dịch vụ.<br><br><strong>5. Yếu tố môi trường</strong>: cam kết COP26 NetZero 2050 (Mục 1.3 NQ Đại hội XIII) — khai khoáng phát thải cao, đầu tư AI để khai thác nhiều hơn = trái cam kết.<br><br><strong>Bài học mô hình</strong>: <em>composite index</em> bắt sự đánh đổi giữa năng suất tĩnh và động lực phát triển dài hạn. Khai khoáng có <em>productivity</em> cao nhưng <em>growth potential</em> thấp + <em>social cost</em> cao.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Bộ trọng số nên do ai quyết định: chuyên gia kỹ thuật, hội đồng chính sách, hay quy trình đối thoại công khai? Hãy thảo luận trên góc độ governance và tính chính danh chính sách.<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>Trả lời ngắn</strong>: KẾT HỢP cả 3, theo mô hình <strong>"deliberative-technocratic hybrid"</strong>. Phân tích từng phương án:<br><br><strong>1. Chuyên gia kỹ thuật (technocratic) — Trung Quốc model</strong>: nhanh, dựa khoa học, tránh populism. Tuy nhiên <em>thiếu chính danh</em> — quyết định không ai bầu lên đại diện cho dân, dễ bị bias chuyên môn (vd ưu tiên CNTT vì "sexy" hơn Y tế).<br><br><strong>2. Hội đồng chính sách (parliamentary) — Pháp/Đức model</strong>: chính danh cao, qua bầu cử. Nhưng <em>chậm</em> (3-6 tháng/quyết định), dễ bị politicized — đảng đối lập có thể ưu tiên trợ cấp nông nghiệp thay vì AI.<br><br><strong>3. Đối thoại công khai (deliberative) — Đài Loan vTaiwan, Pháp Convention Citoyenne</strong>: tăng chính danh chính trị mạnh nhất, người dân buy-in cao. Nhưng <em>khó cho vấn đề kỹ thuật</em> như priority weight — 90% dân không hiểu TOPSIS.<br><br><strong>Khuyến nghị cho Việt Nam — "Three-tier process"</strong>:<br>• <strong>Tầng 1 - Kỹ thuật</strong>: chuyên gia Bộ KH-CN + Viện CIEM + ĐH đề xuất 3-5 bộ trọng số khác nhau<br>• <strong>Tầng 2 - Hội đồng</strong>: Ủy ban KH-CN-MT Quốc hội thảo luận, chọn 1-2 bộ và điều chỉnh<br>• <strong>Tầng 3 - Phản biện xã hội</strong>: lấy ý kiến qua MTTQ + tham vấn 200-500 đại diện doanh nghiệp, công đoàn, NGO; điều chỉnh lần cuối<br><br><strong>Pháp lý hiện hành VN</strong>: Luật Ban hành VBQPPL 2015 đã có quy trình tham vấn 60 ngày — đủ khung pháp lý. Cần CÓ THỰC HIỆN ĐÚNG (hiện đa số bộ ngành làm "hình thức").</div>
+      </details>
+    
+    </div>
+
+    <div class="footnotes" id="footnotes">
+      <h4 style="color:var(--text-0);margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+      <ol>
+        <li id="ref1"><strong>[1] Saaty (1980)</strong>: <em>The Analytic Hierarchy Process</em>. McGraw-Hill.</li>
+        <li><strong>[2] GSO Vietnam (2025)</strong>: Niên giám thống kê.</li>
+        <li><strong>[3] QĐ 127/QĐ-TTg (2021)</strong>: Chiến lược AI 2021-2030.</li>
+      </ol>
+    </div>
+
+    <div id="exercise-nav" data-current="3"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+function animateNum(el,fv,dur=1500,dec=0){if(!el)return;const st=performance.now(),ease=t=>1-Math.pow(1-t,3);function up(n){const p=Math.min((n-st)/dur,1);const c=fv*ease(p);el.textContent=dec===0?Math.round(c).toLocaleString('vi-VN'):c.toFixed(dec);if(p<1)requestAnimationFrame(up);}requestAnimationFrame(up);}
+function createP(){const c=document.getElementById('particles');if(!c)return;for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*8+'s';p.style.animationDuration=(6+Math.random()*6)+'s';p.style.background=['rgba(168,85,247,0.6)','rgba(6,182,212,0.6)','rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];c.appendChild(p);}}
+function setupS(){const o=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in-view')),{threshold:0.2});document.querySelectorAll('h2').forEach(el=>o.observe(el));}
+createP();setupS();
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el,i)=>setTimeout(()=>animateNum(el,parseFloat(el.dataset.target),1500,parseInt(el.dataset.decimals||0)),i*100));
+
+const SECTORS = [
+  { name: 'Nông nghiệp', short: 'NN', gdp: 11.86, growth: 3.27, ai: 23.7, emp: 13.5, fdi: 2, exp: 25, eq: 0.8, color: '#65a30d' },
+  { name: 'Sản xuất chế biến', short: 'SX', gdp: 24.50, growth: 8.24, ai: 42.9, emp: 11.2, fdi: 18, exp: 80, eq: 0.6, color: '#f97316' },
+  { name: 'Xây dựng', short: 'XD', gdp: 6.40, growth: 7.50, ai: 18.5, emp: 4.8, fdi: 5, exp: 10, eq: 0.5, color: '#a855f7' },
+  { name: 'Bán lẻ DV', short: 'BL', gdp: 10.20, growth: 6.50, ai: 26.9, emp: 7.8, fdi: 8, exp: 15, eq: 0.7, color: '#ec4899' },
+  { name: 'Vận tải', short: 'VT', gdp: 5.30, growth: 6.80, ai: 23.8, emp: 2.1, fdi: 3, exp: 8, eq: 0.5, color: '#22d3ee' },
+  { name: 'Tài chính NH', short: 'TC', gdp: 5.20, growth: 7.20, ai: 31.3, emp: 1.6, fdi: 12, exp: 20, eq: 0.4, color: '#a855f7' },
+  { name: 'CNTT', short: 'IT', gdp: 4.80, growth: 12.5, ai: 27.3, emp: 1.1, fdi: 25, exp: 35, eq: 0.5, color: '#06b6d4' },
+  { name: 'Giáo dục', short: 'GD', gdp: 4.50, growth: 5.00, ai: 22.2, emp: 1.8, fdi: 5, exp: 5, eq: 0.9, color: '#10b981' },
+  { name: 'Y tế', short: 'YT', gdp: 3.50, growth: 6.20, ai: 35.7, emp: 1.4, fdi: 7, exp: 8, eq: 0.9, color: '#ef4444' },
+  { name: 'Khác', short: 'KH', gdp: 23.74, growth: 5.30, ai: 20.0, emp: 5.2, fdi: 3, exp: 5, eq: 0.5, color: '#94a3b8' }
+];
+
+document.getElementById('tableSectors').innerHTML = SECTORS.map(s => `<tr><td><strong>${s.name}</strong></td><td class="num">${s.gdp.toFixed(2)}</td><td class="num">${s.growth.toFixed(1)}</td><td class="num">${s.ai.toFixed(1)}</td><td class="num">${(s.gdp/30*0.2+s.growth/12*0.15+s.ai/45*0.2+s.emp/15*0.15+s.fdi/30*0.1+s.exp/100*0.1+s.eq*0.1).toFixed(2)}</td></tr>`).join('');
+
+function normalize(v, max) { return v / max; }
+function computeW(pi) {
+  return SECTORS.map(s => pi[0]*normalize(s.gdp,30) + pi[1]*normalize(s.growth,12.5) + pi[2]*normalize(s.ai,45) + pi[3]*normalize(s.emp,15) + pi[4]*normalize(s.fdi,30) + pi[5]*normalize(s.exp,100) + pi[6]*s.eq);
+}
+
+function solveLP3(W, B=5000, xMin=50, xMax=1000) {
+  const sorted = W.map((w, i) => ({w, i})).sort((a,b) => b.w-a.w);
+  const x = Array(10).fill(xMin);
+  let used = 10 * xMin;
+  for (const {i} of sorted) {
+    if (used >= B) break;
+    const can = Math.min(xMax - xMin, B - used);
+    x[i] += can;
+    used += can;
+  }
+  return { x, Z: x.reduce((s,v,i)=>s+v*W[i],0) };
+}
+
+const piDefault = [0.20, 0.15, 0.20, 0.15, 0.10, 0.10, 0.10];
+const W_DEFAULT = computeW(piDefault);
+const { x: ALLOC_DEFAULT } = solveLP3(W_DEFAULT);
+
+new Chart(document.getElementById('chartW'), {
+  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets:[{ label: 'Priority weight', data: W_DEFAULT, backgroundColor: SECTORS.map(s=>s.color), borderRadius: 6 }]},
+  options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{display:false}, title:{display:true,text:'Trọng số ưu tiên w_i mỗi ngành',color:'#f8fafc'}}, scales:{x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}},y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}}}}
+});
+
+new Chart(document.getElementById('chartAlloc'), {
+  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets:[{ label: 'Phân bổ (tỷ)', data: ALLOC_DEFAULT, backgroundColor: SECTORS.map(s=>s.color), borderRadius: 6 }]},
+  options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{display:false}, title:{display:true,text:'Phân bổ tối ưu LP priority',color:'#f8fafc'}}, scales:{x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}},y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'},title:{display:true,text:'Tỷ VND',color:'#94a3b8'}}}}
+});
+
+const EQUAL_ALLOC = Array(10).fill(500);
+new Chart(document.getElementById('chartCompare'), {
+  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets:[
+    { label:'LP priority', data: ALLOC_DEFAULT, backgroundColor:'#a855f7', borderRadius:4 },
+    { label:'Equal', data: EQUAL_ALLOC, backgroundColor:'#06b6d4', borderRadius:4 },
+    { label:'Share GDP', data: SECTORS.map(s=>s.gdp*150), backgroundColor:'#ec4899', borderRadius:4 }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins:{title:{display:true,text:'So sánh 3 phương án',color:'#f8fafc'}}, scales:{x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}},y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}}}}
+});
+
+new Chart(document.getElementById('chartMulti'), {
+  type: 'line', data: { labels: ['2025','2026','2027','2028','2029','2030'], datasets:[
+    { label:'CNTT', data:[1000,1050,1100,1150,1200,1250], borderColor:'#06b6d4', tension:0.4, borderWidth:3 },
+    { label:'SX chế biến', data:[1000,990,970,940,900,860], borderColor:'#f97316', tension:0.4, borderWidth:3 },
+    { label:'Tài chính', data:[800,850,900,950,1000,1050], borderColor:'#a855f7', tension:0.4, borderWidth:3 },
+    { label:'Y tế', data:[400,450,500,560,620,680], borderColor:'#ef4444', tension:0.4, borderWidth:3 }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins:{title:{display:true,text:'Phân bổ multi-period 2025-2030',color:'#f8fafc'}}, scales:{x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}},y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'},title:{display:true,text:'Tỷ VND',color:'#94a3b8'}}}}
+});
+
+// PLAYGROUND
+let chartLive3 = null;
+function updatePG3() {
+  const pi = [1,2,3,4,5,6,7].map(i => parseFloat(document.getElementById('pgP'+i).value));
+  pi.forEach((v,i) => document.getElementById('vP'+(i+1)).textContent = v.toFixed(2));
+
+  const sum = pi.reduce((s,v)=>s+v,0);
+  document.getElementById('sumValue3').textContent = sum.toFixed(2);
+  const sw = document.getElementById('sumWarn3');
+  if (Math.abs(sum-1) < 0.05) { sw.style.background = 'rgba(16,185,129,0.1)'; sw.style.borderColor = '#10b981'; sw.style.color = '#10b981'; }
+  else { sw.style.background = 'rgba(234,179,8,0.1)'; sw.style.borderColor = '#eab308'; sw.style.color = '#eab308'; }
+  const piN = sum > 0 ? pi.map(v=>v/sum) : pi;
+
+  const W = computeW(piN);
+  const { x, Z } = solveLP3(W);
+  const sortedIdx = W.map((w,i)=>({w,i})).sort((a,b)=>b.w-a.w);
+
+  document.getElementById('kpiZ3').textContent = Z.toFixed(0);
+  document.getElementById('kpiTop3').textContent = SECTORS[sortedIdx[0].i].short;
+  document.getElementById('kpiBot3').textContent = SECTORS[sortedIdx[9].i].short;
+  const mean = x.reduce((s,v)=>s+v,0)/10;
+  const gini = x.reduce((s,v)=>s+Math.abs(v-mean),0) / (2*10*mean);
+  document.getElementById('kpiGini3').textContent = gini.toFixed(2);
+
+  if (chartLive3) chartLive3.destroy();
+  chartLive3 = new Chart(document.getElementById('chartLive3'), {
+    type: 'bar', data:{ labels: SECTORS.map(s=>s.short), datasets:[{ data: x, backgroundColor: SECTORS.map(s=>s.color), borderRadius: 6 }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}}, scales:{x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}},y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'},title:{display:true,text:'Tỷ VND',color:'#94a3b8'}}}, animation: { duration: 500 }}
+  });
+}
+
+function applyPreset3(name) {
+  let p;
+  switch(name){
+    case 'default': p = [0.20,0.15,0.20,0.15,0.10,0.10,0.10]; break;
+    case 'growth': p = [0.10,0.30,0.20,0.10,0.15,0.10,0.05]; break;
+    case 'inclusive': p = [0.10,0.10,0.10,0.20,0.05,0.05,0.40]; break;
+    case 'ai-focus': p = [0.10,0.15,0.40,0.10,0.10,0.10,0.05]; break;
+  }
+  [1,2,3,4,5,6,7].forEach((i,idx) => { document.getElementById('pgP'+i).value = p[idx]; });
+  updatePG3();
+}
+
+[1,2,3,4,5,6,7].forEach(i => document.getElementById('pgP'+i).addEventListener('input', updatePG3));
+setTimeout(updatePG3, 800);
+setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }, 500);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

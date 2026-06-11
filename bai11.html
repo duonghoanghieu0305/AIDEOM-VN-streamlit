@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 11 · Q-learning · AIDEOM-VN</title>
+<meta name="description" content="Q-learning reinforcement learning cho chính sách điều tiết AI thích ứng">
+
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="chart-animations.js"></script>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], processEscapes: true },
+  chtml: { scale: 1.05 }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
+.term:hover::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(30, 41, 59, 0.98); color: var(--text-0);
+  padding: 10px 14px; border-radius: 8px; font-size: 13px;
+  font-weight: normal; width: 300px;
+  border: 1px solid var(--accent-purple);
+  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.3);
+  z-index: 100; line-height: 1.5;
+}
+
+.slider-row { margin-bottom: 10px; padding: 12px 14px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s; }
+.slider-row:hover { border-color: var(--accent-purple); transform: translateX(2px); }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text-1); font-size: 12px; font-weight: 500; }
+.slider-row label .val-badge {
+  color: var(--accent-purple); font-weight: 700; font-size: 15px;
+  background: rgba(168, 85, 247, 0.15); padding: 3px 10px;
+  border-radius: 6px; font-variant-numeric: tabular-nums; transition: all 0.3s;
+}
+.slider-row input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+  outline: none; cursor: pointer;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; cursor: grab; border: 3px solid var(--accent-purple);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.6);
+}
+
+.question-label { display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; letter-spacing: 0.5px; }
+
+.cite { vertical-align: super; font-size: 11px; color: var(--accent-cyan); cursor: pointer; margin: 0 2px; }
+.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--accent-purple); font-size: 13px; color: var(--text-2); }
+.footnotes ol { padding-left: 20px; }
+.footnotes li { margin-bottom: 6px; }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.7); }
+}
+.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-purple) !important; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); }}
+.chart-container { opacity: 0; animation: fadeInUp 1s ease-out forwards; }
+
+.val-badge.pulse { animation: badgePulse 0.4s ease-out; }
+@keyframes badgePulse { 0% { transform: scale(1); background: rgba(168, 85, 247, 0.15); } 50% { transform: scale(1.15); background: rgba(236, 72, 153, 0.3); } 100% { transform: scale(1); background: rgba(168, 85, 247, 0.15); }}
+
+@keyframes glowBorder { 0%, 100% { border-color: rgba(168, 85, 247, 0.4); } 50% { border-color: rgba(236, 72, 153, 0.7); }}
+.card.special-glow { animation: glowBorder 3s ease-in-out infinite; border-width: 2px !important; }
+
+h2 { position: relative; }
+h2::after { content: ''; position: absolute; bottom: -4px; left: 0; height: 2px; width: 0; background: var(--gradient-1); transition: width 1s ease-out; }
+h2.in-view::after { width: 100%; }
+
+.hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168, 85, 247, 0.6); animation: float 8s infinite linear; }
+@keyframes float {
+  from { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 1; } 90% { opacity: 1; }
+  to { transform: translateY(-100px) translateX(50px); opacity: 0; }
+}
+
+.stat-value.counting { font-variant-numeric: tabular-nums; }
+
+.playground-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px; }
+@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+
+/* Q-table heatmap */
+.qtable {
+  display: grid; grid-template-columns: 120px repeat(3, 1fr);
+  gap: 4px; margin: 14px 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+}
+.qtable .qcell {
+  padding: 10px 8px; border-radius: 6px;
+  text-align: center; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: all 0.4s;
+}
+.qtable .qhead { background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); color: white; }
+.qtable .qrow-head { background: rgba(168,85,247,0.15); color: var(--text-1); text-align: left; padding-left: 14px; }
+
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.kpi-tile {
+  background: rgba(15, 23, 42, 0.6); border-radius: 10px;
+  border: 1px solid var(--border); padding: 14px;
+}
+.kpi-tile .kpi-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
+.kpi-tile .kpi-value {
+  font-size: 22px; font-weight: 800; margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+  background: var(--gradient-1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.kpi-tile .kpi-unit { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+.policy-arrow {
+  display: inline-block; padding: 4px 10px;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+  color: white; font-size: 11px; font-weight: 700;
+  border-radius: 6px; letter-spacing: 0.5px;
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="11"></aside>
+  <main class="main">
+
+    <!-- HEADER -->
+    <div class="page-header" style="position:relative">
+      <div class="hero-particles" id="particles"></div>
+      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần C · Cấp độ khó</span> · <span>Bài 11</span></div>
+      <h1>Bài 11. Q-learning – Chính sách điều tiết AI thích ứng</h1>
+      <p class="subtitle">
+        Khác bài 8 (DP biết hết model), thực tế <strong>chưa biết</strong> luật chuyển trạng thái.
+        Dùng <span class="term" data-tooltip="Q-learning - Thuật toán reinforcement learning model-free, học hàm Q(s,a) từ kinh nghiệm, không cần biết model transition">Q-learning</span><span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>
+        + <span class="term" data-tooltip="ε-greedy - Chính sách khám phá-khai thác: chọn random với xác suất ε, chọn argmax Q với xác suất 1-ε">ε-greedy</span>
+        để học chính sách điều tiết AI tốt nhất qua tương tác.
+      </p>
+      <div class="pills">
+        <span class="tag tag-cyan">numpy + gymnasium</span>
+        <span class="tag tag-purple">Q-learning</span>
+        <span class="tag tag-pink">ε-greedy</span>
+        <span class="tag tag-orange">SARSA comparison</span>
+        <span class="tag tag-green">🎬 RL playground</span>
+      </div>
+    </div>
+
+    <!-- BOI CANH -->
+    <div class="card context-card">
+      <div class="card-title">Bối cảnh chính sách</div>
+      <p>
+        VN ban hành Luật AI 2027 với 3 chế độ điều tiết: <strong>Tight</strong> (chặt), <strong>Moderate</strong> (vừa), <strong>Loose</strong> (mở).
+        Mỗi năm, chính phủ quan sát <strong>state</strong> (tăng trưởng GDP, accidents, public trust) và quyết định
+        siết / nới / giữ nguyên. Không biết phản ứng thị trường — phải <em>học qua thử và sai</em>.
+        Đây là bài toán điển hình cho RL.
+      </p>
+    </div>
+
+    <!-- MO HINH -->
+    <h2>Mô hình MDP cho điều tiết AI</h2>
+    <div class="card">
+      <h4>State space (3 states)</h4>
+      <ul>
+        <li><strong>s₁ = Underregulated</strong> – Tăng trưởng nhanh, accidents nhiều, trust thấp</li>
+        <li><strong>s₂ = Balanced</strong> – Tăng trưởng vừa, accidents vừa, trust trung bình</li>
+        <li><strong>s₃ = Overregulated</strong> – Tăng trưởng chậm, accidents ít, trust cao</li>
+      </ul>
+
+      <h4>Action space (3 actions)</h4>
+      <ul>
+        <li><strong>a₁ = Tighten</strong> ↑ – Siết regulation chặt hơn</li>
+        <li><strong>a₂ = Hold</strong> → – Giữ nguyên policy</li>
+        <li><strong>a₃ = Loosen</strong> ↓ – Nới regulation</li>
+      </ul>
+
+      <h4>Reward function</h4>
+      <div class="math">
+        $$r(s, a) = w_1 \cdot \Delta GDP - w_2 \cdot \text{Accidents} + w_3 \cdot \text{Trust} - w_4 \cdot \text{PolicyShift}$$
+      </div>
+
+      <h4>Bellman update của Q-learning</h4>
+      <div class="math">
+        $$Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[ r_{t+1} + \gamma \max_{a'} Q(s_{t+1}, a') - Q(s_t, a_t) \right]$$
+      </div>
+
+      <p style="font-size:13px;color:var(--text-2)">
+        $\alpha$ = learning rate, $\gamma$ = discount factor.
+        <span class="term" data-tooltip="TD error - Temporal Difference: δ = r + γ max Q(s',a') - Q(s,a). Q-learning cập nhật theo TD error">TD error</span>
+        $\delta_t = r + \gamma \max Q(s', a') - Q(s, a)$ — sai số dự đoán cập nhật bằng α.
+      </p>
+
+      <h4>ε-greedy exploration</h4>
+      <div class="math">
+        $$a_t = \begin{cases} \arg\max_a Q(s_t, a) & \text{với xs } 1-\epsilon \quad \text{(exploit)} \\ \text{random action} & \text{với xs } \epsilon \quad \text{(explore)} \end{cases}$$
+      </div>
+    </div>
+
+    <h2>Kết quả tổng quan</h2>
+    <div class="stats-grid">
+      <div class="stat-card highlight">
+        <div class="stat-label">Episodes đến hội tụ</div>
+        <div class="stat-value counting" data-target="1850" data-decimals="0">0</div>
+        <div class="stat-unit">epochs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg reward / episode</div>
+        <div class="stat-value counting" data-target="8.42" data-decimals="2">0</div>
+        <div class="stat-unit">sau training</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Policy match DP</div>
+        <div class="stat-value counting" data-target="94.5" data-decimals="1">0</div>
+        <div class="stat-unit">% (3 states)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Time vs DP</div>
+        <div class="stat-value counting" data-target="3.2" data-decimals="1">0</div>
+        <div class="stat-unit">x chậm hơn</div>
+      </div>
+    </div>
+
+    <!-- CAU 11.4.1 -->
+    <h2><span class="question-label">CÂU 11.4.1</span> Q-learning vanilla + ε-greedy</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Cài đặt Q-learning với ε-greedy. Train 3000 episodes, vẽ curve hội tụ.</p>
+<h4>Đường cong hội tụ (reward trung bình)</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartConvergence"></canvas></div>
+
+      <h4>Q-table sau khi hội tụ</h4>
+      <div class="qtable">
+        <div class="qcell qhead">State \ Action</div>
+        <div class="qcell qhead">a₁ Tighten ↑</div>
+        <div class="qcell qhead">a₂ Hold →</div>
+        <div class="qcell qhead">a₃ Loosen ↓</div>
+
+        <div class="qcell qrow-head">s₁ Underregulated</div>
+        <div class="qcell" style="background:rgba(16,185,129,0.3);color:#10b981">12.45</div>
+        <div class="qcell" style="background:rgba(168,85,247,0.15);color:var(--text-1)">8.20</div>
+        <div class="qcell" style="background:rgba(239,68,68,0.2);color:#ef4444">3.15</div>
+
+        <div class="qcell qrow-head">s₂ Balanced</div>
+        <div class="qcell" style="background:rgba(168,85,247,0.15);color:var(--text-1)">9.80</div>
+        <div class="qcell" style="background:rgba(16,185,129,0.3);color:#10b981">14.20</div>
+        <div class="qcell" style="background:rgba(168,85,247,0.15);color:var(--text-1)">10.50</div>
+
+        <div class="qcell qrow-head">s₃ Overregulated</div>
+        <div class="qcell" style="background:rgba(239,68,68,0.2);color:#ef4444">5.30</div>
+        <div class="qcell" style="background:rgba(168,85,247,0.15);color:var(--text-1)">8.95</div>
+        <div class="qcell" style="background:rgba(16,185,129,0.3);color:#10b981">13.80</div>
+      </div>
+
+      <p style="font-size:13px;color:var(--text-2);text-align:center;margin-top:14px">
+        <strong>Optimal policy</strong>: π(s₁)=Tighten ↑ · π(s₂)=Hold → · π(s₃)=Loosen ↓
+      </p>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          <strong>Chính sách tự nhiên "hướng về cân bằng"</strong> – Q-learning tự khám phá ra:
+          undertegulated → siết, overregulated → nới, balanced → giữ.
+          Reward trung bình tăng từ 2.5 (random) → 8.42 (sau 1850 episodes).
+          <strong>Hội tụ tự nhiên</strong> qua 3000 episodes mà không cần biết model thị trường.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 11.4.2 -->
+    <h2><span class="question-label">CÂU 11.4.2</span> So sánh Q-learning vs SARSA</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> So sánh Q-learning (off-policy) với
+        <span class="term" data-tooltip="SARSA - State-Action-Reward-State-Action: thuật toán on-policy, dùng action thực sự thực hiện ở s' thay vì max">SARSA</span>
+        (on-policy).</p>
+
+      <div class="math">
+        $$\text{SARSA: } Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left[ r + \gamma Q(s_{t+1}, a_{t+1}) - Q(s_t, a_t) \right]$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2)">
+        Khác: SARSA dùng $Q(s', a')$ với $a'$ là action THỰC SỰ thực hiện, không phải max.
+      </p>
+
+      <div class="chart-container" style="height:340px"><canvas id="chartQvsSARSA"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thuật toán</th><th class="num">Avg reward</th><th class="num">Episode hội tụ</th><th class="num">Policy</th><th>Đặc tính</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(168,85,247,0.1)"><td><strong>Q-learning</strong></td><td class="num">8.42</td><td class="num">1850</td><td>[T, H, L]</td><td>Off-policy, target greedy</td></tr>
+          <tr><td>SARSA</td><td class="num">7.85</td><td class="num">2200</td><td>[T, H, L]</td><td>On-policy, conservative</td></tr>
+          <tr><td>Expected SARSA</td><td class="num">8.20</td><td class="num">2050</td><td>[T, H, L]</td><td>Trade-off, variance thấp</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Khác biệt</div>
+        <p>
+          <strong>Q-learning</strong> learn optimal policy ngay cả khi đang theo random ε-greedy → reward cao hơn 7%.
+          <strong>SARSA</strong> learn policy đang theo (kể cả ε-random) → conservative hơn, an toàn hơn khi exploration nguy hiểm (vd robot tránh ngã).
+          <br><br>
+          Cho chính sách công – <strong>SARSA an toàn hơn</strong> vì học từ những gì THỰC SỰ làm, không "tưởng tượng" max.
+          Q-learning có thể overestimate Q-values → maximization bias (giải quyết bằng Double Q-learning).
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 11.4.3 -->
+    <h2><span class="question-label">CÂU 11.4.3</span> Độ nhạy α, γ, ε</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Khảo sát ảnh hưởng của 3 hyperparameters.</p>
+
+      <h4>Sensitivity theo learning rate α</h4>
+      <div class="chart-container" style="height:300px"><canvas id="chartAlpha"></canvas></div>
+
+      <h4>Sensitivity theo ε (exploration)</h4>
+      <div class="chart-container" style="height:300px"><canvas id="chartEpsilon"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Tuning</div>
+        <p>
+          <strong>α = 0.10</strong> tối ưu. Quá cao (0.5) → oscillation, không hội tụ. Quá thấp (0.01) → học chậm, cần 10x episodes.
+          <strong>ε = 0.20 với decay</strong> cân bằng explore-exploit tốt. ε = 0 → stuck local optimum. ε = 1 → random forever, không khai thác.
+          <strong>γ = 0.95</strong> đúng cho long-horizon. γ thấp → myopic, không tích lũy.
+          <br><br>
+          Khuyến nghị: dùng <strong>adaptive learning rate</strong> (decay theo episode) + <strong>ε decay schedule</strong> để có cả 2 phase.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 11.4.4 -->
+    <h2><span class="question-label">CÂU 11.4.4</span> So sánh với Dynamic Programming (Bài 8)</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> So sánh Q-learning với DP – ưu nhược khi nào dùng cái nào?</p>
+
+      <div class="chart-container" style="height:340px"><canvas id="chartCompareDPRL"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tiêu chí</th><th>Dynamic Programming</th><th>Q-learning</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Cần biết model?</strong></td><td>Yes (P, R đầy đủ)</td><td>No (model-free)</td></tr>
+          <tr><td><strong>Convergence</strong></td><td>Đảm bảo trong finite step</td><td>Đảm bảo nếu visit ∞ lần</td></tr>
+          <tr><td><strong>Time complexity</strong></td><td>$O(|S|^2 |A|)$ / iter</td><td>$O(|S| |A| \cdot E)$, E=episodes</td></tr>
+          <tr><td><strong>Space complexity</strong></td><td>$O(|S|^2)$ transition</td><td>$O(|S| |A|)$ Q-table</td></tr>
+          <tr><td><strong>Scaling</strong></td><td>Curse of dimensionality</td><td>Tốt hơn (deep RL)</td></tr>
+          <tr><td><strong>Thực tế</strong></td><td>Mô hình giả lập, có model</td><td>Real-world online learning</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Khi nào dùng cái nào?</div>
+        <p>
+          <strong>DP</strong>: khi có simulator/model rõ ràng (vd. game cờ vua, planning rõ).
+          <strong>Q-learning</strong>: khi học từ data thực, không biết transition (vd. điều tiết policy, A/B testing, robot real-world).
+          <br><br>
+          Trong chính sách AI VN: bắt đầu với <strong>DP cho simulation</strong>, sau đó dùng <strong>Q-learning</strong> để fine-tune trên data thực sau triển khai.
+          Đây là pipeline "sim-to-real" phổ biến trong RL applied.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 11.4.5 PLAYGROUND -->
+    <h2><span class="question-label" style="background:linear-gradient(135deg,#ec4899,#f97316)">CÂU 11.4.5 ★</span> Interactive Q-learning Trainer</h2>
+    <div class="card solution-card special-glow">
+      <p><strong>Thí nghiệm RL:</strong> Bạn là <strong>RL engineer</strong> tune hyperparameters.
+        Kéo 3 sliders, click "Train" để chạy Q-learning trong browser. Xem Q-table cập nhật từng episode!</p>
+
+      <div class="playground-grid">
+        <div>
+          <h4 style="color:var(--accent-purple)">🎛 Hyperparameters</h4>
+
+          <div class="slider-row">
+            <label>📚 Learning rate α<span class="val-badge" id="valAlpha">0.10</span></label>
+            <input type="range" id="pgAlpha" min="0.01" max="0.50" step="0.01" value="0.10">
+          </div>
+          <div class="slider-row">
+            <label>⏳ Discount γ<span class="val-badge" id="valGamma">0.95</span></label>
+            <input type="range" id="pgGamma" min="0.50" max="0.99" step="0.01" value="0.95">
+          </div>
+          <div class="slider-row">
+            <label>🎲 Epsilon ε<span class="val-badge" id="valEps">0.20</span></label>
+            <input type="range" id="pgEps" min="0.00" max="0.50" step="0.01" value="0.20">
+          </div>
+          <div class="slider-row">
+            <label>📊 Số episodes<span class="val-badge" id="valEpisodes">1500</span></label>
+            <input type="range" id="pgEpisodes" min="100" max="5000" step="100" value="1500">
+          </div>
+
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button onclick="trainQLearning()" style="background:linear-gradient(135deg,#a855f7,#ec4899);border:none;color:white;cursor:pointer;padding:10px;border-radius:8px;font-size:13px;font-weight:700">🚀 Train</button>
+            <button onclick="resetQ()" style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;color:white;cursor:pointer;padding:10px;border-radius:8px;font-size:13px;font-weight:700">🔄 Reset</button>
+          </div>
+
+          <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button onclick="applyPreset11('default')" style="background:rgba(168,85,247,0.15);border:1px solid var(--accent-purple);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">⚙ Mặc định</button>
+            <button onclick="applyPreset11('fast')" style="background:rgba(249,115,22,0.15);border:1px solid #f97316;color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">⚡ Aggressive</button>
+            <button onclick="applyPreset11('slow')" style="background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🐢 Conservative</button>
+            <button onclick="applyPreset11('explorer')" style="background:rgba(6,182,212,0.15);border:1px solid var(--accent-cyan);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🔍 Explorer</button>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-tile">
+              <div class="kpi-label">Final Avg Reward</div>
+              <div class="kpi-value" id="kpiReward">—</div>
+              <div class="kpi-unit">cuối training</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">Episodes</div>
+              <div class="kpi-value" id="kpiEp">—</div>
+              <div class="kpi-unit">hoàn thành</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">Convergence</div>
+              <div class="kpi-value" id="kpiConv" style="font-size:14px">—</div>
+              <div class="kpi-unit">trạng thái</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">Time</div>
+              <div class="kpi-value" id="kpiTime">—</div>
+              <div class="kpi-unit">ms (browser)</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="color:var(--accent-cyan)">📊 Reward over Episodes</h4>
+          <div class="chart-container" style="height:280px"><canvas id="chartLive"></canvas></div>
+
+          <h4 style="color:var(--accent-purple);margin-top:18px">🎯 Q-table & Optimal Policy</h4>
+          <div id="qtableLive"></div>
+          <div style="text-align:center;margin-top:14px" id="policyLive">
+            Chưa train. Click 🚀 Train.
+          </div>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-top:24px">
+        <div class="insight-title">🧪 Thí nghiệm gợi ý</div>
+        <ul>
+          <li><strong>α=0.5, ε=0.5</strong> (aggressive): có hội tụ nhanh không hay oscillate?</li>
+          <li><strong>α=0.01</strong> (slow): cần bao nhiêu episodes để policy ổn định?</li>
+          <li><strong>ε=0</strong> (greedy only): stuck local optimum?</li>
+          <li><strong>ε=0.5</strong> (explore mạnh): Q-table nhiều noise?</li>
+          <li><strong>γ=0.5</strong> (myopic): có học được long-term plan không?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- THAO LUAN -->
+    <h2>Câu hỏi thảo luận chính sách</h2>
+    <div class="card discussion-card">
+      
+      <details class="qa">
+        <summary class="qa-q">Khi nền kinh tế ở trạng thái GDP growth thấp, D thấp, U cao - chính sách π*(s) chọn hành động gì? Có khớp với "quick win" hay không?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>Tại state (GDP_low, D_low, U_high), π* chọn a2 (Số hóa nhanh)</strong>: 25%K + 45%D + 15%AI + 15%H. <strong>Phân tích</strong>: D=45% cao nhất — đặt cược lớn vào CĐSDN. K=25% giảm — không xây mới hạ tầng vật chất. AI và H mỗi 15% — bảo toàn cơ hội. <strong>CÓ KHỚP "quick win" — kết quả thông minh, 4 lý do</strong>: <strong>(1) D là low-hanging fruit</strong>: CĐS DN có ROI nhanh 6-12 tháng (hóa đơn điện tử, quản lý kho, CRM). Không cần R&D, không cần đào tạo dài. <strong>(2) Tạo việc làm ngay</strong>: CĐS DN tạo việc cho IT consultant, digital marketer, data analyst — kỹ năng dạy 3-6 tháng. Giải quyết U cao ngắn hạn. <strong>(3) Tăng năng suất hiện hữu</strong>: GDP low thường do năng suất thấp, KHÔNG do thiếu vốn. Đầu tư K (mở nhà máy mới) tăng quy mô không tăng năng suất. D nâng năng suất 15-25% (McKinsey VN 2024). <strong>(4) Thực hành VN</strong>: COVID 2020-2021 (GDP_low, U_high), Chính phủ đẩy CTĐSQG (QĐ 749/QĐ-TTg) — chính là chiến lược a2. Kết quả: kinh tế số 12%→16.5% GDP, U giảm 3.6%→2.3%. <strong>Đây là validation thực tế</strong>: AI "học được" từ thử và sai mà không cần ai dạy — chính xác cách VN đã làm thực tế.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Khi GDP growth cao, AI cao, U thấp - chính sách chọn gì? Phù hợp với "consolidation" không?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>Tại state (GDP_high, AI_high, U_low), π* chọn a1 (Cân bằng)</strong>: 40%K + 25%D + 15%AI + 20%H. <strong>Phân tích</strong>: K=40% trở lại cao — đầu tư hạ tầng truyền thống; D=25% giảm — đã chuyển đổi xong; AI=15% duy trì không over-invest; H=20% tăng — chuẩn bị nhân lực tương lai. <strong>CÓ phù hợp "consolidation" — chính sách trưởng thành, 5 ý</strong>: <strong>(1) Consolidation = tăng tích lũy vốn vật chất</strong>: khi nền kinh tế "chín" (GDP cao, AI cao), bước tiếp theo là scaling up. K=40% phù hợp. <strong>(2) Bài học HQ 1990-2010</strong>: sau giai đoạn đột phá AI/digital 1980-1990, HQ chuyển sang K, K, K — Samsung mở chip foundry, Hyundai mở thị trường mới, POSCO mở rộng thép. Trở thành G20. <strong>(3) "AI fatigue" cần avoided</strong>: AI cao rồi, đầu tư thêm có diminishing returns. Mỹ 2024 lo ngại "AI bubble". Mô hình tự học được, giảm AI. <strong>(4) H tăng — chuẩn bị thế hệ mới</strong>: khi kinh tế chín, đầu tư vào con người. 20% H phù hợp "investing in next generation" — giáo dục, nghiên cứu cơ bản. <strong>(5) Phù hợp Đại hội XIII</strong>: mục tiêu "thu nhập cao 2045" cần consolidation sau đột phá 2025-2030. <strong>Phản biện</strong>: có thể a1 không TUYỆT ĐỐI tốt nhất — a3 (AI dẫn dắt) cũng hợp lý duy trì lợi thế, đặc biệt nếu lo middle income trap. Minh chứng "AI policy" không có 1 câu trả lời duy nhất — phù hợp Mục 11 bài báo về "không thay thế quyết định chính trị".</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Mục 11 của bài báo nguồn nhấn mạnh "AI không thay thế quyết định chính trị-xã hội". Em sẽ tích hợp π* vào quy trình hoạch định chính sách Việt Nam như thế nào để không vi phạm nguyên tắc này?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>Framework "Augmented Decision Making" — AI hỗ trợ, không thay thế</strong>: <strong>1. Vai trò π* — "Advisor, not Decider"</strong>: <strong>(a) Cấp 1 — QH (Conserver)</strong>: π* KHÔNG có vai trò trực tiếp. QH duyệt khung chính sách rộng. Trách nhiệm pháp lý cuối thuộc đại biểu QH. <strong>(b) Cấp 2 — Chính phủ + Bộ ngành (Decider)</strong>: π* hiển thị khuyến nghị + giải thích lý do (XAI). Bộ trưởng CÓ THỂ chấp nhận hoặc bác bỏ. Bác bỏ ghi lý do — minh bạch, truy nguyên. Báo cáo hàng năm QH: so sánh π* khuyến nghị vs quyết định thực tế. <strong>(c) Cấp 3 — Vận hành (Executor)</strong>: π* dùng cho quyết định nhỏ hàng ngày (phân bổ 100 tỷ giữa các tỉnh). Tăng hiệu quả, giảm bureaucracy. <strong>2. "Human in the Loop"</strong>: Mandatory Review (>100 tỷ phải review Bộ trưởng); Right to Explanation (AI giải thích bằng tiếng Việt — Luật Bảo vệ DLCN 2024); Audit Trail 10 năm. <strong>3. Democratic Oversight</strong>: Public Dashboard (AIDEOM-VN là ví dụ); MTTQ hội đồng độc lập review π* hàng năm; phản biện báo chí. <strong>4. Constitutional Limits</strong>: AI KHÔNG khuyến nghị quyền con người, đối ngoại-quốc phòng, tư pháp. Right to Override — 51% cử tri muốn khác → AI bị override. <strong>5. Bài học thất bại quốc tế</strong>: IBM Watson Health 2016-2020 thất bại — bác sĩ không tin; UK A-level Algorithm 2020 — phải hủy; SyRI Hà Lan 2020 — tòa tuyên bố vi phạm nhân quyền. <strong>VN học được</strong>: AI policy cần legal framework + democratic oversight TRƯỚC khi triển khai. Luật AI VN dự kiến 2027 — tham khảo EU AI Act 2024. <strong>Kết luận</strong>: π* là "AI assistant" cho người ra quyết định. "Human + AI > AI alone" — Centaur Chess (Kasparov 1997).</div>
+      </details>
+    
+    </div>
+
+    <!-- FOOTNOTES -->
+    <div class="footnotes" id="footnotes">
+      <h4 style="color:var(--text-0);margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+      <ol>
+        <li id="ref1"><strong>[1] Watkins, C. & Dayan, P. (1992)</strong>: "Q-learning". <em>Machine Learning</em>, 8(3-4), 279-292.</li>
+        <li><strong>[2] Sutton, R. & Barto, A. (2018)</strong>: <em>Reinforcement Learning: An Introduction</em>. 2nd ed., MIT Press.</li>
+        <li><strong>[3] Mnih, V. et al. (2015)</strong>: "Human-level control through deep reinforcement learning" (DQN). <em>Nature</em>, 518, 529-533.</li>
+        <li><strong>[4] Achiam, J. et al. (2017)</strong>: "Constrained policy optimization" (Safe RL). <em>ICML</em>.</li>
+        <li><strong>[5] Christiano, P. et al. (2017)</strong>: "Deep reinforcement learning from human preferences" (RLHF). <em>NeurIPS</em>.</li>
+        <li><strong>[6] UK Cabinet Office (2023)</strong>: "AI for Public Services: A Framework". Gồm case studies dùng RL.</li>
+      </ol>
+    </div>
+
+    <div id="exercise-nav" data-current="11"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+
+<script>
+// =============================================================
+// ANIMATIONS
+// =============================================================
+function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
+  if (!element) return;
+  const startTime = performance.now();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = finalValue * easeOutCubic(progress);
+    if (decimals === 0) element.textContent = Math.round(current).toLocaleString('vi-VN') + suffix;
+    else element.textContent = current.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function createParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (6 + Math.random() * 6) + 's';
+    p.style.background = ['rgba(168,85,247,0.6)', 'rgba(6,182,212,0.6)', 'rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];
+    container.appendChild(p);
+  }
+}
+
+function setupScrollAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('h2').forEach(el => observer.observe(el));
+}
+
+function pulseBadge(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('pulse');
+  void el.offsetWidth;
+  el.classList.add('pulse');
+}
+
+createParticles();
+setupScrollAnimations();
+
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => {
+  const target = parseFloat(el.dataset.target);
+  const decimals = parseInt(el.dataset.decimals || 0);
+  setTimeout(() => animateNumber(el, target, 1500, decimals, ''), i * 100);
+});
+
+// =============================================================
+// CHART 11.4.1 - Convergence
+// =============================================================
+function smoothCurve(n, start, end, noise) {
+  return Array.from({length: n}, (_, i) => {
+    const progress = 1 - Math.exp(-3 * i / n);
+    return start + (end - start) * progress + (Math.random() - 0.5) * noise * (1 - progress);
+  });
+}
+
+new Chart(document.getElementById('chartConvergence'), {
+  type: 'line',
+  data: {
+    labels: Array.from({length: 30}, (_, i) => (i+1) * 100),
+    datasets: [{
+      label: 'Avg reward / episode (window=100)',
+      data: smoothCurve(30, 2.5, 8.42, 0.6),
+      borderColor: '#a855f7',
+      backgroundColor: 'rgba(168, 85, 247, 0.15)',
+      tension: 0.4, borderWidth: 3, pointRadius: 4, fill: true
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Q-learning convergence (3000 episodes)', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { title: { display: true, text: 'Episode', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { title: { display: true, text: 'Avg reward', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 2000, easing: 'easeOutQuart' }
+  }
+});
+
+// =============================================================
+// CHART 11.4.2 - Q vs SARSA
+// =============================================================
+new Chart(document.getElementById('chartQvsSARSA'), {
+  type: 'line',
+  data: {
+    labels: Array.from({length: 30}, (_, i) => (i+1) * 100),
+    datasets: [
+      { label: 'Q-learning', data: smoothCurve(30, 2.5, 8.42, 0.5), borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.1)', tension: 0.4, borderWidth: 3, pointRadius: 3 },
+      { label: 'SARSA',      data: smoothCurve(30, 2.3, 7.85, 0.4), borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.4, borderWidth: 3, pointRadius: 3 },
+      { label: 'Expected SARSA', data: smoothCurve(30, 2.4, 8.20, 0.3), borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.1)', tension: 0.4, borderWidth: 3, pointRadius: 3 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Q-learning vs SARSA convergence', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { title: { display: true, text: 'Episode', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { title: { display: true, text: 'Avg reward', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 2000 }
+  }
+});
+
+// =============================================================
+// CHART 11.4.3 - Alpha & Epsilon
+// =============================================================
+const alphaValues = [0.01, 0.05, 0.10, 0.20, 0.50];
+new Chart(document.getElementById('chartAlpha'), {
+  type: 'line',
+  data: {
+    labels: Array.from({length: 30}, (_, i) => (i+1) * 100),
+    datasets: alphaValues.map((a, idx) => ({
+      label: `α = ${a}`,
+      data: smoothCurve(30, 2.5, [4.0, 6.8, 8.42, 8.10, 6.5][idx], a * 2 + 0.3),
+      borderColor: ['#10b981','#06b6d4','#a855f7','#ec4899','#ef4444'][idx],
+      tension: 0.4, borderWidth: 2.5, pointRadius: 2
+    }))
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Sensitivity theo learning rate α', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { title: { display: true, text: 'Avg reward', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+const epsValues = [0.0, 0.10, 0.20, 0.30, 0.50];
+new Chart(document.getElementById('chartEpsilon'), {
+  type: 'line',
+  data: {
+    labels: Array.from({length: 30}, (_, i) => (i+1) * 100),
+    datasets: epsValues.map((e, idx) => ({
+      label: `ε = ${e}`,
+      data: smoothCurve(30, 2.5, [5.5, 8.0, 8.42, 8.20, 7.0][idx], 0.4),
+      borderColor: ['#ef4444','#06b6d4','#a855f7','#10b981','#f97316'][idx],
+      tension: 0.4, borderWidth: 2.5, pointRadius: 2
+    }))
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Sensitivity theo ε (exploration)', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { title: { display: true, text: 'Avg reward', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// CHART 11.4.4 - DP vs RL
+// =============================================================
+new Chart(document.getElementById('chartCompareDPRL'), {
+  type: 'bar',
+  data: {
+    labels: ['Optimal Reward', 'Time (s)', 'Memory (MB)', 'Convergence ep.', 'Robustness'],
+    datasets: [
+      { label: 'DP', data: [8.50, 0.5, 12, 100, 6], backgroundColor: '#a855f7', borderRadius: 6 },
+      { label: 'Q-learning', data: [8.42, 1.8, 3, 1850, 9], backgroundColor: '#06b6d4', borderRadius: 6 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'DP vs Q-learning trên 5 tiêu chí', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// PLAYGROUND 11.4.5 - LIVE Q-LEARNING IN BROWSER
+// =============================================================
+let Q = [[0,0,0],[0,0,0],[0,0,0]];
+let chartLive = null;
+let lastVals = [0.10, 0.95, 0.20, 1500];
+
+const REWARDS_MATRIX = [
+  // s0: Under   → tighten +good, hold 0, loosen -bad
+  [ 8, 4, -2 ],
+  // s1: Balanced → tighten -bit, hold +best, loosen -bit
+  [ 4, 10, 4 ],
+  // s2: Over    → tighten -bad, hold 0, loosen +good
+  [ -2, 4, 8 ]
+];
+
+const TRANSITION = [
+  // s0: Under → tighten→balanced, hold→under, loosen→under
+  [ 1, 0, 0 ],
+  [ 0, 1, 2 ],
+  [ 1, 2, 2 ]
+];
+
+function step(s, a) {
+  const r = REWARDS_MATRIX[s][a] + (Math.random() - 0.5) * 1.5;
+  const s_next = TRANSITION[s][a];
+  return [s_next, r];
+}
+
+function trainQLearning() {
+  const alpha = parseFloat(document.getElementById('pgAlpha').value);
+  const gamma = parseFloat(document.getElementById('pgGamma').value);
+  const epsStart = parseFloat(document.getElementById('pgEps').value);
+  const N = parseInt(document.getElementById('pgEpisodes').value);
+
+  Q = [[0,0,0],[0,0,0],[0,0,0]];
+  let eps = epsStart;
+  const rewardHistory = [];
+  const window = 50;
+  const recent = [];
+
+  const startTime = performance.now();
+
+  for (let ep = 0; ep < N; ep++) {
+    let s = Math.floor(Math.random() * 3);
+    let episodeReward = 0;
+    for (let t = 0; t < 30; t++) {
+      const a = Math.random() < eps ? Math.floor(Math.random() * 3) : argmax(Q[s]);
+      const [s_next, r] = step(s, a);
+      const td_target = r + gamma * Math.max(...Q[s_next]);
+      Q[s][a] += alpha * (td_target - Q[s][a]);
+      s = s_next;
+      episodeReward += r;
+    }
+    recent.push(episodeReward / 30);
+    if (recent.length > window) recent.shift();
+    if (ep % Math.max(1, Math.floor(N / 30)) === 0) {
+      rewardHistory.push(recent.reduce((s,v) => s+v, 0) / recent.length);
+    }
+    eps = Math.max(0.01, eps * 0.9995);
+  }
+
+  const elapsedMs = (performance.now() - startTime).toFixed(0);
+  const finalReward = rewardHistory[rewardHistory.length - 1];
+
+  // KPIs
+  document.getElementById('kpiReward').textContent = finalReward.toFixed(2);
+  document.getElementById('kpiEp').textContent = N;
+  const conv = finalReward > 7.5 ? '✓ Converged' : finalReward > 5 ? '⚠ Slow' : '✗ Failed';
+  document.getElementById('kpiConv').textContent = conv;
+  document.getElementById('kpiTime').textContent = elapsedMs;
+
+  // Live chart
+  if (chartLive) chartLive.destroy();
+  chartLive = new Chart(document.getElementById('chartLive'), {
+    type: 'line',
+    data: {
+      labels: rewardHistory.map((_, i) => Math.round((i+1) * N / rewardHistory.length)),
+      datasets: [{
+        label: 'Avg reward', data: rewardHistory,
+        borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.15)',
+        tension: 0.4, borderWidth: 3, pointRadius: 3, fill: true
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }},
+      scales: { x: { title: { display: true, text: 'Episode', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+                y: { title: { display: true, text: 'Avg reward', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+      animation: { duration: 600 }
+    }
+  });
+
+  // Q-table render
+  renderQTable();
+}
+
+function argmax(arr) {
+  let bestIdx = 0, best = -Infinity;
+  arr.forEach((v, i) => { if (v > best) { best = v; bestIdx = i; }});
+  return bestIdx;
+}
+
+function renderQTable() {
+  const stateLabels = ['s₁ Underregulated', 's₂ Balanced', 's₃ Overregulated'];
+  const actionLabels = ['Tighten ↑', 'Hold →', 'Loosen ↓'];
+  let html = '<div class="qtable">';
+  html += '<div class="qcell qhead">State \\ Action</div>';
+  actionLabels.forEach(a => html += `<div class="qcell qhead">${a}</div>`);
+  for (let s = 0; s < 3; s++) {
+    html += `<div class="qcell qrow-head">${stateLabels[s]}</div>`;
+    const maxQ = Math.max(...Q[s]);
+    for (let a = 0; a < 3; a++) {
+      const isMax = Q[s][a] === maxQ;
+      const bg = isMax ? 'rgba(16,185,129,0.3)' : 'rgba(168,85,247,0.15)';
+      const color = isMax ? '#10b981' : 'var(--text-1)';
+      html += `<div class="qcell" style="background:${bg};color:${color}">${Q[s][a].toFixed(2)}</div>`;
+    }
+  }
+  html += '</div>';
+  document.getElementById('qtableLive').innerHTML = html;
+
+  // Policy
+  const pol = Q.map(row => argmax(row));
+  const polNames = pol.map(p => ['Tighten ↑', 'Hold →', 'Loosen ↓'][p]);
+  document.getElementById('policyLive').innerHTML = `
+    <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+      <span class="policy-arrow">π(s₁)=${polNames[0]}</span>
+      <span class="policy-arrow">π(s₂)=${polNames[1]}</span>
+      <span class="policy-arrow">π(s₃)=${polNames[2]}</span>
+    </div>
+  `;
+}
+
+function resetQ() {
+  Q = [[0,0,0],[0,0,0],[0,0,0]];
+  document.getElementById('kpiReward').textContent = '—';
+  document.getElementById('kpiEp').textContent = '—';
+  document.getElementById('kpiConv').textContent = '—';
+  document.getElementById('kpiTime').textContent = '—';
+  if (chartLive) chartLive.destroy();
+  document.getElementById('qtableLive').innerHTML = '<p style="text-align:center;color:var(--text-3);padding:30px">Q-table chưa được khởi tạo. Click 🚀 Train.</p>';
+  document.getElementById('policyLive').innerHTML = 'Chưa train. Click 🚀 Train.';
+}
+
+function applyPreset11(name) {
+  let preset;
+  switch(name) {
+    case 'default':  preset = { alpha: 0.10, gamma: 0.95, eps: 0.20, ep: 1500 }; break;
+    case 'fast':     preset = { alpha: 0.30, gamma: 0.90, eps: 0.30, ep: 800 }; break;
+    case 'slow':     preset = { alpha: 0.05, gamma: 0.99, eps: 0.10, ep: 3000 }; break;
+    case 'explorer': preset = { alpha: 0.15, gamma: 0.95, eps: 0.40, ep: 2000 }; break;
+  }
+  document.getElementById('pgAlpha').value = preset.alpha;
+  document.getElementById('pgGamma').value = preset.gamma;
+  document.getElementById('pgEps').value = preset.eps;
+  document.getElementById('pgEpisodes').value = preset.ep;
+  updateLabels11();
+}
+
+function updateLabels11() {
+  const vals = [
+    { id: 'valAlpha', vid: 'pgAlpha', dec: 2 },
+    { id: 'valGamma', vid: 'pgGamma', dec: 2 },
+    { id: 'valEps',   vid: 'pgEps',   dec: 2 },
+    { id: 'valEpisodes', vid: 'pgEpisodes', dec: 0 }
+  ];
+  const curVals = vals.map((v, i) => {
+    const val = parseFloat(document.getElementById(v.vid).value);
+    document.getElementById(v.id).textContent = v.dec === 0 ? val : val.toFixed(v.dec);
+    if (val !== lastVals[i]) pulseBadge(v.id);
+    return val;
+  });
+  lastVals = curVals;
+}
+
+['pgAlpha','pgGamma','pgEps','pgEpisodes'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateLabels11);
+});
+
+setTimeout(() => {
+  updateLabels11();
+  resetQ();
+}, 600);
+setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }, 500);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

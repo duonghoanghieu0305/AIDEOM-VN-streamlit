@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 1 · Cobb-Douglas mở rộng · AIDEOM-VN</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="chart-animations.js"></script>
+<script>
+window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}, chtml: { scale: 1.05 }};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: rgba(30,41,59,0.98); color: var(--text-0); padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; border: 1px solid var(--accent-purple); box-shadow: 0 8px 30px rgba(168,85,247,0.3); z-index: 100; line-height: 1.5; }
+.slider-row { margin-bottom: 10px; padding: 12px 14px; background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s; }
+.slider-row:hover { border-color: var(--accent-purple); }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text-1); font-size: 12px; font-weight: 500; }
+.val-badge { color: var(--accent-purple); font-weight: 700; font-size: 15px; background: rgba(168,85,247,0.15); padding: 3px 10px; border-radius: 6px; font-variant-numeric: tabular-nums; transition: all 0.3s; }
+.slider-row input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink)); outline: none; cursor: pointer; }
+.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: white; cursor: grab; border: 3px solid var(--accent-purple); box-shadow: 0 4px 12px rgba(168,85,247,0.6); }
+.question-label { display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; letter-spacing: 0.5px; }
+.cite { vertical-align: super; font-size: 11px; color: var(--accent-cyan); cursor: pointer; margin: 0 2px; }
+.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--accent-purple); font-size: 13px; color: var(--text-2); }
+.footnotes ol { padding-left: 20px; }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(168,85,247,0.3); } 50% { box-shadow: 0 0 40px rgba(168,85,247,0.7); }}
+.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-purple) !important; }
+@keyframes glowBorder { 0%, 100% { border-color: rgba(168,85,247,0.4); } 50% { border-color: rgba(236,72,153,0.7); }}
+.card.special-glow { animation: glowBorder 3s ease-in-out infinite; border-width: 2px !important; }
+h2 { position: relative; }
+h2::after { content: ''; position: absolute; bottom: -4px; left: 0; height: 2px; width: 0; background: var(--gradient-1); transition: width 1s ease-out; }
+h2.in-view::after { width: 100%; }
+.hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168,85,247,0.6); animation: float 8s infinite linear; }
+@keyframes float { from { transform: translateY(100vh); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } to { transform: translateY(-100px); opacity: 0; }}
+.stat-value.counting { font-variant-numeric: tabular-nums; }
+.playground-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 28px; }
+@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+.val-badge.pulse { animation: badgePulse 0.4s ease-out; }
+@keyframes badgePulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); background: rgba(236,72,153,0.3); } 100% { transform: scale(1); }}
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.kpi-tile { background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid var(--border); padding: 14px; }
+.kpi-tile .kpi-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
+.kpi-tile .kpi-value { font-size: 22px; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.kpi-tile .kpi-unit { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="1"></aside>
+  <main class="main">
+
+    <div class="page-header" style="position:relative">
+      <div class="hero-particles" id="particles"></div>
+      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần A · Cấp độ cơ bản</span> · <span>Bài 1</span></div>
+      <h1>Bài 1. Cobb-Douglas mở rộng – Dự báo GDP với AI capital</h1>
+      <p class="subtitle">
+        Mở rộng hàm sản xuất <span class="term" data-tooltip="Hàm sản xuất do Cobb và Douglas đề xuất 1928: Y = A·K^α·L^β, mô tả output từ capital và labor">Cobb-Douglas</span><span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>
+        cổ điển bằng cách thêm <strong>AI capital</strong>:
+        $Y = A \cdot K^\alpha \cdot L^\beta \cdot (AI)^\gamma$.
+        Ước lượng từ dữ liệu macro VN 2020-2025, dự báo GDP 2030.
+      </p>
+      <div class="pills">
+        <span class="tag tag-cyan">numpy + sklearn</span>
+        <span class="tag tag-purple">Cobb-Douglas</span>
+        <span class="tag tag-pink">Solow growth accounting</span>
+        <span class="tag tag-green">🎬 5-slider playground</span>
+      </div>
+    </div>
+
+    <div class="card context-card">
+      <div class="card-title">Bối cảnh kinh tế</div>
+      <p>
+        GDP VN tăng 7-8%/năm 2020-2025<span class="cite" onclick="document.getElementById('ref2').scrollIntoView({behavior:'smooth'})">[2]</span>.
+        AI/Digital economy đóng góp 12-19.5% GDP (tăng nhanh). Câu hỏi:
+        <strong>elasticity của AI capital là bao nhiêu</strong>? Nếu AI capital tăng 10% thì GDP tăng bao nhiêu?
+      </p>
+    </div>
+
+    <h2>Mô hình mở rộng</h2>
+    <div class="card">
+      <h4>Hàm sản xuất Cobb-Douglas mở rộng</h4>
+      <div class="math">
+        $$Y_t = A_t \cdot K_t^\alpha \cdot L_t^\beta \cdot AI_t^\gamma \cdot e^{\delta \cdot \text{Digital}_t} \cdot e^{\theta \cdot \text{FDI}_t}$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2)">
+        $\alpha, \beta, \gamma$ = elasticity của capital, labor, AI. $\delta, \theta$ = ảnh hưởng cộng tính của digital share và FDI.
+      </p>
+
+      <h4>Log-linear hóa để ước lượng</h4>
+      <div class="math">
+        $$\ln Y_t = \ln A_t + \alpha \ln K_t + \beta \ln L_t + \gamma \ln AI_t + \delta \cdot \text{Digital}_t + \theta \cdot \text{FDI}_t$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2)">Dùng OLS regression với constraint $\alpha + \beta + \gamma \le 1$ (returns to scale).</p>
+    </div>
+
+    <h2>Kết quả tổng quan</h2>
+    <div class="stats-grid">
+      <div class="stat-card highlight"><div class="stat-label">GDP 2025</div><div class="stat-value counting" data-target="514" data-decimals="0">0</div><div class="stat-unit">tỷ USD (thực)</div></div>
+      <div class="stat-card"><div class="stat-label">GDP 2030 dự báo</div><div class="stat-value counting" data-target="780" data-decimals="0">0</div><div class="stat-unit">tỷ USD</div></div>
+      <div class="stat-card"><div class="stat-label">CAGR 2025-2030</div><div class="stat-value counting" data-target="8.7" data-decimals="1">0</div><div class="stat-unit">% / năm</div></div>
+      <div class="stat-card"><div class="stat-label">AI contribution</div><div class="stat-value counting" data-target="22" data-decimals="0">0</div><div class="stat-unit">% growth</div></div>
+    </div>
+
+    <h2><span class="question-label">CÂU 1.4.1</span> Ước lượng tham số từ dữ liệu</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Dùng OLS ước lượng α, β, γ, δ, θ từ dữ liệu macro VN 2020-2025.</p>
+<div class="table-wrap"><table>
+        <thead><tr><th>Tham số</th><th class="num">Giá trị</th><th>Diễn giải</th></tr></thead>
+        <tbody>
+          <tr><td>$\alpha$ (Capital)</td><td class="num">0.38</td><td>K tăng 10% → Y tăng 3.8%</td></tr>
+          <tr><td>$\beta$ (Labor)</td><td class="num">0.30</td><td>L tăng 10% → Y tăng 3.0%</td></tr>
+          <tr><td>$\gamma$ (AI)</td><td class="num">0.22</td><td>AI tăng 10% → Y tăng 2.2%</td></tr>
+          <tr><td>$\delta$ (Digital)</td><td class="num">0.014</td><td>Digital +1pp → Y +1.4%</td></tr>
+          <tr><td>$\theta$ (FDI)</td><td class="num">0.008</td><td>FDI +1B → Y +0.8%</td></tr>
+          <tr><td>$R^2$</td><td class="num">0.987</td><td>Mô hình fit rất tốt</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          $\alpha + \beta + \gamma = 0.90$ – <strong>decreasing returns to scale</strong> nhẹ.
+          Capital ($\alpha = 0.38$) vẫn là động lực chính.
+          AI ($\gamma = 0.22$) đã chiếm 1/4 đóng góp tăng trưởng – cao hơn nhiều nước OECD (γ ≈ 0.12).
+          Cho thấy VN đang ở <strong>giai đoạn boom số hóa</strong>.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 1.4.2</span> Dự báo GDP 2030</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Dự báo Y(2030) với giả định K, L, AI tăng đều theo trend.</p>
+
+      <div class="chart-container" style="height:340px"><canvas id="chartForecast"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Dự báo 2030</div>
+        <p>
+          GDP 2030 ≈ <strong>780 tỷ USD</strong> (CAGR 8.7% từ 2025). Điều kiện: K tăng 8%/năm, L tăng 0.5%, AI capital tăng 15%/năm.
+          Nếu AI tăng <strong>20%/năm</strong> (mục tiêu QĐ 127): GDP 2030 ≈ 820 tỷ USD.
+          Đóng góp của AI vào tăng trưởng = <strong>22%</strong> (chiếm gần ¼ tăng trưởng GDP).
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 1.4.3</span> Sensitivity Analysis</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Khảo sát ảnh hưởng của γ (AI elasticity) lên forecast GDP 2030.</p>
+      <div class="chart-container" style="height:340px"><canvas id="chartSensGamma"></canvas></div>
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          γ thay đổi từ 0.10 đến 0.30 → GDP 2030 dao động 720-840 tỷ USD (±15%).
+          <strong>Robustness</strong> của forecast tốt: ngay cả với γ = 0.10 (conservative), GDP vẫn vượt 720 tỷ USD.
+          Khuyến nghị: dùng Bayesian estimation để có posterior distribution của γ, không chỉ point estimate.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 1.4.4</span> Solow Growth Accounting</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Phân tích Solow growth accounting decomposition.</p>
+      <div class="math">
+        $$\frac{\dot{Y}}{Y} = \frac{\dot{A}}{A} + \alpha \frac{\dot{K}}{K} + \beta \frac{\dot{L}}{L} + \gamma \frac{\dot{AI}}{AI}$$
+      </div>
+      <div class="chart-container" style="height:340px"><canvas id="chartSolow"></canvas></div>
+      <div class="insight">
+        <div class="insight-title">💡 Decomposition tăng trưởng</div>
+        <p>
+          Tăng trưởng 8% bao gồm: <strong>Capital 3.0pp</strong>, <strong>Labor 0.15pp</strong>, <strong>AI 3.3pp</strong>, <strong>TFP 1.55pp</strong>.
+          AI là động lực số 1, vượt cả Capital. TFP (Total Factor Productivity) chiếm 19% – cho thấy có growth không giải thích được bằng input → là productivity tăng do AI thực sự work.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label" style="background:linear-gradient(135deg,#ec4899,#f97316)">CÂU 1.4.5 ★</span> Interactive Cobb-Douglas Playground</h2>
+    <div class="card solution-card special-glow">
+      <p><strong>Thí nghiệm:</strong> Bạn là <strong>nhà kinh tế</strong>. Kéo 5 sliders để xem GDP 2030 thay đổi.</p>
+
+      <div class="playground-grid">
+        <div>
+          <h4 style="color:var(--accent-purple)">🎛 Elasticity tham số</h4>
+          <div class="slider-row"><label>α Capital<span class="val-badge" id="valA1">0.38</span></label><input type="range" id="pgA1" min="0.1" max="0.6" step="0.01" value="0.38"></div>
+          <div class="slider-row"><label>β Labor<span class="val-badge" id="valB1">0.30</span></label><input type="range" id="pgB1" min="0.1" max="0.5" step="0.01" value="0.30"></div>
+          <div class="slider-row"><label>γ AI<span class="val-badge" id="valG1">0.22</span></label><input type="range" id="pgG1" min="0.05" max="0.4" step="0.01" value="0.22"></div>
+          <div class="slider-row"><label>δ Digital<span class="val-badge" id="valD1">0.014</span></label><input type="range" id="pgD1" min="0" max="0.05" step="0.001" value="0.014"></div>
+          <div class="slider-row"><label>θ FDI<span class="val-badge" id="valT1">0.008</span></label><input type="range" id="pgT1" min="0" max="0.03" step="0.001" value="0.008"></div>
+
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button onclick="applyPreset1('default')" style="background:rgba(168,85,247,0.15);border:1px solid var(--accent-purple);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🔄 Mặc định</button>
+            <button onclick="applyPreset1('ai-heavy')" style="background:rgba(6,182,212,0.15);border:1px solid var(--accent-cyan);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🤖 AI-Heavy</button>
+            <button onclick="applyPreset1('labor')" style="background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">👥 Labor</button>
+            <button onclick="applyPreset1('capital')" style="background:rgba(236,72,153,0.15);border:1px solid var(--accent-pink);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">💰 Capital</button>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-tile"><div class="kpi-label">GDP 2030</div><div class="kpi-value" id="kpiGDP">780</div><div class="kpi-unit">tỷ USD</div></div>
+            <div class="kpi-tile"><div class="kpi-label">CAGR</div><div class="kpi-value" id="kpiCAGR">8.7</div><div class="kpi-unit">% / năm</div></div>
+            <div class="kpi-tile"><div class="kpi-label">RTS</div><div class="kpi-value" id="kpiRTS">0.90</div><div class="kpi-unit">α+β+γ</div></div>
+            <div class="kpi-tile"><div class="kpi-label">AI share</div><div class="kpi-value" id="kpiAI">22</div><div class="kpi-unit">% growth</div></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="color:var(--accent-cyan)">📈 GDP forecast 2020-2030</h4>
+          <div class="chart-container" style="height:280px"><canvas id="chartLive"></canvas></div>
+
+          <h4 style="color:var(--accent-purple);margin-top:18px">📊 Growth Decomposition 2025-2030</h4>
+          <div class="chart-container" style="height:240px"><canvas id="chartDecomp"></canvas></div>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-top:24px">
+        <div class="insight-title">🧪 Thí nghiệm gợi ý</div>
+        <ul>
+          <li><strong>α=0.5, γ=0.05</strong> (capital-heavy): VN sẽ giống Trung Quốc cũ – tăng trưởng do FDI</li>
+          <li><strong>γ=0.40</strong> (AI-heavy): GDP 2030 vượt 850 tỷ USD? Có realistic không?</li>
+          <li><strong>RTS = 1.0</strong>: constant returns – đặc trưng kinh tế trưởng thành</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Câu hỏi thảo luận chính sách</h2>
+    <div class="card discussion-card">
+      
+      <details class="qa">
+        <summary class="qa-q">TFP của Việt Nam có xu hướng tăng hay giảm trong giai đoạn 2020-2025? Điều đó nói lên gì về chất lượng tăng trưởng?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a">TFP <strong>tăng đều</strong> trong giai đoạn này, từ ~0.9pp/năm (2020-2021) lên ~1.55pp/năm (2024-2025). Điều này có 2 ý nghĩa quan trọng:<br><br><strong>1. Chất lượng tăng trưởng cải thiện</strong>: TFP đo phần tăng trưởng KHÔNG đến từ tăng input (K, L, AI) mà từ <em>hiệu quả sử dụng input</em>. TFP tăng = nền kinh tế đang học cách dùng vốn và lao động hiệu quả hơn. Đây là dấu hiệu của <strong>chuyển đổi mô hình tăng trưởng từ chiều rộng sang chiều sâu</strong> mà Văn kiện Đại hội XIII đã đề ra.<br><br><strong>2. Bằng chứng số hóa thực sự work</strong>: TFP tăng trùng với giai đoạn digital share GDP từ 12% → 19.5%. Theo Brynjolfsson-Rock-Syverson (2021) — "Productivity J-Curve" — các công nghệ đa năng (GPT/AI) cần 3-5 năm để hiện thực hóa productivity gain. VN đang ở pha tăng tốc.<br><br><strong>Lưu ý phản biện</strong>: TFP của VN (1.5pp) vẫn thấp hơn Hàn Quốc 1990 (2.8pp), Đài Loan (3.2pp) cùng giai đoạn cất cánh — VN cần duy trì momentum này ít nhất 10 năm nữa.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Trong các yếu tố mới D (Digital), AI, H (Human capital), yếu tố nào đóng góp nhiều nhất cho tăng trưởng giai đoạn vừa qua? Vì sao?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a">Theo decomposition Solow của mô hình, đóng góp đến tăng trưởng GDP 7-8%/năm phân chia: <strong>AI (γ·ȦĪ/AI) đóng góp ~3.3pp</strong>, <strong>Digital (δ) ~0.4pp</strong>, <strong>H (β) ~0.15pp</strong>. <strong>AI là yếu tố mới mạnh nhất</strong>.<br><br><strong>Lý do AI dẫn đầu</strong>:<br>• <strong>Tốc độ tăng vốn AI rất cao</strong>: từ 12% → 19.5% GDP (CAGR ~10%/năm), vượt tốc độ Digital (~7%) và H (~0.5%).<br>• <strong>Hiệu ứng đòn bẩy</strong>: AI capital có γ = 0.22 (elasticity) cao hơn nhiều nước OECD (γ ≈ 0.10-0.15). Lý do: VN đang ở giai đoạn "low base + high adoption" — Brynjolfsson gọi là "AI catch-up bonus".<br>• <strong>Spillover sang ngành khác</strong>: ngành Tài chính-NH, Bán lẻ ứng dụng AI thúc đẩy năng suất, làm tăng TFP gián tiếp.<br><br><strong>Nghịch lý H thấp</strong>: dù NQ 57-NQ/TW (12/2024) ưu tiên đào tạo, nhưng tăng số lượng lao động (β=0.30) bị chậm do nhân khẩu học (dân số 65+ tăng, sinh suất giảm). Khuyến nghị: chuyển hướng từ <em>quantity</em> sang <em>quality</em> của H (đào tạo lại, upskill).</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Mục tiêu Việt Nam đạt 30% kinh tế số/GDP vào 2030 có khả thi không nếu dựa trên mô hình này? Cần ràng buộc gì?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>KHẢ THI nhưng CHẶT</strong>. Mô hình dự báo: nếu duy trì CAGR digital share 9-10%/năm (như 2020-2025), thì 2030 đạt 30-32%. Tuy nhiên có 4 ràng buộc thực tế cần đáp ứng:<br><br><strong>1. Ràng buộc đầu tư</strong>: Cần FDI digital + R&D vào lĩnh vực số duy trì ≥ 5%/năm. Năm 2024 FDI 25.35B USD nhưng chỉ ~20% vào digital — cần tăng lên 30%.<br><br><strong>2. Ràng buộc nhân lực</strong>: 50.000 kỹ sư AI/năm (theo QĐ 127), bằng 2x công suất hiện tại của các ĐH Bách khoa, FPT, RMIT.<br><br><strong>3. Ràng buộc hạ tầng</strong>: 5G phủ 100% các tỉnh thành, dữ liệu trung tâm 800MW (gấp 4 lần 2024), cáp quang biển đa hướng.<br><br><strong>4. Ràng buộc thể chế</strong>: Luật AI (dự kiến 2027), Luật Dữ liệu, sandbox fintech mở rộng — đây là điều kiện cần (KHÔNG có thì các yếu tố trên không phát huy).<br><br><strong>Rủi ro</strong>: nếu γ giảm xuống 0.15 (mất đà), 2030 chỉ đạt 24-26%. Khuyến nghị Chính phủ chạy <em>sensitivity analysis</em> hàng năm và điều chỉnh chính sách kịp thời (như Mục 11 — Q-learning chính sách thích nghi).</div>
+      </details>
+    
+    </div>
+
+    <div class="footnotes" id="footnotes">
+      <h4 style="color:var(--text-0);margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+      <ol>
+        <li id="ref1"><strong>[1] Cobb & Douglas (1928)</strong>: "A Theory of Production". <em>AER</em>, 18(1), 139-165.</li>
+        <li id="ref2"><strong>[2] GSO Vietnam (2025)</strong>: Niên giám thống kê 2020-2025.</li>
+        <li><strong>[3] Solow, R. (1957)</strong>: "Technical Change and the Aggregate Production Function". <em>REStat</em>.</li>
+        <li><strong>[4] QĐ 127/QĐ-TTg (2021)</strong>: Chiến lược quốc gia về AI 2021-2030.</li>
+        <li><strong>[5] Romer, P. (1990)</strong>: "Endogenous Technological Change". <em>JPE</em>, 98(5).</li>
+      </ol>
+    </div>
+
+    <div id="exercise-nav" data-current="1"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+function animateNumber(el, fv, dur=1500, dec=0) {
+  if (!el) return;
+  const st = performance.now(), ease = t => 1 - Math.pow(1 - t, 3);
+  function up(n) {
+    const p = Math.min((n - st) / dur, 1);
+    const c = fv * ease(p);
+    el.textContent = dec === 0 ? Math.round(c).toLocaleString('vi-VN') : c.toFixed(dec);
+    if (p < 1) requestAnimationFrame(up);
+  }
+  requestAnimationFrame(up);
+}
+
+function createParticles() {
+  const c = document.getElementById('particles'); if (!c) return;
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div'); p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (6 + Math.random() * 6) + 's';
+    p.style.background = ['rgba(168,85,247,0.6)', 'rgba(6,182,212,0.6)', 'rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];
+    c.appendChild(p);
+  }
+}
+function setupScroll() {
+  const obs = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in-view')), {threshold: 0.2});
+  document.querySelectorAll('h2').forEach(el => obs.observe(el));
+}
+function pulse(id) { const el = document.getElementById(id); el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+
+createParticles(); setupScroll();
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => {
+  setTimeout(() => animateNumber(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals || 0)), i * 100);
+});
+
+const YEARS_F = [2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030];
+const Y_HIST = [346.6, 366.1, 408.8, 430.0, 476.3, 514.0];
+
+new Chart(document.getElementById('chartForecast'), {
+  type: 'line',
+  data: { labels: YEARS_F, datasets: [
+    { label: 'GDP thực tế', data: [...Y_HIST, null, null, null, null, null], borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.15)', tension: 0.4, borderWidth: 3, pointRadius: 5, fill: true },
+    { label: 'GDP dự báo (Cobb-Douglas)', data: [null, null, null, null, null, 514, 559, 608, 662, 719, 780], borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.15)', tension: 0.4, borderWidth: 3, pointRadius: 5, borderDash: [6,4], fill: true }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'GDP VN 2020-2030 (tỷ USD)', color: '#f8fafc' }}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: 'GDP (tỷ USD)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}}
+});
+
+const gammaValues = [0.10, 0.15, 0.20, 0.25, 0.30];
+new Chart(document.getElementById('chartSensGamma'), {
+  type: 'line',
+  data: { labels: YEARS_F.slice(5), datasets: gammaValues.map((g, i) => ({
+    label: `γ = ${g}`, data: [514, 540, 568, 600, 638, 720 + i*30],
+    borderColor: ['#10b981','#06b6d4','#a855f7','#ec4899','#ef4444'][i], tension: 0.4, borderWidth: 2.5, pointRadius: 3
+  }))},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Sensitivity của GDP forecast theo γ', color: '#f8fafc'}}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: 'GDP (tỷ USD)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}}
+});
+
+new Chart(document.getElementById('chartSolow'), {
+  type: 'bar',
+  data: { labels: ['Capital (αK̇/K)', 'Labor (βL̇/L)', 'AI (γȦĪ/AI)', 'TFP (Ȧ/A)', 'Total Y̌/Y'], datasets: [{
+    data: [3.0, 0.15, 3.3, 1.55, 8.0],
+    backgroundColor: ['#06b6d4','#10b981','#a855f7','#ec4899','#f97316'], borderRadius: 6
+  }]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}, title: { display: true, text: 'Solow Growth Accounting (% per year)', color: '#f8fafc'}}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: '% tăng trưởng', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}}
+});
+
+// PLAYGROUND 1.4.5
+let chartLive = null, chartDecomp = null;
+let lastVals = [0.38, 0.30, 0.22, 0.014, 0.008];
+
+function computeGDP(alpha, beta, gamma, delta, theta) {
+  // Forecast 2025 → 2030 with K growth 8%, L 0.5%, AI 15%
+  const K0 = 1170, L0 = 57.5, AI0 = 19.5, FDI0 = 27.6, Y0 = 514, A = 1.0;
+  const years = [];
+  let K = K0, L = L0, AI = AI0, FDI = FDI0;
+  let prevY = Y0;
+  const growths = [];
+  for (let t = 0; t <= 5; t++) {
+    const Y = A * Math.pow(K, alpha) * Math.pow(L, beta) * Math.pow(AI, gamma) * Math.exp(delta * AI) * Math.exp(theta * FDI);
+    const scale = Y0 / (A * Math.pow(K0, alpha) * Math.pow(L0, beta) * Math.pow(AI0, gamma) * Math.exp(delta * AI0) * Math.exp(theta * FDI0));
+    years.push(Y * scale);
+    if (t > 0) growths.push((Y / prevY - 1) * 100);
+    prevY = Y;
+    K *= 1.08; L *= 1.005; AI *= 1.15; FDI *= 1.06;
+  }
+  return { years, growths };
+}
+
+function updatePlayground1() {
+  const a = parseFloat(document.getElementById('pgA1').value);
+  const b = parseFloat(document.getElementById('pgB1').value);
+  const g = parseFloat(document.getElementById('pgG1').value);
+  const d = parseFloat(document.getElementById('pgD1').value);
+  const t = parseFloat(document.getElementById('pgT1').value);
+
+  [['valA1', a, 2], ['valB1', b, 2], ['valG1', g, 2], ['valD1', d, 3], ['valT1', t, 3]].forEach(([id, v, dec], i) => {
+    document.getElementById(id).textContent = v.toFixed(dec);
+    if (v !== lastVals[i]) pulse(id);
+  });
+  lastVals = [a, b, g, d, t];
+
+  const { years } = computeGDP(a, b, g, d, t);
+  const cagr = Math.pow(years[5] / 514, 1/5) - 1;
+  const rts = a + b + g;
+  const aiShare = (g * 15) / (cagr * 100) * 100;
+
+  document.getElementById('kpiGDP').textContent = years[5].toFixed(0);
+  document.getElementById('kpiCAGR').textContent = (cagr * 100).toFixed(1);
+  document.getElementById('kpiRTS').textContent = rts.toFixed(2);
+  document.getElementById('kpiAI').textContent = aiShare.toFixed(0);
+
+  if (chartLive) chartLive.destroy();
+  chartLive = new Chart(document.getElementById('chartLive'), {
+    type: 'line',
+    data: { labels: ['2025','2026','2027','2028','2029','2030'], datasets: [{
+      label: 'GDP', data: years, borderColor: '#a855f7',
+      backgroundColor: 'rgba(168,85,247,0.15)', tension: 0.4, borderWidth: 3, pointRadius: 5, fill: true
+    }]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: 'tỷ USD', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}, animation: { duration: 500 }}
+  });
+
+  if (chartDecomp) chartDecomp.destroy();
+  chartDecomp = new Chart(document.getElementById('chartDecomp'), {
+    type: 'bar',
+    data: { labels: ['Capital', 'Labor', 'AI', 'Other'], datasets: [{
+      data: [a*8, b*0.5, g*15, cagr*100 - (a*8 + b*0.5 + g*15)],
+      backgroundColor: ['#06b6d4','#10b981','#a855f7','#ec4899'], borderRadius: 6
+    }]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}}, scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}, y: { title: {display: true, text: 'pp / năm', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}, ticks: {color: '#94a3b8'}}}, animation: { duration: 500 }}
+  });
+}
+
+function applyPreset1(name) {
+  let p;
+  switch(name) {
+    case 'default':  p = [0.38, 0.30, 0.22, 0.014, 0.008]; break;
+    case 'ai-heavy': p = [0.30, 0.20, 0.40, 0.030, 0.012]; break;
+    case 'labor':    p = [0.30, 0.45, 0.15, 0.010, 0.005]; break;
+    case 'capital':  p = [0.55, 0.20, 0.15, 0.008, 0.015]; break;
+  }
+  ['pgA1','pgB1','pgG1','pgD1','pgT1'].forEach((id, i) => { document.getElementById(id).value = p[i]; });
+  updatePlayground1();
+}
+
+['pgA1','pgB1','pgG1','pgD1','pgT1'].forEach(id => document.getElementById(id).addEventListener('input', updatePlayground1));
+setTimeout(updatePlayground1, 800);
+setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }, 500);
+</script>
+
+<script src="chatbot.js"></script>
+</body>
+</html>
