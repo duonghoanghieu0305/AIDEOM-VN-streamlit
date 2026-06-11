@@ -19,22 +19,286 @@ window.MathJax = {
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 <style>
-.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
-.term:hover::after {
-  content: attr(data-tooltip);
-  position: absolute; bottom: 100%; left: 50%;
-  transform: translateX(-50%) translateY(-8px);
-  background: rgba(30, 41, 59, 0.98); color: var(--text-0);
-  padding: 10px 14px; border-radius: 8px; font-size: 13px;
-  font-weight: normal; width: 300px;
-  border: 1px solid var(--accent-purple);
-  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.3);
-  z-index: 100; line-height: 1.5;
+/* =============================================================
+   EXECUTIVE CLEAN SLATE INTERNAL STYLE - BÀI 10
+   ============================================================= */
+.term { border-bottom: 1px dashed var(--color-primary); cursor: help; position: relative; font-weight: 600; color: var(--color-primary); }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: var(--text-main); color: var(--bg-card); padding: 8px 12px; border-radius: 6px; font-size: 12px; width: 300px; z-index: 100; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); line-height: 1.5; }
+.slider-row { margin-bottom: 12px; padding: 16px; background: var(--bg-surface); border-radius: 8px; border: 1px solid var(--border-color); }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: var(--text-main); font-size: 13px; font-weight: 600; }
+.val-badge { color: var(--color-primary); font-weight: 700; font-size: 14px; background: var(--bg-card); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border-color); }
+.slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--border-color); outline: none; }
+.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); cursor: grab; }
+.question-label { display: inline-block; background: rgba(30, 64, 175, 0.1); color: var(--color-primary); border: 1px solid rgba(30, 64, 175, 0.2); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
+.stat-value.counting { font-variant-numeric: tabular-nums; }
+
+.playground-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px; }
+@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+
+/* Thẻ kịch bản sáng màu */
+.scenario-tree { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; margin: 18px 0; }
+.scenario-card { padding: 16px 14px; background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 12px; text-align: center; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.scenario-card.s-low    { border-top-color: #047857; }
+.scenario-card.s-mid    { border-top-color: #1e40af; }
+.scenario-card.s-high   { border-top-color: #b45309; }
+.scenario-card.s-crisis { border-top-color: #9f1239; }
+.scenario-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05); border-color: var(--color-primary); }
+.scenario-card .sc-icon { font-size: 22px; margin-bottom: 4px; }
+.scenario-card .sc-name { font-weight: 700; font-size: 13px; color: var(--text-main); }
+.scenario-card .sc-prob { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); margin: 4px 0; }
+.scenario-card .sc-stats { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: var(--text-body); }
+.scenario-card .sc-stat-val { font-weight: 700; color: var(--color-primary); font-variant-numeric: tabular-nums; }
+
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.kpi-tile { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.kpi-tile .kpi-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+.kpi-tile .kpi-value { font-size: 22px; font-weight: 800; color: var(--color-primary); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.kpi-tile .kpi-unit { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+.recourse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+.recourse-tile { padding: 12px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); font-size: 12px; }
+.recourse-tile.r-low { border-left: 4px solid #047857; }
+.recourse-tile.r-mid { border-left: 4px solid #1e40af; }
+.recourse-tile.r-high { border-left: 4px solid #b45309; }
+.recourse-tile .rec-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+.recourse-tile .rec-value { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-main); font-weight: 700; margin-top: 4px; }
+.preset-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-body); cursor: pointer; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+.preset-btn:hover { background: var(--bg-surface); border-color: var(--color-primary); color: var(--color-primary); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="10"></aside>
+  <main class="main">
+
+    <div class="page-header">
+      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần C · Cấp độ khó</span> · <span>Bài 10</span></div>
+      <h1>Bài 10. Stochastic 2-stage – Đầu tư AI dưới bất định</h1>
+      <p class="subtitle">
+        Năm 2025 quyết định ngân sách, nhưng <strong>tốc độ adoption AI chưa biết</strong>.
+        Sử dụng <span class="term" data-tooltip="Quy hoạch ngẫu nhiên 2 giai đoạn: stage 1 quyết định trước, stage 2 điều chỉnh recourse">stochastic 2-stage</span>
+        + <span class="term" data-tooltip="Tối thiểu hối tiếc tối đa trong tình huống xấu nhất (worst-case)">robust optimization</span> để ra quyết định an toàn.
+      </p>
+      <div class="pills">
+        <span class="tag">Pyomo + SAA</span>
+        <span class="tag">2-stage SP</span>
+        <span class="tag">EVPI · VSS</span>
+      </div>
+    </div>
+
+    <div class="card context-card">
+      <div class="card-title">Bối cảnh chính sách</div>
+      <p>3 kịch bản với xác suất: <strong>Chậm (30%)</strong>, <strong>Trung bình (50%)</strong>, <strong>Nhanh (20%)</strong>. Giai đoạn 1: quyết định ngân sách $x$. Giai đoạn 2: sau khi quan sát kịch bản, điều chỉnh $y_s$ (recourse).</p>
+    </div>
+
+    <h2>Mô hình 2-stage Stochastic</h2>
+    <div class="card">
+      <h4>Tổng quát dạng SAA (Sample Average Approximation)</h4>
+      <div class="math">
+        $$\min_{x, y_s} \ c^T x + \sum_{s=1}^{S} p_s \cdot q_s^T y_s$$
+      </div>
+      
+      <h4>3 kịch bản tốc độ AI adoption</h4>
+      <div class="scenario-tree">
+        <div class="scenario-card s-low">
+          <div class="sc-icon">🐢</div><div class="sc-name">Chậm</div><div class="sc-prob">p₁ = 0.30</div>
+          <div class="sc-stats"><div>Risk:<br><span class="sc-stat-val">8.6M</span></div><div>GDP:<br><span class="sc-stat-val">380K</span></div></div>
+        </div>
+        <div class="scenario-card s-mid">
+          <div class="sc-icon">⚖</div><div class="sc-name">Trung bình</div><div class="sc-prob">p₂ = 0.50</div>
+          <div class="sc-stats"><div>Risk:<br><span class="sc-stat-val">12.3M</span></div><div>GDP:<br><span class="sc-stat-val">425K</span></div></div>
+        </div>
+        <div class="scenario-card s-high">
+          <div class="sc-icon">🚀</div><div class="sc-name">Nhanh</div><div class="sc-prob">p₃ = 0.20</div>
+          <div class="sc-stats"><div>Risk:<br><span class="sc-stat-val">18.5M</span></div><div>GDP:<br><span class="sc-stat-val">510K</span></div></div>
+        </div>
+        <div class="scenario-card s-crisis">
+          <div class="sc-icon">⚠</div><div class="sc-name">Crisis*</div><div class="sc-prob">p₄ = 0.05 *</div>
+          <div class="sc-stats"><div>Risk:<br><span class="sc-stat-val">24M</span></div><div>GDP:<br><span class="sc-stat-val">280K</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Kết quả tổng quan</h2>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Expected Cost</div><div class="stat-value counting" data-target="9.85" data-decimals="2">0</div><div class="stat-unit">nghìn tỷ VND</div></div>
+      <div class="stat-card"><div class="stat-label">EVPI</div><div class="stat-value counting" data-target="0.42" data-decimals="2">0</div><div class="stat-unit">value of perfect info</div></div>
+      <div class="stat-card"><div class="stat-label">VSS</div><div class="stat-value counting" data-target="1.23" data-decimals="2">0</div><div class="stat-unit">value of stochastic sol</div></div>
+      <div class="stat-card"><div class="stat-label">Robust gap</div><div class="stat-value counting" data-target="0.65" data-decimals="2">0</div><div class="stat-unit">vs minimax cost</div></div>
+    </div>
+
+    <h2><span class="question-label">CÂU 10.4.1</span> Cài đặt 2-stage stochastic với Pyomo</h2>
+    <div class="card solution-card">
+      <div class="chart-container" style="height:340px"><canvas id="chartStages"></canvas></div>
+    </div>
+
+    <h2><span class="question-label">CÂU 10.4.2</span> EVPI và CÂU 10.4.3 VSS</h2>
+    <div class="card solution-card">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+        <div class="chart-container" style="height:280px"><canvas id="chartEVPI"></canvas></div>
+        <div class="chart-container" style="height:280px"><canvas id="chartVSS"></canvas></div>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 10.4.4</span> Robust Optimization (Minimax Regret)</h2>
+    <div class="card solution-card">
+      <div class="chart-container" style="height:340px"><canvas id="chartRobust"></canvas></div>
+    </div>
+
+    <h2><span class="question-label">CÂU 10.4.5 ★</span> Scenario Probability Explorer</h2>
+    <div class="card solution-card">
+      <div class="playground-grid">
+        <div>
+          <h4 style="color:var(--color-primary)">🎛 Phân phối xác suất kịch bản</h4>
+          <div class="slider-row"><label>🐢 P(Chậm)<span class="val-badge" id="valP1">0.30</span></label><input type="range" id="pgP1" min="0" max="1" step="0.05" value="0.30"></div>
+          <div class="slider-row"><label>⚖ P(Trung bình)<span class="val-badge" id="valP2">0.50</span></label><input type="range" id="pgP2" min="0" max="1" step="0.05" value="0.50"></div>
+          <div class="slider-row"><label>🚀 P(Nhanh)<span class="val-badge" id="valP3">0.20</span></label><input type="range" id="pgP3" min="0" max="1" step="0.05" value="0.20"></div>
+
+          <div id="sumWarn10" style="padding:10px;border-radius:8px;margin-top:10px;background:rgba(4, 120, 87, 0.05);border:1px solid #047857;color:#047857;font-weight:600;text-align:center;font-size:13px">
+            Σ = <span id="sumValue10">1.00</span> ✓
+          </div>
+
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="preset-btn" onclick="applyPreset10('default')">🔄 Mặc định</button>
+            <button class="preset-btn" onclick="applyPreset10('pessimist')">😨 Bi quan</button>
+            <button class="preset-btn" onclick="applyPreset10('optimist')">😊 Lạc quan</button>
+            <button class="preset-btn" onclick="applyPreset10('uniform')">⚖ Đều</button>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-tile"><div class="kpi-label">Expected Cost</div><div class="kpi-value" id="kpiExpCost">9.85</div><div class="kpi-unit">nghìn tỷ VND</div></div>
+            <div class="kpi-tile"><div class="kpi-label">VSS</div><div class="kpi-value" id="kpiVSS">1.23</div><div class="kpi-unit">savings vs det</div></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="color:var(--color-primary)">📊 Phân bổ Stage 1 vs Recourse</h4>
+          <div class="chart-container" style="height:280px"><canvas id="chartStageLive"></canvas></div>
+
+          <h4 style="color:var(--color-primary);margin-top:18px">🎯 Stage 2 Recourse mỗi kịch bản</h4>
+          <div class="recourse-grid" id="recourseLive"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="exercise-nav" data-current="10"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+Chart.defaults.color = '#64748b';
+function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
+  if (!element) return;
+  const start = 0; const startTime = performance.now(); const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  function update(now) {
+    const p = Math.min((now - startTime) / duration, 1);
+    const current = start + (finalValue - start) * easeOutCubic(p);
+    element.textContent = (decimals === 0 ? Math.round(current).toLocaleString('vi-VN') : current.toFixed(decimals)) + suffix;
+    if (p < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
 }
-.slider-row { margin-bottom: 10px; padding: 12px 14px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s; }
-.slider-row:hover { border-color: var(--accent-purple); transform: translateX(2px); }
-.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text-1); font-size: 12px; font-weight: 500; }
-.slider-row label .val-badge {
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => setTimeout(() => animateNumber(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals||0)), i * 100));
+
+const SCENARIOS = [
+  { name: 'Chậm',     icon: '🐢', mul: 0.70, det_cost: 7.20 },
+  { name: 'Trung bình', icon: '⚖', mul: 1.00, det_cost: 9.40 },
+  { name: 'Nhanh',    icon: '🚀', mul: 1.50, det_cost: 13.80 }
+];
+const SECTORS_LABELS = ['NN', 'SX', 'BL', 'TC', 'IT', 'GD', 'YT', 'VT'];
+const STAGE1_BASE = [580, 1450, 320, 1180, 1250, 480, 720, 520];
+const STAGE2_SLOW = [50, 100, 30, 80, 100, 40, 60, 40];
+const STAGE2_MID  = [180, 480, 110, 320, 380, 160, 230, 170];
+const STAGE2_FAST = [520, 1080, 280, 680, 720, 360, 530, 380];
+
+new Chart(document.getElementById('chartStages'), {
+  type: 'bar',
+  data: {
+    labels: SECTORS_LABELS,
+    datasets: [
+      { label: 'Stage 1 (here-and-now)', data: STAGE1_BASE, backgroundColor: '#1e40af', borderRadius: 4, stack: 'stack0' },
+      { label: 'Stage 2: Slow recourse', data: STAGE2_SLOW, backgroundColor: '#047857', borderRadius: 4, stack: 'stack1' },
+      { label: 'Stage 2: Mid recourse',  data: STAGE2_MID, backgroundColor: '#6b21a8', borderRadius: 4, stack: 'stack2' },
+      { label: 'Stage 2: Fast recourse', data: STAGE2_FAST, backgroundColor: '#b45309', borderRadius: 4, stack: 'stack3' }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Phân bổ Stage 1 và Stage 2', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: { color: '#e2e8f0'}}, y: { grid: { color: '#e2e8f0'}}} }
+});
+
+new Chart(document.getElementById('chartEVPI'), {
+  type: 'bar',
+  data: { labels: ['WS(S)', 'WS(M)', 'WS(F)', 'E[WS]', 'RP(2SP)', 'EVPI'], datasets: [{ data: [7.2, 9.4, 13.8, 9.43, 9.85, 0.42], backgroundColor: ['#047857', '#1e40af', '#b45309', '#94a3b8', '#6b21a8', '#9f1239'], borderRadius: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'EVPI Calculation', color: '#0f172a', font:{size:14,weight:'bold'}} }, scales: { x: { grid: { color: '#e2e8f0'}}, y: { grid: { color: '#e2e8f0'}}} }
+});
+
+new Chart(document.getElementById('chartVSS'), {
+  type: 'bar',
+  data: { labels: ['RP (2SP)', 'EEV (det mean)', 'VSS'], datasets: [{ data: [9.85, 11.08, 1.23], backgroundColor: ['#6b21a8', '#9f1239', '#047857'], borderRadius: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'VSS Calculation', color: '#0f172a', font:{size:14,weight:'bold'}} }, scales: { x: { grid: { color: '#e2e8f0'}}, y: { grid: { color: '#e2e8f0'}}} }
+});
+
+new Chart(document.getElementById('chartRobust'), {
+  type: 'bar',
+  data: {
+    labels: ['Slow', 'Mid', 'Fast'],
+    datasets: [
+      { label: 'Deterministic (mean)', data: [7.85, 9.40, 14.20], backgroundColor: '#9f1239', borderRadius: 4 },
+      { label: '2-stage SP',           data: [7.95, 9.55, 13.65], backgroundColor: '#1e40af', borderRadius: 4 },
+      { label: 'Robust minimax',       data: [8.40, 10.10, 12.80], backgroundColor: '#047857', borderRadius: 4 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Chi phí chiến lược (Robust vs SP)', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: { color: '#e2e8f0'}}, y: { grid: { color: '#e2e8f0'}}} }
+});
+
+let chartStageLive = null;
+function updatePG10() {
+  const p = [ parseFloat(document.getElementById('pgP1').value), parseFloat(document.getElementById('pgP2').value), parseFloat(document.getElementById('pgP3').value) ];
+  [1,2,3].forEach((i, idx) => document.getElementById(`valP${i}`).textContent = p[idx].toFixed(2));
+
+  const sum = p.reduce((s,v) => s+v, 0);
+  document.getElementById('sumValue10').textContent = sum.toFixed(2);
+  const sw = document.getElementById('sumWarn10');
+  if (Math.abs(sum - 1.0) < 0.05) { sw.style.background = 'rgba(4, 120, 87, 0.05)'; sw.style.borderColor = '#047857'; sw.style.color = '#047857'; }
+  else { sw.style.background = 'rgba(180, 83, 9, 0.05)'; sw.style.borderColor = '#b45309'; sw.style.color = '#b45309'; }
+  const pn = sum > 0 ? p.map(v => v/sum) : [0.33, 0.33, 0.34];
+
+  const expCost = pn[0]*7.2 + pn[1]*9.4 + pn[2]*13.8 + 0.05*(pn[2]-pn[0]);
+  document.getElementById('kpiExpCost').textContent = expCost.toFixed(2);
+  document.getElementById('kpiVSS').textContent = (1.23 * (1 + Math.abs(pn[2]-pn[0])*1.5)).toFixed(2);
+
+  const adjFactor = 0.85 + pn[2]*0.5;
+  const stage1Adj = STAGE1_BASE.map(v => v * adjFactor);
+  const stage2Adj = SECTORS_LABELS.map((_, i) => pn[0]*STAGE2_SLOW[i] + pn[1]*STAGE2_MID[i] + pn[2]*STAGE2_FAST[i]);
+
+  if (chartStageLive) chartStageLive.destroy();
+  chartStageLive = new Chart(document.getElementById('chartStageLive'), {
+    type: 'bar',
+    data: { labels: SECTORS_LABELS, datasets: [{ label: 'Stage 1', data: stage1Adj, backgroundColor: '#1e40af', borderRadius: 4 }, { label: 'Stage 2 E[recourse]', data: stage2Adj, backgroundColor: '#b45309', borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid: { color: '#e2e8f0'} }, y: { stacked: true, grid: { color: '#e2e8f0'}} }, plugins: { legend: { display: false } } }
+  });
+
+  const recTotals = [ STAGE2_SLOW.reduce((s,v)=>s+v,0), STAGE2_MID.reduce((s,v)=>s+v,0), STAGE2_FAST.reduce((s,v)=>s+v,0) ];
+  document.getElementById('recourseLive').innerHTML = SCENARIOS.map((sc, i) => `
+    <div class="recourse-tile r-${['low','mid','high'][i]}">
+      <div class="rec-label">${sc.icon} ${sc.name} (p=${pn[i].toFixed(2)})</div>
+      <div class="rec-value">+${recTotals[i].toLocaleString('vi-VN')} tỷ</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Expected: ${(recTotals[i] * pn[i]).toFixed(0)} tỷ</div>
+    </div>
+  `).join('');
+}
+
+function applyPreset10(name) {
+  const p = { 'default':[0.3,0.5,0.2], 'pessimist':[0.7,0.25,0.05], 'optimist':[0.1,0.3,0.6], 'uniform':[0.34,0.33,0.33] }[name];
+  ['pgP1','pgP2','pgP3'].forEach((id, i) => document.getElementById(id).value = p[i]);
+  updatePlayground10();
+}
+['pgP1','pgP2','pgP3'].forEach(id => document.getElementById(id).addEventListener('input', updatePlayground10));
+setTimeout(updatePlayground10, 500);
+</script>
+</body>
+</html>.slider-row label .val-badge {
   color: var(--accent-purple); font-weight: 700; font-size: 15px;
   background: rgba(168, 85, 247, 0.15); padding: 3px 10px;
   border-radius: 6px; font-variant-numeric: tabular-nums; transition: all 0.3s;
