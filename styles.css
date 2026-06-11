@@ -1,6 +1,6 @@
 /* =============================================================
-   AIDEOM-VN · DARK MODE DASHBOARD THEME
-   Cyan-Purple-Pink gradient + Glassmorphism
+   AIDEOM-VN · DARK MODE DASHBOARD THEME (RED EDITION)
+   Bright Red - Crimson - Rose gradient + Glassmorphism
    ============================================================= */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,17 +16,18 @@
   --text-2: #94a3b8;
   --text-3: #64748b;
 
-  --accent-cyan: #06b6d4;
-  --accent-purple: #a855f7;
-  --accent-pink: #ec4899;
-  --accent-orange: #f97316;
-  --accent-green: #10b981;
+  /* Hệ màu đỏ chủ đạo mới */
+  --accent-red-bright: #ff3333; /* Đỏ tươi rực rỡ */
+  --accent-crimson: #dc2626;    /* Đỏ thuần / Đỏ đô */
+  --accent-rose: #f43f5e;       /* Đỏ hồng mềm mại */
+  --accent-orange: #f97316;     /* Màu bổ trợ giữ nguyên */
+  --accent-green: #10b981;      /* Màu bổ trợ giữ nguyên */
 
-  --border: rgba(148, 163, 184, 0.15);
+  --border: rgba(220, 38, 38, 0.15); /* Đường viền ánh đỏ nhẹ */
 
-  --gradient-1: linear-gradient(135deg, #06b6d4, #a855f7, #ec4899);
-  --gradient-2: linear-gradient(135deg, #a855f7, #ec4899);
-  --gradient-3: linear-gradient(135deg, #06b6d4, #a855f7);
+  --gradient-1: linear-gradient(135deg, #ff3333, #dc2626, #881337); /* Đỏ tươi -> Đỏ đô -> Đỏ mận */
+  --gradient-2: linear-gradient(135deg, #dc2626, #f43f5e);
+  --gradient-3: linear-gradient(135deg, #ff3333, #dc2626);
 }
 
 body {
@@ -35,10 +36,11 @@ body {
   color: var(--text-1);
   line-height: 1.6;
   min-height: 100vh;
+  /* Hiệu ứng đèn Neon phát quang màu đỏ dịu phía nền background */
   background-image:
-    radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.10) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.10) 0px, transparent 50%),
-    radial-gradient(at 50% 50%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(220, 38, 38, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(255, 51, 51, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(244, 63, 94, 0.04) 0px, transparent 50%);
   background-attachment: fixed;
 }
 
@@ -62,7 +64,7 @@ body {
   backdrop-filter: blur(10px);
 }
 .sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.3); border-radius: 2px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(220, 38, 38, 0.3); border-radius: 2px; }
 
 .sidebar .logo {
   font-size: 18px; font-weight: 800;
@@ -89,14 +91,14 @@ body {
   transition: all 0.2s;
 }
 .sidebar a.nav-link:hover {
-  background: rgba(168, 85, 247, 0.1);
+  background: rgba(220, 38, 38, 0.08);
   color: var(--text-0);
-  border-left-color: var(--accent-purple);
+  border-left-color: var(--accent-crimson);
 }
 .sidebar a.nav-link.active {
-  background: linear-gradient(90deg, rgba(168,85,247,0.15), transparent);
+  background: linear-gradient(90deg, rgba(220, 38, 38, 0.12), transparent);
   color: var(--text-0);
-  border-left-color: var(--accent-pink);
+  border-left-color: var(--accent-rose);
   font-weight: 600;
 }
 
@@ -108,7 +110,7 @@ body {
 
 /* ----- HEADERS ----- */
 .page-header {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(6, 182, 212, 0.05));
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.06), rgba(255, 51, 51, 0.04));
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 28px 30px;
@@ -120,8 +122,8 @@ body {
   font-size: 12px; color: var(--text-2);
   margin-bottom: 12px;
 }
-.page-header .crumb a { color: var(--accent-cyan); text-decoration: none; }
-.page-header .crumb a:hover { color: var(--accent-pink); }
+.page-header .crumb a { color: var(--accent-red-bright); text-decoration: none; }
+.page-header .crumb a:hover { color: var(--accent-rose); }
 .page-header h1 {
   font-size: 30px; font-weight: 800; color: var(--text-0);
   margin-bottom: 14px; line-height: 1.3;
@@ -140,9 +142,10 @@ body {
   font-size: 11px; padding: 4px 12px; border-radius: 6px;
   font-weight: 600; letter-spacing: 0.3px;
 }
-.tag-cyan   { background: rgba(6, 182, 212, 0.15);  color: var(--accent-cyan); }
-.tag-purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); }
-.tag-pink   { background: rgba(236, 72, 153, 0.15); color: var(--accent-pink); }
+/* Hệ thống Tag đổi sang tone Đỏ */
+.tag-red    { background: rgba(255, 51, 51, 0.15);  color: var(--accent-red-bright); }
+.tag-crimson{ background: rgba(220, 38, 38, 0.15); color: var(--accent-crimson); }
+.tag-rose   { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
 .tag-orange { background: rgba(249, 115, 22, 0.15); color: var(--accent-orange); }
 .tag-green  { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
 
@@ -154,7 +157,7 @@ h2 {
 }
 h4 {
   font-size: 15px; font-weight: 700;
-  color: var(--accent-purple);
+  color: var(--accent-crimson);
   margin: 18px 0 10px;
 }
 
@@ -168,9 +171,9 @@ h4 {
   backdrop-filter: blur(10px);
 }
 .card-title { font-size: 15px; font-weight: 700; color: var(--text-0); margin-bottom: 8px; }
-.context-card { border-left: 4px solid var(--accent-cyan); }
-.solution-card { border-left: 4px solid var(--accent-purple); }
-.discussion-card { border-left: 4px solid var(--accent-pink); }
+.context-card { border-left: 4px solid var(--accent-red-bright); }
+.solution-card { border-left: 4px solid var(--accent-crimson); }
+.discussion-card { border-left: 4px solid var(--accent-rose); }
 
 /* ----- STATS GRID ----- */
 .stats-grid {
@@ -187,7 +190,7 @@ h4 {
   position: relative;
   transition: all 0.3s;
 }
-.stat-card:hover { transform: translateY(-3px); border-color: var(--accent-purple); }
+.stat-card:hover { transform: translateY(-3px); border-color: var(--accent-crimson); }
 .stat-card .stat-label {
   font-size: 11px; color: var(--text-3);
   text-transform: uppercase; letter-spacing: 1px;
@@ -210,7 +213,7 @@ table {
   background: rgba(15, 23, 42, 0.4);
   font-size: 13px;
 }
-thead tr { background: rgba(168, 85, 247, 0.12); }
+thead tr { background: rgba(220, 38, 38, 0.12); }
 th, td {
   padding: 10px 14px; text-align: left;
   border-bottom: 1px solid var(--border);
@@ -218,7 +221,7 @@ th, td {
 th { font-weight: 700; color: var(--text-0); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 td { color: var(--text-1); }
 td.num, th.num { text-align: right; font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
-tbody tr:hover { background: rgba(168, 85, 247, 0.05); }
+tbody tr:hover { background: rgba(220, 38, 38, 0.05); }
 
 /* ----- CODE BLOCKS ----- */
 pre {
@@ -238,7 +241,7 @@ pre code { color: #e2e8f0; }
 /* ----- MATH ----- */
 .math {
   background: rgba(15, 23, 42, 0.5);
-  border-left: 3px solid var(--accent-cyan);
+  border-left: 3px solid var(--accent-red-bright);
   padding: 14px 18px;
   border-radius: 0 10px 10px 0;
   margin: 12px 0;
@@ -247,15 +250,15 @@ pre code { color: #e2e8f0; }
 
 /* ----- INSIGHT ----- */
 .insight {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(6, 182, 212, 0.04));
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.06), rgba(255, 51, 51, 0.03));
+  border: 1px solid rgba(220, 38, 38, 0.3);
   border-radius: 10px;
   padding: 14px 18px;
   margin: 14px 0 6px;
 }
 .insight .insight-title {
   font-size: 13px; font-weight: 700;
-  color: var(--accent-purple);
+  color: var(--accent-crimson);
   margin-bottom: 6px;
 }
 .insight p, .insight ul { color: var(--text-1); font-size: 14px; line-height: 1.7; }
@@ -263,7 +266,7 @@ pre code { color: #e2e8f0; }
 .insight li { margin-bottom: 4px; }
 .insight strong { color: var(--text-0); }
 
-/* ----- Q&A ----- */
+/* ----- Q&A STYLING ----- */
 .qa { margin-bottom: 18px; }
 .qa-q {
   font-weight: 700; color: var(--text-0); margin-bottom: 8px;
@@ -271,7 +274,7 @@ pre code { color: #e2e8f0; }
 }
 .qa-q::before {
   content: 'Q.'; position: absolute; left: 0;
-  color: var(--accent-cyan); font-weight: 900;
+  color: var(--accent-red-bright); font-weight: 900;
 }
 .qa-a {
   color: var(--text-1); font-size: 14px; line-height: 1.7;
@@ -279,7 +282,7 @@ pre code { color: #e2e8f0; }
 }
 .qa-a::before {
   content: 'A.'; position: absolute; left: 0;
-  color: var(--accent-pink); font-weight: 900;
+  color: var(--accent-rose); font-weight: 900;
 }
 .qa-a ul { padding-left: 22px; margin-top: 6px; }
 .qa-a li { margin-bottom: 4px; }
@@ -305,38 +308,38 @@ pre code { color: #e2e8f0; }
 }
 #exercise-nav a {
   display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
   color: var(--text-0);
   padding: 10px 16px; border-radius: 10px;
   font-size: 13px; font-weight: 600;
   text-decoration: none; transition: all 0.2s;
 }
 #exercise-nav a:hover {
-  background: rgba(168, 85, 247, 0.2);
+  background: rgba(220, 38, 38, 0.2);
   transform: translateY(-2px);
 }
 
 /* =============================================================
-   COLLAPSIBLE Q&A — câu hỏi thảo luận có thể đóng/mở
+   COLLAPSIBLE Q&A — Câu hỏi khối đóng mở đổi tone đỏ
    ============================================================= */
 details.qa {
   margin-bottom: 12px;
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid var(--border);
-  border-left: 4px solid var(--accent-cyan);
+  border-left: 4px solid var(--accent-red-bright);
   border-radius: 10px;
   overflow: hidden;
   transition: all 0.3s ease;
 }
 details.qa:hover {
-  border-left-color: var(--accent-pink);
+  border-left-color: var(--accent-rose);
   background: rgba(15, 23, 42, 0.6);
 }
 details.qa[open] {
-  border-left-color: var(--accent-purple);
-  background: rgba(168, 85, 247, 0.05);
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.15);
+  border-left-color: var(--accent-crimson);
+  background: rgba(220, 38, 38, 0.03);
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.12);
 }
 
 details.qa summary {
@@ -363,7 +366,7 @@ details.qa summary::before {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  background: linear-gradient(135deg, var(--accent-red-bright), var(--accent-crimson));
   color: white;
   display: flex;
   align-items: center;
@@ -381,11 +384,11 @@ details.qa summary .qa-arrow {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: rgba(168, 85, 247, 0.15);
+  background: rgba(220, 38, 38, 0.15);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-purple);
+  color: var(--accent-crimson);
   font-size: 14px;
   font-weight: 900;
   transition: transform 0.35s ease, background 0.3s;
@@ -393,12 +396,12 @@ details.qa summary .qa-arrow {
 }
 details.qa[open] summary .qa-arrow {
   transform: translateY(-50%) rotate(180deg);
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+  background: linear-gradient(135deg, var(--accent-crimson), var(--accent-rose));
   color: white;
 }
 details.qa summary:hover .qa-arrow {
-  background: rgba(236, 72, 153, 0.25);
-  color: var(--accent-pink);
+  background: rgba(244, 63, 94, 0.25);
+  color: var(--accent-rose);
 }
 
 details.qa .qa-a {
@@ -406,7 +409,7 @@ details.qa .qa-a {
   color: var(--text-1);
   font-size: 14px;
   line-height: 1.75;
-  border-top: 1px dashed rgba(168, 85, 247, 0.2);
+  border-top: 1px dashed rgba(220, 38, 38, 0.2);
   margin-top: 0;
   position: relative;
   animation: qaFadeIn 0.4s ease-out;
@@ -419,7 +422,7 @@ details.qa .qa-a::before {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-pink), var(--accent-orange));
+  background: linear-gradient(135deg, var(--accent-rose), var(--accent-orange));
   color: white;
   display: flex;
   align-items: center;
