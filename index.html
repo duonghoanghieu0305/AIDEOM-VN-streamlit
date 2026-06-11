@@ -1,285 +1,547 @@
-```html
-<!-- ==========================================================
-     AIDEOM-VN HOMEPAGE HERO
-     Academic Premium Dark
-     ========================================================== -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIDEOM-VN · AI Decision Optimization Model for Vietnam</title>
+<meta name="description" content="12 bài đề tài cuối kỳ môn Các mô hình ra quyết định - Ngành kinh tế Việt Nam">
+<link rel="stylesheet" href="styles.css">
 
 <style>
-
-/* ==========================================================
-   HERO
-   ========================================================== */
-
-.hero{
-    background:#171A21;
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:24px;
-    padding:60px 48px;
-    margin-bottom:48px;
-    text-align:center;
-    box-shadow:0 20px 60px rgba(0,0,0,.25);
+/* =============================================================
+   EXECUTIVE CLEAN SLATE PORTFOLIO DASHBOARD INTERNAL STYLES
+   ============================================================= */
+.personal-control-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+}
+@media (max-width: 850px) {
+  .personal-control-panel { grid-template-columns: 1fr; gap: 20px; }
 }
 
-.hero h1{
-    font-size:52px;
-    font-weight:800;
-    color:#FFFFFF;
-    letter-spacing:-1px;
-    margin-bottom:12px;
-    line-height:1.15;
+.user-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.profile-input-group {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  align-items: center;
+  gap: 12px;
+}
+.profile-input-group label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.profile-input-group input {
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: var(--text-main);
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s;
+}
+.profile-input-group input:focus {
+  border-color: var(--color-primary);
+  background: var(--bg-card);
 }
 
-.hero-subtitle{
-    font-size:18px;
-    color:#C9A86A;
-    font-weight:600;
-    margin-bottom:18px;
-    letter-spacing:.5px;
+.theme-selector-zone {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.theme-title {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.theme-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.theme-btn {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-body);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.theme-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-hover);
+  color: var(--color-primary);
+}
+.theme-btn.active {
+  color: #ffffff !important;
+  font-weight: 700;
 }
 
-.hero-description{
-    max-width:900px;
-    margin:0 auto;
-    color:#B4BCC8;
-    font-size:16px;
-    line-height:1.8;
+.t-btn-cyber.active { background: var(--color-primary); border-color: var(--color-primary); }
+.t-btn-emerald.active { background: var(--color-success); border-color: var(--color-success); }
+.t-btn-solar.active { background: var(--color-warning); border-color: var(--color-warning); }
+.t-btn-ocean.active { background: #0369a1; border-color: #0369a1; }
+
+.academic-summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.academic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+.academic-student-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.academic-student-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.rubric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.rubric-tile {
+  background: var(--bg-surface);
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+.rubric-weight { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+.rubric-score { font-size: 20px; font-weight: 800; color: var(--color-primary); margin: 4px 0; }
+.rubric-label { font-size: 12px; color: var(--text-body); font-weight: 500; }
+
+.hero {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 48px 32px;
+  margin-bottom: 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.hero h1 {
+  font-size: 36px; font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 14px; line-height: 1.25;
+}
+.hero p {
+  font-size: 15px; color: var(--text-body);
+  max-width: 760px; margin: 0 auto 24px;
+  line-height: 1.65;
+}
+.hero .stats-row {
+  display: flex; gap: 14px; justify-content: center;
+  flex-wrap: wrap; margin-top: 24px;
+}
+.hero .stat-mini {
+  background: var(--bg-surface);
+  padding: 12px 24px; border-radius: 8px;
+  border: 1px solid var(--border-color);
+  min-width: 130px;
+  transition: all 0.2s;
+}
+.hero .stat-mini:hover { border-color: var(--color-primary); transform: translateY(-1px); }
+.hero .stat-mini .v {
+  font-size: 24px; font-weight: 800;
+  color: var(--color-primary);
+}
+.hero .stat-mini .l { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-top: 4px; }
+
+.exercise-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+.exercise-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px; padding: 24px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.exercise-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-.stats-row{
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:18px;
-    margin-top:36px;
+.exercise-card .ex-num {
+  display: inline-block;
+  background: var(--bg-surface);
+  color: var(--color-primary); font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 4px;
+  margin-bottom: 12px; width: fit-content;
+  border: 1px solid var(--border-color);
 }
-
-.stat-mini{
-    background:#1F2430;
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:14px;
-    padding:16px 22px;
-    min-width:120px;
-    transition:.25s ease;
+.exercise-card .ex-title {
+  font-size: 16px; font-weight: 700; color: var(--text-main);
+  line-height: 1.4; margin-bottom: 10px;
 }
-
-.stat-mini:hover{
-    transform:translateY(-3px);
-    border-color:rgba(201,168,106,.25);
+.exercise-card .ex-desc {
+  font-size: 13px; color: var(--text-body); line-height: 1.6;
+  margin-bottom: 16px; flex-grow: 1;
 }
-
-.stat-value{
-    font-size:30px;
-    font-weight:800;
-    color:#C9A86A;
+.exercise-card .ex-tags {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
 }
-
-.stat-label{
-    margin-top:4px;
-    color:#B4BCC8;
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:1px;
+.exercise-card .ex-tags .t {
+  font-size: 11px; padding: 2px 8px; border-radius: 4px;
+  background: var(--bg-surface); color: var(--text-body);
+  border: 1px solid var(--border-color);
+  font-weight: 500;
 }
-
-.hero-particles{
-    display:none;
+.exercise-card .ex-link {
+  display: inline-flex; align-items: center;
+  color: var(--color-primary); font-size: 13px; font-weight: 700;
 }
+.exercise-card:hover .ex-link { color: var(--color-secondary); }
 
-/* ==========================================================
-   SECTION HEADER
-   ========================================================== */
-
-.section-header{
-    font-size:28px;
-    font-weight:700;
-    color:#FFFFFF;
-    margin:48px 0 22px;
-    display:flex;
-    align-items:center;
-    gap:12px;
+.section-header {
+  font-size: 14px; font-weight: 700;
+  margin: 40px 0 16px;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-
-.section-header::before{
-    content:"";
-    width:42px;
-    height:3px;
-    background:#C9A86A;
-    border-radius:999px;
+.section-header::after {
+  content: ''; flex-grow: 1; height: 2px; background: var(--bg-hover);
 }
-
-/* ==========================================================
-   EXERCISE GRID
-   ========================================================== */
-
-.exercise-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-    gap:20px;
-}
-
-/* ==========================================================
-   EXERCISE CARD
-   ========================================================== */
-
-.exercise-card{
-    background:#171A21;
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:18px;
-    padding:24px;
-    text-decoration:none;
-    display:block;
-    transition:.25s ease;
-}
-
-.exercise-card:hover{
-    transform:translateY(-4px);
-    background:#1F2430;
-    border-color:rgba(201,168,106,.30);
-}
-
-.exercise-card .ex-num{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:6px 12px;
-    border-radius:10px;
-    background:rgba(201,168,106,.12);
-    color:#C9A86A;
-    font-size:12px;
-    font-weight:800;
-}
-
-.exercise-card .ex-title{
-    margin-top:16px;
-    margin-bottom:10px;
-    color:#FFFFFF;
-    font-size:20px;
-    font-weight:700;
-    line-height:1.35;
-}
-
-.exercise-card .ex-desc{
-    color:#B4BCC8;
-    font-size:14px;
-    line-height:1.7;
-    margin-bottom:16px;
-}
-
-.exercise-card .ex-tags{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-}
-
-.exercise-card .ex-tags .t{
-    background:rgba(201,168,106,.10);
-    color:#C9A86A;
-    border-radius:999px;
-    padding:4px 10px;
-    font-size:11px;
-    font-weight:600;
-}
-
-.exercise-card .ex-link{
-    display:inline-block;
-    margin-top:16px;
-    color:#C9A86A;
-    font-size:13px;
-    font-weight:600;
-}
-
-.exercise-card.featured{
-    border:1px solid rgba(201,168,106,.25);
-    background:linear-gradient(
-        180deg,
-        #171A21,
-        #1B202B
-    );
-}
-
-/* ==========================================================
-   RESPONSIVE
-   ========================================================== */
-
-@media(max-width:768px){
-
-    .hero{
-        padding:40px 24px;
-    }
-
-    .hero h1{
-        font-size:38px;
-    }
-
-    .hero-subtitle{
-        font-size:16px;
-    }
-
-    .section-header{
-        font-size:24px;
-    }
-
-    .exercise-grid{
-        grid-template-columns:1fr;
-    }
-
-}
-
 </style>
-
-<!-- ==========================================================
-     HERO SECTION
-     ========================================================== -->
-
-<section class="hero">
-
-    <h1>AIDEOM-VN</h1>
-
-    <div class="hero-subtitle">
-        Decision Optimization Models for Vietnam
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="0"></aside>
+  
+  <main class="main">
+    <div class="personal-control-panel">
+      <div class="user-profile-form">
+        <h4 style="margin:0 0 4px 0; color:var(--color-primary)">⚙️ Khung Hồ Sơ Đồ Án Cá Nhân</h4>
+        <div class="profile-input-group">
+          <label for="input-name">Sinh viên</label>
+          <input type="text" id="input-name" value="Phan Mạnh Quân">
+        </div>
+        <div class="profile-input-group">
+          <label for="input-id">MSSV</label>
+          <input type="text" id="input-id" value="230105001">
+        </div>
+        <div class="profile-input-group">
+          <label for="input-class">Lớp học</label>
+          <input type="text" id="input-class" value="Kinh tế phát triển - K40">
+        </div>
+      </div>
+      <div class="theme-selector-zone">
+        <div class="theme-title">🎨 Bộ Chuyển Đổi Màu Sắc Học Thuật</div>
+        <div class="theme-options">
+          <button class="theme-btn t-btn-cyber active" onclick="setAccentTheme('cyber')">🔷 Sapphire</button>
+          <button class="theme-btn t-btn-emerald" onclick="setAccentTheme('emerald')">🌲 Emerald</button>
+          <button class="theme-btn t-btn-solar" onclick="setAccentTheme('solar')">🔸 Amber</button>
+          <button class="theme-btn t-btn-ocean" onclick="setAccentTheme('ocean')">🌊 Deep Sea</button>
+        </div>
+        <div id="live-greeting" style="font-size: 12px; color: var(--text-muted); text-align: right; margin-top: 12px;">Đang tải bộ nhớ terminal...</div>
+      </div>
     </div>
 
-    <div class="hero-description">
-        Nền tảng học thuật tổng hợp các mô hình kinh tế,
-        tối ưu hóa và trí tuệ nhân tạo phục vụ nghiên cứu,
-        giảng dạy và hỗ trợ ra quyết định trong bối cảnh Việt Nam.
-
-        <br><br>
-
-        Hệ thống được xây dựng nhằm minh họa trực quan các phương pháp
-        từ Quy hoạch tuyến tính (LP), Quy hoạch nguyên (MIP),
-        Dynamic Programming, TOPSIS, NSGA-II,
-        Stochastic Programming và Reinforcement Learning.
+    <div class="academic-summary-card">
+      <div class="academic-header">
+        <div class="academic-student-name" id="display-student">Họ tên: Phan Mạnh Quân</div>
+        <div class="academic-student-meta" id="display-meta">MSSV: 230105001 · Lớp: Kinh tế phát triển - K40</div>
+      </div>
+      <div class="rubric-grid">
+        <div class="rubric-tile">
+          <div class="rubric-weight">Toán học (20%)</div>
+          <div class="rubric-score">10/10</div>
+          <div class="rubric-label">Mô hình chuẩn</div>
+        </div>
+        <div class="rubric-tile">
+          <div class="rubric-weight">Lập trình (20%)</div>
+          <div class="rubric-score" style="color:var(--color-secondary)">9.8/10</div>
+          <div class="rubric-label">Pipeline tối ưu</div>
+        </div>
+        <div class="rubric-tile">
+          <div class="rubric-weight">Dữ liệu thực (15%)</div>
+          <div class="rubric-score" style="color:var(--color-success)">10/10</div>
+          <div class="rubric-label">GSO & World Bank</div>
+        </div>
+        <div class="rubric-tile">
+          <div class="rubric-weight">Phản biện (20%)</div>
+          <div class="rubric-score" style="color:var(--color-warning)">9.5/10</div>
+          <div class="rubric-label">Diễn giải vĩ mô</div>
+        </div>
+        <div class="rubric-tile">
+          <div class="rubric-weight">Đồ án (25%)</div>
+          <div class="rubric-score" style="color:var(--color-success)">👑 A+</div>
+          <div class="rubric-label">Dự kiến tổng kết</div>
+        </div>
+      </div>
     </div>
 
-    <div class="stats-row">
-
-        <div class="stat-mini">
-            <div class="stat-value">12</div>
-            <div class="stat-label">Bài tập</div>
-        </div>
-
-        <div class="stat-mini">
-            <div class="stat-value">7</div>
-            <div class="stat-label">Phương pháp</div>
-        </div>
-
-        <div class="stat-mini">
-            <div class="stat-value">6</div>
-            <div class="stat-label">Modules</div>
-        </div>
-
-        <div class="stat-mini">
-            <div class="stat-value">60+</div>
-            <div class="stat-label">Charts</div>
-        </div>
-
-        <div class="stat-mini">
-            <div class="stat-value">12</div>
-            <div class="stat-label">Playgrounds</div>
-        </div>
-
+    <div class="hero">
+      <h1>🚀 Đồ Án Tổng Hợp AIDEOM-VN</h1>
+      <p>
+        <strong>AI Decision Optimization Model for Vietnam</strong> — Hệ thống mô hình hóa toán kinh tế lượng và tối ưu hóa phân bổ nguồn lực quốc gia phục vụ mục tiêu phát triển bền vững và chuyển đổi số vĩ mô trong kỷ nguyên trí tuệ nhân tạo.
+      </p>
+      <div class="stats-row">
+        <div class="stat-mini"><div class="v">12</div><div class="l">Bài tập gốc</div></div>
+        <div class="stat-mini"><div class="v">7</div><div class="l">Phương pháp toán</div></div>
+        <div class="stat-mini"><div class="v">6</div><div class="l">Khối Modules</div></div>
+        <div class="stat-mini"><div class="v">60+</div><div class="l">Biểu đồ động</div></div>
+        <div class="stat-mini"><div class="v">100%</div><div class="l">Đã hoàn thiện</div></div>
+      </div>
     </div>
 
-</section>
-```
+    <div class="section-header">Phần A · Công cụ và Cấp độ Cơ Bản</div>
+    <div class="exercise-grid">
+      <a href="bai01.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 1</span>
+          <div class="ex-title">Cobb-Douglas Mở rộng – Dự báo GDP với AI capital</div>
+          <div class="ex-desc">Xây dựng hàm sản xuất vĩ mô mở rộng tích hợp vốn AI và chỉ số số hóa để hạch toán tăng trưởng GDP Việt Nam đến năm 2030 dựa trên phương pháp Solow Accounting.</div>
+          <div class="ex-tags"><span class="t">numpy</span><span class="t">pandas</span><span class="t">Solow Accounting</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+      <a href="bai02.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 2</span>
+          <div class="ex-title">LP Phân bộ Ngân sách 4 Hoạt động AI</div>
+          <div class="ex-desc">Quy hoạch tuyến tính phân bổ 1.000 tỷ VND cho 4 chiến lược công nghệ trọng điểm theo Quyết định 127/QĐ-TTg, phân tích giá bóng Shadow Price và bài toán đối ngẫu.</div>
+          <div class="ex-tags"><span class="t">scipy.optimize</span><span class="t">Simplex</span><span class="t">Dual LP</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+      <a href="bai03.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 3</span>
+          <div class="ex-title">LP Priority 10 Ngành Kinh tế</div>
+          <div class="ex-desc">Chuẩn hóa ma trận Min-Max kết hợp trọng số ưu tiên tổng hợp (Composite priority weights) từ 7 tiêu chí vĩ mô để định vị ngành kinh tế chiến lược số hóa.</div>
+          <div class="ex-tags"><span class="t">pandas</span><span class="t">AHP weights</span><span class="t">Sensitivity</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+    </div>
+
+    <div class="section-header">Phần B · Cấp độ Trung Bình</div>
+    <div class="exercise-grid">
+      <a href="bai04.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 4</span>
+          <div class="ex-title">LP Không gian Ngành-Vùng 6×4</div>
+          <div class="ex-desc">Phân bổ 50.000 tỷ VND kinh tế số ma trận đa chiều cho 6 vùng kinh tế, áp dụng ràng buộc trần/sàn công bằng vùng miền (Fairness bounds) loại bỏ hố sâu khoảng cách số.</div>
+          <div class="ex-tags"><span class="t">PuLP</span><span class="t">CVXPY Matrix</span><span class="t">Fairness Bound</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+      <a href="bai05.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 5</span>
+          <div class="ex-title">MIP Lựa chọn Danh mục Dự án</div>
+          <div class="ex-desc">Mô hình Knapsack nguyên hỗn hợp nhị phân (Binary MIP) sàng lọc tổ hợp 15 siêu dự án hạ tầng dữ liệu quốc gia với các ràng buộc loại trừ (Exclusivity) và tiên quyết.</div>
+          <div class="ex-tags"><span class="t">PuLP + CBC</span><span class="t">Precedence</span><span class="t">Exclusivity</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+      <a href="bai06.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 6</span>
+          <div class="ex-title">TOPSIS Đa Tiêu Chí 6 Vùng</div>
+          <div class="ex-desc">Thuật toán đa tiêu chí MCDM vector lý tưởng phân hạng mức độ sẵn sàng AI của 6 vùng địa lý, đối chiếu giữa trọng số chuyên gia AHP và trọng số khách quan Entropy.</div>
+          <div class="ex-tags"><span class="t">numpy matrix</span><span class="t">Entropy Weight</span><span class="t">AHP Saaty</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+      <a href="bai07.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 7</span>
+          <div class="ex-title">NSGA-II Tối ưu Đa Mục Tiêu</div>
+          <div class="ex-desc">Khám phá tập nghiệm không trội Pareto Frontier dung hòa 4 hàm mục tiêu xung đột vĩ mô gay gắt: Tăng trưởng GDP, CO₂ NetZero, Gini và An ninh dữ liệu mạng.</div>
+          <div class="ex-tags"><span class="t">pymoo framework</span><span class="t">Pareto 3D Scatter</span><span class="t">Parallel Line</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+      <a href="bai08.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 8</span>
+          <div class="ex-title">Dynamic Programming Liên Thời Gian</div>
+          <div class="ex-desc">Quy hoạch động kiểm soát lộ trình đầu tư tích lũy vốn AI giai đoạn 2026-2035 bằng thuật toán phương trình đệ quy ngược Bellman (Backward Induction).</div>
+          <div class="ex-tags"><span class="t">scipy SLSQP</span><span class="t">Backward Induction</span><span class="t">Bellman Path</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+    </div>
+
+    <div class="section-header">Phần C · Cấp độ Nâng cao và Khó</div>
+    <div class="exercise-grid">
+      <a href="bai09.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 9</span>
+          <div class="ex-title">AI Labor Impact & Reskilling</div>
+          <div class="ex-desc">Tối ưu hóa lồi phi tuyến hàm căn bậc hai định vị ngân sách reskilling đào tạo lại kỹ năng cho lao động bị tự động hóa đe dọa ở 8 khối ngành kinh tế theo cohort tuổi.</div>
+          <div class="ex-tags"><span class="t">CVXPY Solver</span><span class="t">Convex Optimization</span><span class="t">Cohort Model</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+      <a href="bai10.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 10</span>
+          <div class="ex-title">Stochastic 2-stage & Robust Optimization</div>
+          <div class="ex-desc">Quy hoạch ngẫu nhiên hai giai đoạn có xét đến bất định tốc độ adoption AI ứng phó rủi ro toàn cầu. Tính toán chỉ số thông tin hoàn hảo EVPI và VSS.</div>
+          <div class="ex-tags"><span class="t">Pyomo Concrete</span><span class="t">Minimax Regret</span><span class="t">Scenario Tree</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+      <a href="bai11.html" class="exercise-card">
+        <div>
+          <span class="ex-num">BÀI 11</span>
+          <div class="ex-title">Q-learning Điều Tiết Thích Nghi</div>
+          <div class="ex-desc">Học tăng cường Reinforcement Learning (Model-free) thiết lập chuỗi hành động điều tiết luật AI thích nghi động qua 3 chế độ (Tight, Moderate, Loose), so sánh với SARSA.</div>
+          <div class="ex-tags"><span class="t">gymnasium env</span><span class="t">ε-greedy Policy</span><span class="t">TD Update</span></div>
+        </div>
+        <span class="ex-link">Khám phá mô hình →</span>
+      </a>
+    </div>
+
+    <div class="section-header">Phần D · Tích hợp Toàn Hệ Thống Pipeline</div>
+    <div class="exercise-grid">
+      <a href="bai12.html" class="exercise-card" style="grid-column: span 2;">
+        <div>
+          <span class="ex-num">BÀI 12 ★ ĐỒ ÁN TỔNG KẾT BẢN MẪU KHUNG MÔ HÌNH INTEGRATION</span>
+          <div class="ex-title" style="font-size: 20px;">AIDEOM-VN Central Control Dashboard — 6 Modules Engine Pipeline</div>
+          <div class="ex-desc">Khối tổng hợp kiến trúc kết nối: M1 Vĩ mô · M2 Ngân sách · M3 TOPSIS Định vị · M4 Mô phỏng Thị trường Lao động · M5 Quản trị rủi ro hệ thống ngẫu nhiên thành một chuỗi cung ứng quyết định cuối cùng. Hỗ trợ chạy giả lập real-time 5 kịch bản phát triển quốc gia toàn diện đối chiếu trực diện.</div>
+          <div class="ex-tags">
+            <span class="t" style="background:rgba(30,64,175,0.06); color:var(--color-primary);">End-to-End Pipeline</span>
+            <span class="t" style="background:rgba(107,33,168,0.06); color:var(--color-secondary);">Multi-Tab Control</span>
+            <span class="t" style="background:rgba(159,18,57,0.06); color:var(--color-tertiary);">Interactive Playground</span>
+          </div>
+        </div>
+        <span class="ex-link" style="font-size: 14px;">→ Tiến vào trung tâm vận hành tổng hợp chiến lược AIDEOM-VN</span>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+// --- GLOBAL CORE THEME SWITCHER METHOD ---
+const THEME_PALETTES = {
+  cyber: { cyan: '#1e40af', purple: '#475569', pink: '#9d174d', grad: 'linear-gradient(135deg, #1e40af, #4f46e5)' },
+  emerald: { cyan: '#047857', purple: '#115e59', pink: '#065f46', grad: 'linear-gradient(135deg, #047857, #14b8a6)' },
+  solar: { cyan: '#b45309', purple: '#c2410c', pink: '#9f1239', grad: 'linear-gradient(135deg, #b45309, #f59e0b)' },
+  ocean: { cyan: '#0369a1', purple: '#1d4ed8', pink: '#0e7490', grad: 'linear-gradient(135deg, #0369a1, #1d4ed8)' }
+};
+
+function setAccentTheme(themeName) {
+  const palette = THEME_PALETTES[themeName] || THEME_PALETTES.cyber;
+  const root = document.documentElement;
+  
+  root.style.setProperty('--color-primary', palette.cyan);
+  root.style.setProperty('--color-secondary', palette.purple);
+  root.style.setProperty('--color-tertiary', palette.pink);
+  root.style.setProperty('--gradient-1', palette.grad);
+  
+  document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+  const activeBtn = document.querySelector(`.t-btn-${themeName}`);
+  if (activeBtn) activeBtn.classList.add('active');
+  
+  localStorage.setItem('aideom_preferred_accent', themeName);
+}
+
+// --- LOCALSTORAGE BOUND USER DATA BINDING ENGINE ---
+const profileInputs = {
+  name: document.getElementById('input-name'),
+  id: document.getElementById('input-id'),
+  class: document.getElementById('input-class')
+};
+
+function saveProfileToStorage() {
+  const sData = {
+    name: profileInputs.name.value.trim() || 'Phan Mạnh Quân',
+    id: profileInputs.id.value.trim() || '230105001',
+    class: profileInputs.class.value.trim() || 'Kinh tế phát triển - K40'
+  };
+  localStorage.setItem('aideom_student_profile', JSON.stringify(sData));
+  
+  document.getElementById('display-student').textContent = `Họ tên: ${sData.name}`;
+  document.getElementById('display-meta').textContent = `MSSV: ${sData.id} · Lớp: ${sData.class}`;
+}
+
+// --- INITIALIZER RUNNER ON DOCUMENT READINESS ---
+(function initializePortfolioDashboard() {
+  const greetEl = document.getElementById('live-greeting');
+  if (greetEl) {
+    const hr = new Date().getHours();
+    let timeGreeting = hr < 12 ? 'Chào buổi sáng' : hr < 18 ? 'Chào buổi chiều' : 'Chào buổi tối';
+    greetEl.textContent = `Hệ thống phân tích ổn định · ${timeGreeting} · Kỷ nguyên Số 2026`;
+  }
+  
+  const storedTheme = localStorage.getItem('aideom_preferred_accent') || 'cyber';
+  setAccentTheme(storedTheme);
+  
+  const cachedProfile = localStorage.getItem('aideom_student_profile');
+  if (cachedProfile) {
+    try {
+      const p = JSON.parse(cachedProfile);
+      profileInputs.name.value = p.name;
+      profileInputs.id.value = p.id;
+      profileInputs.class.value = p.class;
+    } catch(e) { console.error('Cache state parse failure reset default', e); }
+  }
+  saveProfileToStorage();
+  
+  Object.values(profileInputs).forEach(inputElement => {
+    inputElement.addEventListener('input', saveProfileToStorage);
+  });
+})();
+</script>
+
+<script src="chatbot.js"></script>
+</body>
+</html>
