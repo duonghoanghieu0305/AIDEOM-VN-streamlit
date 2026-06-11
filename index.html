@@ -1,8 +1,13 @@
+```html
+<!-- ==========================================================
+     AIDEOM-VN HOMEPAGE HERO
+     Academic Premium Dark
+     ========================================================== -->
+
 <style>
 
 /* ==========================================================
-   AIDEOM-VN HOMEPAGE
-   Academic Premium Dark
+   HERO
    ========================================================== */
 
 .hero{
@@ -20,19 +25,27 @@
     font-weight:800;
     color:#FFFFFF;
     letter-spacing:-1px;
-    margin-bottom:16px;
-    line-height:1.2;
+    margin-bottom:12px;
+    line-height:1.15;
 }
 
-.hero p{
-    max-width:850px;
+.hero-subtitle{
+    font-size:18px;
+    color:#C9A86A;
+    font-weight:600;
+    margin-bottom:18px;
+    letter-spacing:.5px;
+}
+
+.hero-description{
+    max-width:900px;
     margin:0 auto;
     color:#B4BCC8;
     font-size:16px;
     line-height:1.8;
 }
 
-.hero .stats-row{
+.stats-row{
     display:flex;
     justify-content:center;
     flex-wrap:wrap;
@@ -40,7 +53,7 @@
     margin-top:36px;
 }
 
-.hero .stat-mini{
+.stat-mini{
     background:#1F2430;
     border:1px solid rgba(255,255,255,.08);
     border-radius:14px;
@@ -49,20 +62,23 @@
     transition:.25s ease;
 }
 
-.hero .stat-mini:hover{
+.stat-mini:hover{
     transform:translateY(-3px);
+    border-color:rgba(201,168,106,.25);
 }
 
-.hero .stat-mini .v{
+.stat-value{
     font-size:30px;
     font-weight:800;
     color:#C9A86A;
 }
 
-.hero .stat-mini .l{
+.stat-label{
     margin-top:4px;
     color:#B4BCC8;
     font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:1px;
 }
 
 .hero-particles{
@@ -172,10 +188,6 @@
     font-weight:600;
 }
 
-/* ==========================================================
-   FEATURED CARD (BÀI 12)
-   ========================================================== */
-
 .exercise-card.featured{
     border:1px solid rgba(201,168,106,.25);
     background:linear-gradient(
@@ -199,6 +211,10 @@
         font-size:38px;
     }
 
+    .hero-subtitle{
+        font-size:16px;
+    }
+
     .section-header{
         font-size:24px;
     }
@@ -210,3 +226,60 @@
 }
 
 </style>
+
+<!-- ==========================================================
+     HERO SECTION
+     ========================================================== -->
+
+<section class="hero">
+
+    <h1>AIDEOM-VN</h1>
+
+    <div class="hero-subtitle">
+        Decision Optimization Models for Vietnam
+    </div>
+
+    <div class="hero-description">
+        Nền tảng học thuật tổng hợp các mô hình kinh tế,
+        tối ưu hóa và trí tuệ nhân tạo phục vụ nghiên cứu,
+        giảng dạy và hỗ trợ ra quyết định trong bối cảnh Việt Nam.
+
+        <br><br>
+
+        Hệ thống được xây dựng nhằm minh họa trực quan các phương pháp
+        từ Quy hoạch tuyến tính (LP), Quy hoạch nguyên (MIP),
+        Dynamic Programming, TOPSIS, NSGA-II,
+        Stochastic Programming và Reinforcement Learning.
+    </div>
+
+    <div class="stats-row">
+
+        <div class="stat-mini">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Bài tập</div>
+        </div>
+
+        <div class="stat-mini">
+            <div class="stat-value">7</div>
+            <div class="stat-label">Phương pháp</div>
+        </div>
+
+        <div class="stat-mini">
+            <div class="stat-value">6</div>
+            <div class="stat-label">Modules</div>
+        </div>
+
+        <div class="stat-mini">
+            <div class="stat-value">60+</div>
+            <div class="stat-label">Charts</div>
+        </div>
+
+        <div class="stat-mini">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Playgrounds</div>
+        </div>
+
+    </div>
+
+</section>
+```
