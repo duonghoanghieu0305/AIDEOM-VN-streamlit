@@ -90,69 +90,74 @@ st.markdown(
     footer {visibility: hidden;}
     .block-container {padding: 0!important; max-width: 100%!important;}
     
-    /* 1. Hạ nền Sidebar xuống màu xám kem nhạt để khử hoàn toàn độ chói lóa */
+    /* 1. Nền Sidebar và thiết lập Font hệ thống chuẩn Apple/Inter */
     section[data-testid='stSidebar'] {
         background-color: #f8fafc !important;
-        border-right: 1px solid rgba(15, 23, 42, 0.08) !important;
+        border-right: 1px solid #e2e8f0 !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     }
     
-    /* Đồng bộ màu chữ cho tiêu đề ứng dụng và caption phụ trong Sidebar */
+    /* 2. Tiêu đề Logo và Caption cực kỳ sắc nét */
     section[data-testid='stSidebar'] h1, 
     section[data-testid='stSidebar'] h2, 
     section[data-testid='stSidebar'] h3,
     section[data-testid='stSidebar'] [data-testid="stMarkdownContainer"] p {
         color: #0f172a !important;
+        font-weight: 800 !important;
     }
     section[data-testid='stSidebar'] caption,
     section[data-testid='stSidebar'] .stCaption {
         color: #64748b !important;
-    }
-    
-    /* Ép màu cho phần text tiêu đề nhỏ của widget Radio Button */
-    section[data-testid='stSidebar'] [data-testid="stWidgetLabel"] p {
-        color: #475569 !important;
-        font-weight: 600 !important;
-        margin-bottom: 8px !important;
-    }
-    
-    /* 2. Tạo lập các khối "Thẻ nổi" (Cards) màu trắng sang trọng cho danh sách bài */
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label {
-        background-color: #ffffff !important;
-        border: 1px solid rgba(15, 23, 42, 0.06) !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
-        padding: 10px 12px !important;
-        border-radius: 8px !important;
-        margin-bottom: 6px !important;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    # ❌ FIX TRIỆT ĐỂ LỖI CHỮ TRẮNG: Ép toàn bộ các phần tử chữ con bên trong thẻ luôn có màu sẫm sắc nét
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label *,
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label p {
-        color: #334155 !important;
         font-weight: 500 !important;
     }
     
-    /* 3. Hiệu ứng Hover chuột: Sáng viền xanh Corporate Sapphire và nhấc nhẹ thẻ */
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover {
-        border-color: #1e40af !important;
-        box-shadow: 0 4px 12px rgba(30, 64, 175, 0.08) !important;
-        transform: translateY(-1px);
-    }
-    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover * {
-        color: #1e40af !important;
+    /* 3. Chỉnh sửa chữ "Danh mục bài tập hoạch định" thành dạng Dashboard Label */
+    section[data-testid='stSidebar'] [data-testid="stWidgetLabel"] p {
+        color: #475569 !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-bottom: 14px !important;
     }
     
-    /* 4. Định dạng trạng thái Đang được chọn (Active Option) - Đổ nền xanh nhạt, font chữ đậm */
+    /* 4. Thẻ bài tập mặc định: Viền bạc tinh tế, chữ xám chì đậm nét */
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+        padding: 12px 14px !important;
+        border-radius: 8px !important;
+        margin-bottom: 8px !important;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label *,
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label p {
+        color: #334155 !important;
+        font-weight: 600 !important; /* Dày dặn hơn, không còn mỏng manh */
+        font-size: 14px !important; /* To rõ ràng */
+    }
+    
+    /* 5. Hiệu ứng Hover: Nổi bật bằng màu Xám Đen (Charcoal), bỏ xanh dương */
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover {
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+        transform: translateY(-2px);
+    }
+    section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] label:hover * {
+        color: #0f172a !important; /* Đen tuyền sang trọng */
+    }
+    
+    /* 6. Trạng thái Đang Chọn (Active): Viền sẫm quyền lực, nền nổi khối */
     section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] [data-checked="true"] {
-        border-color: #1e40af !important;
-        background-color: rgba(30, 64, 175, 0.05) !important;
-        box-shadow: 0 2px 8px rgba(30, 64, 175, 0.04) !important;
+        border-color: #0f172a !important; /* Viền đen tuyền */
+        background-color: #f1f5f9 !important; /* Nền xám khói siêu nhạt */
+        box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03) !important;
     }
     section[data-testid='stSidebar'] .stRadio div[role="radiogroup"] [data-checked="true"] * {
-        color: #1e40af !important;
-        font-weight: 700 !important;
+        color: #0f172a !important;
+        font-weight: 800 !important; /* Nét cực đậm, khẳng định vị trí */
     }
     </style>
     """,
