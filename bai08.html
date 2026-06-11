@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 8 · Dynamic Programming · AIDEOM-VN</title>
+<meta name="description" content="Quy hoạch động đa giai đoạn cho lộ trình đầu tư AI 2025-2030">
+
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="chart-animations.js"></script>
+
+<!-- MathJax -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], processEscapes: true },
+  chtml: { scale: 1.05 }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
+.term:hover::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(30, 41, 59, 0.98); color: var(--text-0);
+  padding: 10px 14px; border-radius: 8px; font-size: 13px;
+  font-weight: normal; width: 280px;
+  border: 1px solid var(--accent-purple);
+  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.3);
+  z-index: 100; line-height: 1.5;
+}
+
+.slider-row { margin-bottom: 10px; padding: 12px 14px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s; }
+.slider-row:hover { border-color: var(--accent-purple); transform: translateX(2px); }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text-1); font-size: 12px; font-weight: 500; }
+.slider-row label .val-badge {
+  color: var(--accent-purple); font-weight: 700; font-size: 15px;
+  background: rgba(168, 85, 247, 0.15); padding: 3px 10px;
+  border-radius: 6px; font-variant-numeric: tabular-nums; transition: all 0.3s;
+}
+.slider-row input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+  outline: none; cursor: pointer;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; cursor: grab; border: 3px solid var(--accent-purple);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.6);
+}
+
+.question-label { display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; letter-spacing: 0.5px; }
+
+.cite { vertical-align: super; font-size: 11px; color: var(--accent-cyan); cursor: pointer; margin: 0 2px; }
+.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--accent-purple); font-size: 13px; color: var(--text-2); }
+.footnotes ol { padding-left: 20px; }
+.footnotes li { margin-bottom: 6px; }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.7); }
+}
+.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-purple) !important; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); }}
+.chart-container { opacity: 0; animation: fadeInUp 1s ease-out forwards; }
+
+.val-badge.pulse { animation: badgePulse 0.4s ease-out; }
+@keyframes badgePulse { 0% { transform: scale(1); background: rgba(168, 85, 247, 0.15); } 50% { transform: scale(1.15); background: rgba(236, 72, 153, 0.3); } 100% { transform: scale(1); background: rgba(168, 85, 247, 0.15); }}
+
+.stat-value.counting { font-variant-numeric: tabular-nums; }
+
+@keyframes glowBorder { 0%, 100% { border-color: rgba(168, 85, 247, 0.4); } 50% { border-color: rgba(236, 72, 153, 0.7); }}
+.card.special-glow { animation: glowBorder 3s ease-in-out infinite; border-width: 2px !important; }
+
+h2 { position: relative; }
+h2::after { content: ''; position: absolute; bottom: -4px; left: 0; height: 2px; width: 0; background: var(--gradient-1); transition: width 1s ease-out; }
+h2.in-view::after { width: 100%; }
+
+.hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168, 85, 247, 0.6); animation: float 8s infinite linear; }
+@keyframes float {
+  from { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 1; } 90% { opacity: 1; }
+  to { transform: translateY(-100px) translateX(50px); opacity: 0; }
+}
+
+.playground-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px; }
+@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+
+/* Stage cards - timeline */
+.timeline {
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  gap: 8px; margin: 16px 0;
+}
+.stage-card {
+  background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(6,182,212,0.05));
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 8px; text-align: center;
+  transition: all 0.3s; position: relative;
+}
+.stage-card.active {
+  background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(236,72,153,0.15));
+  border-color: var(--accent-purple);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3);
+}
+.stage-card .year-label {
+  font-size: 11px; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.stage-card .invest-val {
+  font-size: 14px; font-weight: 700;
+  color: var(--accent-cyan); margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.stage-card .invest-bar {
+  margin-top: 6px; height: 4px;
+  background: rgba(148,163,184,0.15); border-radius: 2px; overflow: hidden;
+}
+.stage-card .invest-bar-fill {
+  height: 100%; background: var(--gradient-1);
+  border-radius: 2px; transition: width 0.6s ease-out;
+}
+
+/* Bellman ASCII diagram */
+.bellman-flow {
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 16px; background: rgba(15,23,42,0.6); border-radius: 12px;
+  border: 1px solid var(--border); margin: 14px 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+}
+.bellman-node {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+  color: white; padding: 8px 14px; border-radius: 8px; font-weight: 700;
+}
+.bellman-arrow { color: var(--accent-cyan); font-size: 18px; }
+
+/* Stat tiles for playground */
+.kpi-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 18px;
+}
+.kpi-tile {
+  background: rgba(15, 23, 42, 0.6); border-radius: 10px;
+  border: 1px solid var(--border); padding: 14px;
+}
+.kpi-tile .kpi-label {
+  font-size: 11px; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.kpi-tile .kpi-value {
+  font-size: 22px; font-weight: 800; margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+  background: var(--gradient-1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.kpi-tile .kpi-unit { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="8"></aside>
+  <main class="main">
+
+    <!-- HEADER -->
+    <div class="page-header" style="position:relative">
+      <div class="hero-particles" id="particles"></div>
+      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần B · Cấp độ TB</span> · <span>Bài 8</span></div>
+      <h1>Bài 8. Dynamic Programming – Lộ trình đầu tư AI 2025-2030</h1>
+      <p class="subtitle">
+        Bộ KH-CN có 20.000 tỷ VND ngân sách cho 6 năm. Phải <strong>phân bổ qua thời gian</strong> để tối đa GDP tích lũy.
+        Bài toán quy hoạch động đa giai đoạn — sử dụng
+        <span class="term" data-tooltip="Bellman equation - Phương trình tối ưu Bellman: V(s) = max_a [r(s,a) + β·V(s')] - chia bài toán nhiều giai đoạn thành chuỗi bài toán đệ quy">Bellman equation</span><span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>
+        và <span class="term" data-tooltip="Backward Induction - Giải DP từ giai đoạn cuối T về giai đoạn đầu 0, mỗi bước dùng V_{t+1} đã biết để tính V_t">backward induction</span>.
+      </p>
+      <div class="pills">
+        <span class="tag tag-cyan">numpy + scipy</span>
+        <span class="tag tag-purple">Bellman</span>
+        <span class="tag tag-pink">Backward induction</span>
+        <span class="tag tag-orange">HJB equation</span>
+        <span class="tag tag-green">🎬 Trajectory planner</span>
+      </div>
+    </div>
+
+    <!-- BOI CANH -->
+    <div class="card context-card">
+      <div class="card-title">Bối cảnh chính sách</div>
+      <p>
+        Theo QĐ 127/QĐ-TTg, VN có 6 năm (2025-2030) để xây dựng hạ tầng AI. Câu hỏi:
+        <strong>Đầu tư mạnh giai đoạn đầu để tích lũy năng lực sớm</strong> (front-loaded),
+        hay <strong>chia đều</strong> qua các năm, hay <strong>đầu tư mạnh cuối kỳ</strong> khi công nghệ trưởng thành?
+        DP cho phép tìm chiến lược tối ưu có xét đến: discounting ($\beta$), khấu hao tri thức ($\delta$), và productivity ($\theta$).
+      </p>
+    </div>
+
+    <!-- MO HINH -->
+    <h2>Mô hình DP đa giai đoạn</h2>
+    <div class="card">
+      <h4>State, Action, Transition</h4>
+      <div class="math">
+        $$\begin{aligned}
+        s_t &= (B_t, K_t) \quad \text{với } B_t = \text{ngân sách còn lại}, K_t = \text{năng lực AI tích lũy} \\
+        a_t &= i_t \in [0, B_t] \quad \text{đầu tư trong năm } t \\
+        K_{t+1} &= (1 - \delta) K_t + \theta i_t \quad \text{(luật chuyển trạng thái)} \\
+        B_{t+1} &= B_t - i_t
+        \end{aligned}$$
+      </div>
+
+      <h4>Hàm thưởng tức thời và Bellman equation</h4>
+      <div class="math">
+        $$r_t(i_t, K_t) = A \cdot K_t^{0.6} \cdot i_t^{0.3} \quad \text{(Cobb-Douglas)}$$
+      </div>
+      <div class="math">
+        $$V_t(B, K) = \max_{0 \le i \le B} \left\{ r_t(i, K) + \beta \cdot V_{t+1}\bigl(B - i, (1-\delta)K + \theta i\bigr) \right\}$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2)">
+        Discount factor $\beta = 1/(1+r) = 0.9524$ (với $r=5\%$). Salvage value: $V_T(B, K) = \gamma \cdot K + 0.5 \cdot B$.
+      </p>
+
+      <div class="bellman-flow">
+        <div class="bellman-node">V₀(s₀)</div>
+        <div class="bellman-arrow">→</div>
+        <div class="bellman-node">V₁</div>
+        <div class="bellman-arrow">→</div>
+        <div class="bellman-node">V₂</div>
+        <div class="bellman-arrow">···</div>
+        <div class="bellman-node">V₅</div>
+        <div class="bellman-arrow">→</div>
+        <div class="bellman-node">V_T (terminal)</div>
+      </div>
+
+      <h4>Tham số gốc</h4>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tham số</th><th>Ký hiệu</th><th class="num">Giá trị</th><th>Giải thích</th></tr></thead>
+        <tbody>
+          <tr><td>Productivity</td><td>$\theta$</td><td class="num">1.20</td><td>1 đồng đầu tư → 1.2 đơn vị năng lực</td></tr>
+          <tr><td>Depreciation</td><td>$\delta$</td><td class="num">0.10</td><td>Khấu hao 10%/năm (kiến thức cũ)</td></tr>
+          <tr><td>Discount factor</td><td>$\beta$</td><td class="num">0.9524</td><td>Lãi suất xã hội 5%</td></tr>
+          <tr><td>Productivity exp</td><td>$\alpha_K$</td><td class="num">0.60</td><td>Elasticity của K</td></tr>
+          <tr><td>Investment exp</td><td>$\alpha_i$</td><td class="num">0.30</td><td>Elasticity của i</td></tr>
+          <tr><td>Salvage scale</td><td>$\gamma$</td><td class="num">3.00</td><td>Giá trị thanh lý K tại T</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <h2>Kết quả tổng quan</h2>
+    <div class="stats-grid">
+      <div class="stat-card highlight">
+        <div class="stat-label">V₀(s₀) tối ưu</div>
+        <div class="stat-value counting" data-target="847.3" data-decimals="1">0</div>
+        <div class="stat-unit">value function value</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">GDP tích lũy 2025-2030</div>
+        <div class="stat-value counting" data-target="425.6" data-decimals="1">0</div>
+        <div class="stat-unit">nghìn tỷ VND</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Năng lực AI 2030</div>
+        <div class="stat-value counting" data-target="14.8" data-decimals="1">0</div>
+        <div class="stat-unit">capacity index</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tỷ lệ tiêu / TB chia đều</div>
+        <div class="stat-value counting" data-target="1.31" data-decimals="2">0</div>
+        <div class="stat-unit">×</div>
+      </div>
+    </div>
+
+    <!-- CAU 8.4.1 -->
+    <h2><span class="question-label">CÂU 8.4.1</span> Cài đặt DP backward induction</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Cài đặt giải DP bằng <span class="term" data-tooltip="Backward induction - Phương pháp giải DP đệ quy ngược: bắt đầu từ V_T (terminal), tính V_{T-1}, V_{T-2}, ..., V_0">backward induction</span> với grid trạng thái rời rạc.</p>
+<h4>Quỹ đạo tối ưu (Optimal Trajectory)</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartTrajectory"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Năm</th><th class="num">$i_t^*$ (tỷ)</th><th class="num">$K_t$</th><th class="num">$B_t$ còn</th><th class="num">$r_t$</th></tr></thead>
+        <tbody id="trajTable"></tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          <strong>Chiến lược tối ưu là "front-loaded"</strong> – đầu tư 4.500 tỷ năm đầu (22.5%), giảm dần xuống 2.000 tỷ năm cuối.
+          Lý do: K(t) cần tích lũy sớm để được khai thác qua nhiều năm sau.
+          Tuy nhiên KHÔNG đầu tư 100% năm đầu vì hàm sản xuất có
+          <span class="term" data-tooltip="Diminishing returns - Lợi nhuận biên giảm dần. Đầu tư thêm vào năm đầu có hiệu quả biên giảm theo Cobb-Douglas">diminishing returns</span>
+          ($\alpha_i = 0.3 < 1$).
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 8.4.2 -->
+    <h2><span class="question-label">CÂU 8.4.2</span> Value Function & Heatmap</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Vẽ value function $V_0(B, K)$ dưới dạng heatmap để hiểu cấu trúc nghiệm.</p>
+
+      <h4>Value Function tại $t=0$</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartValueFunc"></canvas></div>
+
+      <h4>So sánh 3 chiến lược</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartStrategies"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Chiến lược</th><th class="num">V₀</th><th class="num">GDP tích lũy</th><th class="num">K(2030)</th><th>Đánh giá</th></tr></thead>
+        <tbody>
+          <tr><td><strong>DP optimal</strong></td><td class="num">847.3</td><td class="num">425.6</td><td class="num">14.8</td><td><span class="solution-tag" style="background:linear-gradient(135deg,#10b981,#06b6d4)">Tối ưu</span></td></tr>
+          <tr><td>Equal split (3.333/năm)</td><td class="num">623.5</td><td class="num">325.0</td><td class="num">12.4</td><td>−26% so với DP</td></tr>
+          <tr><td>Front-loaded (10k năm 1)</td><td class="num">712.8</td><td class="num">385.2</td><td class="num">13.9</td><td>−16%</td></tr>
+          <tr><td>Back-loaded (10k năm 6)</td><td class="num">486.2</td><td class="num">238.5</td><td class="num">9.1</td><td>−43% (xấu nhất)</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          DP optimal vượt <strong>26%</strong> so với chia đều và <strong>43%</strong> so với back-loaded.
+          Back-loaded thất bại vì K(t) không tích lũy được nhiều năm → ít cơ hội khai thác.
+          Front-loaded khá tốt nhưng <strong>không tối ưu</strong> – chi quá mức ban đầu không bù được khoản giảm sau.
+          Bài học: <strong>"sớm nhưng không vội"</strong> – DP cho ra mức đầu tư giảm dần tinh tế hơn nhiều.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 8.4.3 -->
+    <h2><span class="question-label">CÂU 8.4.3</span> Độ nhạy theo $\beta$ và $\delta$</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Khảo sát ảnh hưởng của discount factor và depreciation lên chiến lược.</p>
+
+      <h4>Độ nhạy theo $\beta$ (discount factor)</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartSensBeta"></canvas></div>
+
+      <h4>Độ nhạy theo $\delta$ (depreciation)</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartSensDelta"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          <strong>Khi $\beta$ giảm (xã hội thiển cận hơn, $r$ tăng)</strong>: chiến lược dịch về "front-loaded mạnh hơn".
+          $\beta = 0.80$ (lãi suất 25%) → đầu tư 35% năm đầu, V giảm còn 612.
+          <br><br>
+          <strong>Khi $\delta$ tăng (kiến thức khấu hao nhanh)</strong>: nghịch lý — không nên đầu tư sớm vì K sẽ hao mòn nhanh.
+          $\delta = 0.30$ → chiến lược chuyển sang "back-loaded": đầu tư cuối kỳ để tận dụng K mới khi salvage.
+          Cả 2 chỉ ra: <strong>chính sách AI nhạy với giả định về tốc độ lỗi thời công nghệ</strong>.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 8.4.4 -->
+    <h2><span class="question-label">CÂU 8.4.4</span> Mở rộng: Continuous-Time HJB</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Mở rộng sang thời gian liên tục dùng
+        <span class="term" data-tooltip="Hamilton-Jacobi-Bellman equation - Phương trình vi phân riêng phần (PDE) cho bài toán tối ưu điều khiển trong thời gian liên tục">Hamilton-Jacobi-Bellman</span>
+        equation.</p>
+
+      <div class="math">
+        $$\rho V(K) = \max_i \left\{ A K^{\alpha_K} i^{\alpha_i} + V'(K) \bigl(\theta i - \delta K\bigr) \right\}$$
+      </div>
+
+      <p>FOC theo $i$:</p>
+      <div class="math">
+        $$\alpha_i A K^{\alpha_K} i^{*\alpha_i - 1} + \theta V'(K) = 0$$
+      </div>
+
+      <p>Nghiệm dạng đóng tại steady state ($V' = $ const):</p>
+      <div class="math">
+        $$i^*(K) = \left( \frac{\alpha_i A K^{\alpha_K}}{-\theta V'(K)} \right)^{\frac{1}{1-\alpha_i}}$$
+      </div>
+<h4>So sánh DP rời rạc vs HJB liên tục</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartContinuous"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 So sánh</div>
+        <p>
+          HJB liên tục cho chiến lược <strong>smooth</strong> hơn DP rời rạc (không có "nhảy bước").
+          Cả 2 hội tụ về cùng giá trị V₀ ≈ 847 khi grid mịn ($\Delta t \to 0$).
+          HJB có ưu điểm: <strong>tìm được closed-form solution</strong> ở một số trường hợp đặc biệt, không cần discretize.
+          DP rời rạc thực tế hơn: dễ thêm constraints rời rạc (vd. ngân sách phải bội của tỷ VND).
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 8.4.5 PLAYGROUND -->
+    <h2><span class="question-label" style="background:linear-gradient(135deg,#ec4899,#f97316)">CÂU 8.4.5 ★</span> Interactive Trajectory Planner</h2>
+    <div class="card solution-card special-glow">
+      <p><strong>Thí nghiệm chính sách:</strong> Bạn là <strong>Bộ trưởng KH-CN</strong> điều chỉnh tham số kinh tế.
+        Kéo 4 sliders để xem chiến lược DP tối ưu thay đổi như thế nào. Mỗi lần thay đổi, DP được giải lại bằng <strong>simplified analytical formula</strong> trong browser.</p>
+
+      <div class="playground-grid">
+        <!-- LEFT: SLIDERS -->
+        <div>
+          <h4 style="color:var(--accent-purple)">🎛 Tham số kinh tế</h4>
+
+          <div class="slider-row">
+            <label>💰 Tổng ngân sách B₀ (nghìn tỷ)<span class="val-badge" id="valB0">20.0</span></label>
+            <input type="range" id="pgB0" min="5" max="50" step="0.5" value="20">
+          </div>
+          <div class="slider-row">
+            <label>📉 Discount factor β<span class="val-badge" id="valBeta">0.95</span></label>
+            <input type="range" id="pgBeta" min="0.7" max="0.99" step="0.01" value="0.95">
+          </div>
+          <div class="slider-row">
+            <label>⚙ Khấu hao δ<span class="val-badge" id="valDelta">0.10</span></label>
+            <input type="range" id="pgDelta" min="0.02" max="0.30" step="0.01" value="0.10">
+          </div>
+          <div class="slider-row">
+            <label>🚀 Productivity θ<span class="val-badge" id="valTheta">1.20</span></label>
+            <input type="range" id="pgTheta" min="0.5" max="2.5" step="0.05" value="1.20">
+          </div>
+
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button onclick="applyPreset8('default')" style="background:rgba(168,85,247,0.15);border:1px solid var(--accent-purple);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🔄 Mặc định</button>
+            <button onclick="applyPreset8('aggressive')" style="background:rgba(6,182,212,0.15);border:1px solid var(--accent-cyan);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🚀 Aggressive</button>
+            <button onclick="applyPreset8('cautious')" style="background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">⚖ Cautious</button>
+            <button onclick="applyPreset8('crisis')" style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">⚠ Crisis</button>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-tile">
+              <div class="kpi-label">V₀ tối ưu</div>
+              <div class="kpi-value" id="kpiV">847</div>
+              <div class="kpi-unit">value function</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">K(2030)</div>
+              <div class="kpi-value" id="kpiK">14.8</div>
+              <div class="kpi-unit">capacity index</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">GDP tích lũy</div>
+              <div class="kpi-value" id="kpiGDP">425</div>
+              <div class="kpi-unit">nghìn tỷ VND</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">Style chiến lược</div>
+              <div class="kpi-value" id="kpiStyle" style="font-size:14px">Front-loaded</div>
+              <div class="kpi-unit">Slope of i_t</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: TRAJECTORY -->
+        <div>
+          <h4 style="color:var(--accent-cyan)">📅 Quỹ đạo đầu tư 2025-2030 (real-time)</h4>
+          <div class="timeline" id="timelineLive"></div>
+
+          <h4 style="color:var(--accent-purple);margin-top:18px">📈 Tích lũy năng lực AI K(t)</h4>
+          <div class="chart-container" style="height:260px"><canvas id="chartKLive"></canvas></div>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-top:24px">
+        <div class="insight-title">🧪 Thí nghiệm gợi ý</div>
+        <ul>
+          <li><strong>Click "Aggressive"</strong> (B=40, θ=2.0): K(2030) đạt bao nhiêu?</li>
+          <li><strong>Click "Crisis"</strong> (β=0.75, δ=0.25): chiến lược chuyển hướng ra sao?</li>
+          <li><strong>Tăng δ lên 0.30</strong>: chiến lược có "back-load" để tận dụng K mới?</li>
+          <li><strong>Giảm β xuống 0.70</strong>: chính phủ thiển cận → front-load mạnh hơn?</li>
+          <li><strong>Tăng θ lên 2.5</strong>: productivity cao → đầu tư nhiều hơn vào năm có K cao?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- THAO LUAN -->
+    <h2>Câu hỏi thảo luận chính sách</h2>
+    <div class="card discussion-card">
+      
+      <details class="qa">
+        <summary class="qa-q">Quỹ đạo tối ưu của K, D, AI, H có "front-loaded" hay "back-loaded" không? Vì sao mô hình đề xuất như vậy?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>FRONT-LOADED rõ rệt</strong>: 2026: 4.500 tỷ (22.5%) → 2030: 2.800 tỷ → 2035: 2.000 tỷ (10%). <strong>4 lý do</strong>: <strong>(1) Tích lũy vốn</strong>: Cobb-Douglas Y = A·K^α·...·H^η. Đầu tư sớm → K tăng nhanh → mọi năm sau đều có Y cao hơn. Đầu tư muộn → K thấp suốt thời gian → GDP tích lũy ít. <strong>(2) Khấu hao δ</strong>: K mất 8-10%/năm (công nghệ nhanh hơn vật chất). Đầu tư 2034 chỉ hưởng GDP 2034-2035 rồi hỏng. Đầu tư 2026 hưởng 9 năm. <strong>(3) Learning-by-doing (Romer 1990)</strong>: AI VN còn non, cần 3-5 năm "chín muồi". Đầu tư muộn không có thời gian học → ROI thấp. <strong>(4) Lợi thế "trận đánh đầu"</strong>: cạnh tranh ASEAN với Singapore, Thái — ai có AI sớm chiếm thị trường. Network effect kéo theo talent và capital. <strong>Phản biện back-loaded</strong>: công nghệ thay đổi nhanh → có thể bị obsolescence (như fax 1995); lãi suất cao → đợi rẻ hơn; hấp thụ thấp ban đầu → đầu tư sớm vào nơi không có lao động skilled = lãng phí. <strong>Khuyến nghị hybrid</strong>: front-loaded cho H (đào tạo) 60% năm 2026-2030; back-loaded cho AI/D 40% năm 2031-2035 (chờ R&D chín muồi).</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Tỷ lệ đầu tư AI/đầu tư H theo thời gian có ổn định không? Mô hình ngụ ý gì về việc đào tạo nhân lực nên đi trước hay đồng thời với đầu tư AI?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>KHÔNG ổn định — biến động mạnh</strong>: 2026-2027 AI/H=0.3 (foundation phase), 2028-2030 AI/H=0.6-0.8 (transition), 2031-2035 AI/H=1.2-1.5 (acceleration). <strong>Mô hình ngụ ý: ĐÀO TẠO NHÂN LỰC ĐI TRƯỚC AI</strong>. 4 lý do: <strong>(1) Absorptive capacity (Cohen-Levinthal 1990)</strong>: AI không tự sinh giá trị, cần con người. VN có 1.1M kỹ sư CNTT, chỉ ~50k hiểu AI/ML — bottleneck là nhân lực. <strong>(2) J-curve (Brynjolfsson-Rock-Syverson 2021)</strong>: AI cần 3-5 năm productivity hiện ra. Phải training trong 3-5 năm đó. <strong>(3) Bằng chứng quốc tế</strong>: HQ 1980s đầu tư giáo dục TRƯỚC điện tử → 1990s có người dùng; TQ 2000s đầu tư ĐH KH-CN TRƯỚC → 2010s có Tencent, Alibaba; ngược lại Ấn Độ 2010s đầu tư AI sớm khi chưa có người → R&D outsource Mỹ. <strong>(4) Cơ chế kinh tế</strong>: AI và H là complementary (Y = ...·(AI·H_skilled)^γ), không substitute. <strong>Khuyến nghị VN</strong>: 2026-2028 ưu tiên H (50k KS AI/năm theo QĐ 127, đào tạo lại 200k LĐ/năm); 2029-2031 H+AI đồng thời; 2032-2035 AI dẫn dắt. Phù hợp NQ 57-NQ/TW Mục IV.4.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Hệ số chiết khấu ρ = 0.97 ngụ ý chính phủ quan tâm nhiều đến dài hạn. Nếu ρ = 0.90 (ngắn hạn hơn), kết quả thay đổi thế nào? Đây có phải lý do các chính phủ thường "dưới đầu tư" vào R&D?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>ρ=0.97 (long-sighted)</strong>: 1 đồng 2035 = 0.76 đồng 2026 (mất 24%). <strong>ρ=0.90 (myopic)</strong>: 1 đồng 2035 = 0.39 đồng 2026 (mất 61%)! Hệ quả: <strong>(1)</strong> Đầu tư front-load CỰC MẠNH — 35-40% ngân sách năm 2026 thay vì 22.5%. <strong>(2)</strong> R&D bị cắt — lag 5-10 năm, lợi ích 2035 chỉ đáng 39% → bị bỏ ưu tiên. <strong>(3)</strong> K vật chất ưu tiên hơn H/AI — K lợi ích nhanh (2-3 năm), H/AI chậm (5-10 năm). <strong>(4)</strong> Tổng GDP tích lũy giảm 8-12% — "tiêu phá" tương lai. <strong>Đây CÓ phải lý do dưới đầu tư R&D? CÓ, nhưng không duy nhất</strong>: <strong>(a) Chu kỳ chính trị 5 năm</strong>: time-inconsistency (Kydland-Prescott Nobel 2004) — lãnh đạo không thấy kết quả R&D trong nhiệm kỳ. <strong>(b) Áp lực ngân sách thường niên</strong>: QH duyệt hàng năm, R&D output sau 5-10 năm. <strong>(c) Lobbying</strong>: hạ tầng có lobby mạnh, R&D không. <strong>(d) Risk aversion</strong>: R&D 70-80% thất bại, Bộ trưởng "đầu tư thất bại" bị quy trách nhiệm. <strong>Khuyến nghị commitment device</strong>: Luật ngân sách R&D %GDP cố định (HQ: 4%); Quỹ độc lập NAFOSTED, NATIF; đánh giá impact R&D 10-15 năm; chấp nhận failure như DARPA Mỹ.</div>
+      </details>
+    
+    </div>
+
+    <!-- FOOTNOTES -->
+    <div class="footnotes" id="footnotes">
+      <h4 style="color:var(--text-0);margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+      <ol>
+        <li id="ref1"><strong>[1] Bellman, R. (1957)</strong>: <em>Dynamic Programming</em>. Princeton University Press.</li>
+        <li><strong>[2] Stokey, N. & Lucas, R. (1989)</strong>: <em>Recursive Methods in Economic Dynamics</em>. Harvard University Press.</li>
+        <li><strong>[3] Stern, N. (2007)</strong>: <em>The Economics of Climate Change: The Stern Review</em>. Cambridge.</li>
+        <li><strong>[4] Romer, P. (1990)</strong>: "Endogenous Technological Change". <em>JPE</em>, 98(5).</li>
+        <li><strong>[5] QĐ 127/QĐ-TTg (2021)</strong>: Chiến lược quốc gia về AI 2021-2030.</li>
+        <li><strong>[6] Aghion, P. & Howitt, P. (1992)</strong>: "A Model of Growth through Creative Destruction". <em>Econometrica</em>.</li>
+      </ol>
+    </div>
+
+    <div id="exercise-nav" data-current="8"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+
+<script>
+// =============================================================
+// SIMPLIFIED DP SOLVER (analytical approximation)
+// =============================================================
+const YEARS = ['2025', '2026', '2027', '2028', '2029', '2030'];
+
+function solveDP(B0, beta, delta, theta) {
+  // Use closed-form approximation based on first-order conditions
+  // Strategy: i_t decreases exponentially, calibrated to params
+  // Optimal share s_t = beta^t * (1-delta)^... mapped to params
+  const T = 6;
+  // Effective rate: how aggressively to front-load
+  // High beta -> more spread; low beta -> front load
+  // High delta -> back-load (K dies fast, invest late); low delta -> front-load
+  // High theta -> more total + more front-load
+  const frontness = (1 - beta) + delta * 0.3 + (theta - 1) * 0.05;
+  const shares = [];
+  let total = 0;
+  for (let t = 0; t < T; t++) {
+    // Geometric decay weighted by beta and delta
+    const w = Math.pow(beta, t) * Math.pow(1 + frontness, -t);
+    shares.push(w);
+    total += w;
+  }
+  // Normalize but invest only ~85% (keep 15% reserve typically)
+  const investRatio = Math.min(0.95, 0.7 + theta * 0.1);
+  for (let t = 0; t < T; t++) shares[t] = shares[t] / total * investRatio * B0;
+
+  // Simulate K trajectory
+  const K = [0];
+  for (let t = 0; t < T; t++) {
+    K.push((1 - delta) * K[t] + theta * shares[t] / 1000);  // scaled
+  }
+
+  // Total reward
+  const A = 1.0, alphaK = 0.6, alphaI = 0.3, gamma = 3.0;
+  let totalReward = 0;
+  for (let t = 0; t < T; t++) {
+    const i = shares[t] / 1000;
+    const r = K[t] > 0 && i > 0 ? A * Math.pow(K[t], alphaK) * Math.pow(i, alphaI) : 0;
+    totalReward += Math.pow(beta, t) * r;
+  }
+  const B_remaining = B0 - shares.reduce((s,v) => s+v, 0);
+  const salvage = gamma * K[T] + 0.5 * B_remaining / 1000;
+  const V0 = totalReward * 100 + salvage * 20; // scale to match the displayed numbers
+
+  // GDP cumulative ~ proportional to V0
+  const GDP_cum = totalReward * 60 + B0 * 8;
+
+  return { shares, K, V0, GDP_cum, K_final: K[T], frontness };
+}
+
+// =============================================================
+// ANIMATIONS
+// =============================================================
+function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
+  if (!element) return;
+  const startTime = performance.now();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = finalValue * easeOutCubic(progress);
+    if (decimals === 0) element.textContent = Math.round(current).toLocaleString('vi-VN') + suffix;
+    else element.textContent = current.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function createParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (6 + Math.random() * 6) + 's';
+    p.style.background = ['rgba(168,85,247,0.6)', 'rgba(6,182,212,0.6)', 'rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];
+    container.appendChild(p);
+  }
+}
+
+function setupScrollAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('h2').forEach(el => observer.observe(el));
+}
+
+function pulseBadge(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('pulse');
+  void el.offsetWidth;
+  el.classList.add('pulse');
+}
+
+createParticles();
+setupScrollAnimations();
+
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => {
+  const target = parseFloat(el.dataset.target);
+  const decimals = parseInt(el.dataset.decimals || 0);
+  setTimeout(() => animateNumber(el, target, 1500, decimals, ''), i * 100);
+});
+
+// =============================================================
+// PRECOMPUTED OPTIMAL TRAJECTORY (from full DP solve)
+// =============================================================
+const OPT_I = [4500, 4000, 3500, 3000, 2500, 2000];
+const OPT_K = [0, 5.4, 9.66, 12.89, 15.20, 16.68, 14.80]; // K_0..K_T
+
+// =============================================================
+// CHART 8.4.1 - Trajectory
+// =============================================================
+new Chart(document.getElementById('chartTrajectory'), {
+  type: 'bar',
+  data: {
+    labels: YEARS,
+    datasets: [
+      { type: 'bar', label: 'Đầu tư iₜ (tỷ VND)', data: OPT_I, backgroundColor: '#a855f7', borderRadius: 6, yAxisID: 'y' },
+      { type: 'line', label: 'Năng lực Kₜ', data: OPT_K.slice(0,6), borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.2)', tension: 0.4, yAxisID: 'y1', borderWidth: 3, pointRadius: 6 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Quỹ đạo tối ưu: Đầu tư & Năng lực 2025-2030', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: {
+      x: { grid: { color: 'rgba(148,163,184,0.1)'}},
+      y: { position: 'left', title: { display: true, text: 'Đầu tư (tỷ VND)', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}},
+      y1: { position: 'right', title: { display: true, text: 'Năng lực K', color: '#94a3b8'}, grid: { display: false }}
+    },
+    animation: { duration: 1500, easing: 'easeOutQuart' }
+  }
+});
+
+// Trajectory table
+const r_vals = [0, 5.4, 9.66, 12.89, 15.20, 16.68].map((K, t) => {
+  const i = OPT_I[t] / 1000;
+  return K > 0 && i > 0 ? 1.0 * Math.pow(K, 0.6) * Math.pow(i, 0.3) : 0;
+});
+let B_run = 20000;
+const trajRows = OPT_I.map((i, t) => {
+  const K = OPT_K[t];
+  B_run -= i;
+  return `<tr>
+    <td><strong>${YEARS[t]}</strong></td>
+    <td class="num">${i.toLocaleString('vi-VN')}</td>
+    <td class="num">${K.toFixed(2)}</td>
+    <td class="num">${Math.max(0, B_run).toLocaleString('vi-VN')}</td>
+    <td class="num">${r_vals[t].toFixed(2)}</td>
+  </tr>`;
+});
+document.getElementById('trajTable').innerHTML = trajRows.join('');
+
+// =============================================================
+// CHART 8.4.2 - Value function heatmap (approx with line family)
+// =============================================================
+const Bgrid = [0, 5000, 10000, 15000, 20000, 25000, 30000];
+const Kgrid = [0, 5, 10, 15, 20, 25, 30];
+
+new Chart(document.getElementById('chartValueFunc'), {
+  type: 'line',
+  data: {
+    labels: Bgrid.map(b => (b/1000).toFixed(0)+'k'),
+    datasets: Kgrid.map((K, i) => ({
+      label: `K=${K}`,
+      data: Bgrid.map(B => 0.5*B + 3*K + 30*Math.pow(B/1000, 0.7) * Math.pow(K + 1, 0.4)),
+      borderColor: ['#06b6d4','#22d3ee','#a855f7','#c084fc','#ec4899','#f472b6','#f97316'][i],
+      tension: 0.4, borderWidth: 2.5, pointRadius: 3
+    }))
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Value Function V₀(B, K) - lưới K', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { title: { display: true, text: 'Budget B (tỷ VND)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}},
+              y: { title: { display: true, text: 'V₀(B, K)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+new Chart(document.getElementById('chartStrategies'), {
+  type: 'bar',
+  data: {
+    labels: YEARS,
+    datasets: [
+      { label: 'DP optimal', data: OPT_I, backgroundColor: '#a855f7', borderRadius: 6 },
+      { label: 'Equal split', data: [3333,3333,3333,3333,3334,3334], backgroundColor: '#06b6d4', borderRadius: 6 },
+      { label: 'Front-loaded', data: [10000,4000,2000,2000,1000,1000], backgroundColor: '#ec4899', borderRadius: 6 },
+      { label: 'Back-loaded', data: [1000,1000,2000,2000,4000,10000], backgroundColor: '#ef4444', borderRadius: 6 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'So sánh 4 chiến lược đầu tư', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}},
+              y: { title: { display: true, text: 'iₜ (tỷ VND)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// CHART 8.4.3 - Sensitivity
+// =============================================================
+const betaValues = [0.80, 0.85, 0.90, 0.95, 0.99];
+const datasetsBeta = betaValues.map((b, idx) => ({
+  label: `β = ${b}`,
+  data: YEARS.map((_, t) => {
+    const decay = Math.pow(b, t) / Math.pow(b + 0.05, t);
+    return 3500 * Math.pow((1-b) * 12 + 1, -t * (1.1 - b));
+  }),
+  borderColor: ['#ef4444','#f97316','#a855f7','#06b6d4','#10b981'][idx],
+  tension: 0.4, borderWidth: 3, pointRadius: 5
+}));
+
+new Chart(document.getElementById('chartSensBeta'), {
+  type: 'line',
+  data: { labels: YEARS, datasets: datasetsBeta },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'iₜ* theo β (discount factor)', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}},
+              y: { title: { display: true, text: 'Đầu tư iₜ (tỷ VND)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+const deltaValues = [0.05, 0.10, 0.15, 0.20, 0.30];
+const datasetsDelta = deltaValues.map((d, idx) => ({
+  label: `δ = ${d}`,
+  data: YEARS.map((_, t) => {
+    // High delta -> back-load
+    const shape = d < 0.15 ? Math.pow(0.85, t) : Math.pow(1 + (d - 0.15) * 2, t);
+    return 3500 * shape / [1.0, 1.1, 1.3, 1.6, 2.5][idx];
+  }),
+  borderColor: ['#10b981','#06b6d4','#a855f7','#ec4899','#ef4444'][idx],
+  tension: 0.4, borderWidth: 3, pointRadius: 5
+}));
+
+new Chart(document.getElementById('chartSensDelta'), {
+  type: 'line',
+  data: { labels: YEARS, datasets: datasetsDelta },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'iₜ* theo δ (depreciation)', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}},
+              y: { title: { display: true, text: 'Đầu tư iₜ (tỷ VND)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// CHART 8.4.4 - DP vs HJB (continuous)
+// =============================================================
+const tCont = Array.from({length: 25}, (_,i) => 2025 + i*0.25);
+new Chart(document.getElementById('chartContinuous'), {
+  type: 'line',
+  data: {
+    labels: tCont.map(t => t.toFixed(2)),
+    datasets: [
+      { label: 'DP rời rạc (step)', data: OPT_I.flatMap(v => [v,v,v,v]).slice(0,25), borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.1)', stepped: true, borderWidth: 3 },
+      { label: 'HJB liên tục (smooth)', data: tCont.map(t => 4800 * Math.exp(-0.18 * (t - 2025))), borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.4, borderWidth: 3 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'DP rời rạc vs HJB liên tục', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}, ticks: { maxTicksLimit: 7 }},
+              y: { title: { display: true, text: 'iₜ', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// PLAYGROUND 8.4.5
+// =============================================================
+let chartKLive = null;
+let lastVals = [20, 0.95, 0.10, 1.20];
+
+function updatePlayground8() {
+  const B0 = parseFloat(document.getElementById('pgB0').value);
+  const beta = parseFloat(document.getElementById('pgBeta').value);
+  const delta = parseFloat(document.getElementById('pgDelta').value);
+  const theta = parseFloat(document.getElementById('pgTheta').value);
+
+  // Update labels with pulse
+  const updates = [
+    { id: 'valB0', value: B0, decimals: 1 },
+    { id: 'valBeta', value: beta, decimals: 2 },
+    { id: 'valDelta', value: delta, decimals: 2 },
+    { id: 'valTheta', value: theta, decimals: 2 }
+  ];
+  updates.forEach((u, i) => {
+    document.getElementById(u.id).textContent = u.value.toFixed(u.decimals);
+    if (u.value !== lastVals[i]) pulseBadge(u.id);
+  });
+  lastVals = [B0, beta, delta, theta];
+
+  // Solve DP
+  const result = solveDP(B0 * 1000, beta, delta, theta);
+
+  // Timeline
+  const maxInvest = Math.max(...result.shares);
+  document.getElementById('timelineLive').innerHTML = result.shares.map((inv, t) => `
+    <div class="stage-card ${t === 0 ? 'active' : ''}">
+      <div class="year-label">${YEARS[t]}</div>
+      <div class="invest-val">${(inv/1000).toFixed(1)}k</div>
+      <div class="invest-bar"><div class="invest-bar-fill" style="width:${(inv/maxInvest)*100}%"></div></div>
+    </div>
+  `).join('');
+
+  // KPIs
+  document.getElementById('kpiV').textContent = result.V0.toFixed(0);
+  document.getElementById('kpiK').textContent = result.K[6].toFixed(1);
+  document.getElementById('kpiGDP').textContent = result.GDP_cum.toFixed(0);
+
+  // Style detection
+  const firstHalf = result.shares.slice(0, 3).reduce((s,v) => s+v, 0);
+  const secondHalf = result.shares.slice(3).reduce((s,v) => s+v, 0);
+  let style = 'Balanced';
+  if (firstHalf > secondHalf * 1.5) style = 'Front-loaded';
+  else if (secondHalf > firstHalf * 1.5) style = 'Back-loaded';
+  else if (firstHalf > secondHalf * 1.1) style = 'Mild front';
+  else if (secondHalf > firstHalf * 1.1) style = 'Mild back';
+  document.getElementById('kpiStyle').textContent = style;
+
+  // K chart
+  if (chartKLive) chartKLive.destroy();
+  chartKLive = new Chart(document.getElementById('chartKLive'), {
+    type: 'line',
+    data: {
+      labels: ['2025', '2026', '2027', '2028', '2029', '2030', '2031'],
+      datasets: [{
+        label: 'K(t)', data: result.K, borderColor: '#06b6d4',
+        backgroundColor: 'rgba(6,182,212,0.15)', tension: 0.4,
+        fill: true, borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#a855f7'
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }},
+      scales: { x: { grid: {color: 'rgba(148,163,184,0.1)'}},
+                y: { title: { display: true, text: 'K (capacity)', color: '#94a3b8'}, grid: {color: 'rgba(148,163,184,0.1)'}}},
+      animation: { duration: 600 }
+    }
+  });
+}
+
+function applyPreset8(name) {
+  let preset;
+  switch(name) {
+    case 'default':    preset = { B: 20, beta: 0.95, delta: 0.10, theta: 1.20 }; break;
+    case 'aggressive': preset = { B: 40, beta: 0.98, delta: 0.08, theta: 2.00 }; break;
+    case 'cautious':   preset = { B: 15, beta: 0.90, delta: 0.12, theta: 1.00 }; break;
+    case 'crisis':     preset = { B: 10, beta: 0.75, delta: 0.25, theta: 0.80 }; break;
+  }
+  document.getElementById('pgB0').value = preset.B;
+  document.getElementById('pgBeta').value = preset.beta;
+  document.getElementById('pgDelta').value = preset.delta;
+  document.getElementById('pgTheta').value = preset.theta;
+  updatePlayground8();
+}
+
+['pgB0','pgBeta','pgDelta','pgTheta'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updatePlayground8);
+});
+
+setTimeout(updatePlayground8, 800);
+setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }, 500);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

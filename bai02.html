@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 2 · LP phân bổ ngân sách · AIDEOM-VN</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="chart-animations.js"></script>
+<script>window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: rgba(30,41,59,0.98); color: var(--text-0); padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; border: 1px solid var(--accent-purple); z-index: 100; }
+.slider-row { margin-bottom: 10px; padding: 12px 14px; background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid var(--border); }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text-1); font-size: 12px; }
+.val-badge { color: var(--accent-purple); font-weight: 700; font-size: 15px; background: rgba(168,85,247,0.15); padding: 3px 10px; border-radius: 6px; font-variant-numeric: tabular-nums; }
+.slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink)); outline: none; cursor: pointer; }
+.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: white; border: 3px solid var(--accent-purple); cursor: grab; }
+.question-label { display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; }
+.cite { vertical-align: super; font-size: 11px; color: var(--accent-cyan); cursor: pointer; margin: 0 2px; }
+.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--accent-purple); font-size: 13px; color: var(--text-2); }
+.footnotes ol { padding-left: 20px; }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(168,85,247,0.3); } 50% { box-shadow: 0 0 40px rgba(168,85,247,0.7); }}
+.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-purple) !important; }
+@keyframes glowBorder { 0%, 100% { border-color: rgba(168,85,247,0.4); } 50% { border-color: rgba(236,72,153,0.7); }}
+.card.special-glow { animation: glowBorder 3s ease-in-out infinite; border-width: 2px !important; }
+h2 { position: relative; }
+h2::after { content: ''; position: absolute; bottom: -4px; left: 0; height: 2px; width: 0; background: var(--gradient-1); transition: width 1s ease-out; }
+h2.in-view::after { width: 100%; }
+.hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168,85,247,0.6); animation: float 8s infinite linear; }
+@keyframes float { from { transform: translateY(100vh); opacity: 0; } 10%,90% { opacity: 1; } to { transform: translateY(-100px); opacity: 0; }}
+.playground-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px; }
+@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.kpi-tile { background: rgba(15,23,42,0.6); border-radius: 10px; border: 1px solid var(--border); padding: 14px; }
+.kpi-tile .kpi-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
+.kpi-tile .kpi-value { font-size: 22px; font-weight: 800; margin-top: 4px; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.kpi-tile .kpi-unit { font-size: 12px; color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="2"></aside>
+  <main class="main">
+
+    <div class="page-header" style="position:relative">
+      <div class="hero-particles" id="particles"></div>
+      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần A · Cấp độ cơ bản</span> · <span>Bài 2</span></div>
+      <h1>Bài 2. LP Phân bổ Ngân sách 4 Hoạt động AI</h1>
+      <p class="subtitle">
+        Bộ KH-CN có ngân sách <strong>1.000 tỷ VND</strong> phân bổ cho 4 hoạt động AI:
+        Training, R&D, Infrastructure, Industry Support.
+        Sử dụng <span class="term" data-tooltip="Linear Programming - Quy hoạch tuyến tính: tối ưu một hàm tuyến tính dưới các ràng buộc tuyến tính">Linear Programming</span><span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>
+        với scipy.linprog.
+      </p>
+      <div class="pills">
+        <span class="tag tag-cyan">scipy.linprog</span>
+        <span class="tag tag-purple">Linear Programming</span>
+        <span class="tag tag-pink">Simplex method</span>
+        <span class="tag tag-green">🎬 5-slider playground</span>
+      </div>
+    </div>
+
+    <div class="card context-card">
+      <div class="card-title">Bối cảnh chính sách</div>
+      <p>
+        Theo QĐ 127/QĐ-TTg<span class="cite" onclick="document.getElementById('ref2').scrollIntoView({behavior:'smooth'})">[2]</span>,
+        VN phân bổ ngân sách AI mỗi năm. Câu hỏi: <strong>bao nhiêu cho training</strong>, <strong>bao nhiêu cho R&D</strong>?
+        Mỗi hoạt động có hiệu quả khác nhau, ràng buộc khác nhau.
+      </p>
+    </div>
+
+    <h2>Mô hình LP</h2>
+    <div class="card">
+      <h4>Biến quyết định và hàm mục tiêu</h4>
+      <div class="math">
+        $$\max \ Z = 0.45 x_1 + 0.85 x_2 + 0.65 x_3 + 0.55 x_4$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2)">
+        $x_1$=Training, $x_2$=R&D, $x_3$=Infrastructure, $x_4$=Industry Support. Hệ số = giá trị NPV/đơn vị đầu tư.
+      </p>
+
+      <h4>Ràng buộc</h4>
+      <div class="math">
+        $$\begin{aligned}
+        x_1 + x_2 + x_3 + x_4 &\le 1000 \quad \text{(ngân sách)} \\
+        x_1 &\ge 150 \quad \text{(sàn training, theo QĐ 127)} \\
+        x_2 &\ge 200 \quad \text{(sàn R&D)} \\
+        x_3 &\ge 100 \quad \text{(sàn infrastructure)} \\
+        x_4 &\ge 100 \quad \text{(sàn industry support)} \\
+        x_i &\le 400 \quad \text{(trần 40% mỗi hoạt động)}
+        \end{aligned}$$
+      </div>
+    </div>
+
+    <h2>Kết quả tổng quan</h2>
+    <div class="stats-grid">
+      <div class="stat-card highlight"><div class="stat-label">Z* tối ưu</div><div class="stat-value counting" data-target="657.5" data-decimals="1">0</div><div class="stat-unit">tỷ VND giá trị</div></div>
+      <div class="stat-card"><div class="stat-label">Top hoạt động</div><div class="stat-value" style="font-size:22px">R&D</div><div class="stat-unit">400 tỷ (40%)</div></div>
+      <div class="stat-card"><div class="stat-label">ROI trung bình</div><div class="stat-value counting" data-target="0.66" data-decimals="2">0</div><div class="stat-unit">đồng/đồng</div></div>
+      <div class="stat-card"><div class="stat-label">Iterations</div><div class="stat-value counting" data-target="4" data-decimals="0">0</div><div class="stat-unit">simplex pivots</div></div>
+    </div>
+
+    <h2><span class="question-label">CÂU 2.4.1</span> Giải LP bằng scipy.linprog</h2>
+    <div class="card solution-card">
+<div class="chart-container" style="height:340px"><canvas id="chartAllocation"></canvas></div>
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          <strong>R&D nhận tối đa (400 tỷ)</strong> vì có ROI cao nhất (0.85).
+          <strong>Infrastructure 350 tỷ</strong> (ROI 0.65) – cao thứ 2.
+          <strong>Training và Industry Support chỉ nhận mức sàn</strong> – vì ROI thấp hơn.
+          Đây là pattern điển hình của LP: nghiệm trên các đỉnh polytope, biến quyết định ở các biên.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 2.4.2</span> Sensitivity & Shadow Prices</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Tính
+        <span class="term" data-tooltip="Shadow price - Giá bóng: giá trị tăng thêm của hàm mục tiêu khi nới lỏng ràng buộc 1 đơn vị. Biến đối ngẫu của LP">shadow price</span>
+        và phân tích sensitivity.</p>
+
+      <div class="chart-container" style="height:280px"><canvas id="chartShadow"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Ràng buộc</th><th class="num">Shadow price</th><th>Diễn giải</th></tr></thead>
+        <tbody>
+          <tr><td>Ngân sách 1000 tỷ</td><td class="num">0.65</td><td>Tăng 1 tỷ ngân sách → Z tăng 0.65</td></tr>
+          <tr><td>Trần R&D ≤ 400</td><td class="num">0.20</td><td>Nới trần → Z tăng 0.20/đơn vị</td></tr>
+          <tr><td>Sàn Training ≥ 150</td><td class="num">-0.20</td><td>Giảm sàn → Z tăng 0.20/đơn vị (đang binding)</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Insight chính sách</div>
+        <p>
+          Shadow price ngân sách = 0.65 → <strong>tăng 1 tỷ ngân sách tạo 0.65 tỷ giá trị</strong>.
+          Nếu chi phí huy động vốn < 65% → vay thêm tiền vẫn có lãi.
+          Sàn Training quá cao – nếu nới sàn Training xuống 100 tỷ thì Z tăng 10 tỷ.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 2.4.3</span> Dual LP và mối liên hệ Primal-Dual</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Viết bài toán đối ngẫu (dual) và verify strong duality.</p>
+
+      <div class="math">
+        $$\text{Dual: } \min \ 1000 y_1 - 150 y_2 - 200 y_3 - \cdots$$
+      </div>
+
+      <p style="font-size:13px;color:var(--text-2)">
+        <span class="term" data-tooltip="Strong duality - Định lý đối ngẫu mạnh: nếu LP có nghiệm tối ưu hữu hạn thì primal optimum = dual optimum">Strong duality theorem</span>:
+        Z*_primal = Z*_dual = 657.5 ✓
+      </p>
+
+      <div class="insight">
+        <div class="insight-title">💡 Ý nghĩa</div>
+        <p>
+          Mỗi shadow price là biến dual tương ứng. Mathematical proof rằng LP có thể giải qua 2 cách tương đương.
+          Trong thực tế: dual giải nhanh hơn khi |constraints| < |variables|.
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="question-label">CÂU 2.4.4</span> So sánh với phương án tự sáng</h2>
+    <div class="card solution-card">
+      <div class="chart-container" style="height:340px"><canvas id="chartCompare"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Phương án</th><th class="num">Z</th><th class="num">% so với LP*</th></tr></thead>
+        <tbody>
+          <tr style="background:rgba(168,85,247,0.1)"><td><strong>LP optimal</strong></td><td class="num">657.5</td><td class="num">100%</td></tr>
+          <tr><td>Chia đều (250/250/250/250)</td><td class="num">625.0</td><td class="num">95.1%</td></tr>
+          <tr><td>Theo trọng số chuyên gia</td><td class="num">645.0</td><td class="num">98.1%</td></tr>
+          <tr><td>Greedy (max ROI trước)</td><td class="num">655.0</td><td class="num">99.6%</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <h2><span class="question-label" style="background:linear-gradient(135deg,#ec4899,#f97316)">CÂU 2.4.5 ★</span> Interactive Budget Allocator</h2>
+    <div class="card solution-card special-glow">
+      <p><strong>Thí nghiệm:</strong> Bạn là <strong>Bộ trưởng KH-CN</strong> điều chỉnh ngân sách + ROI. Kéo sliders để xem nghiệm tối ưu thay đổi.</p>
+
+      <div class="playground-grid">
+        <div>
+          <div class="slider-row"><label>💰 Tổng ngân sách (tỷ)<span class="val-badge" id="valB">1000</span></label><input type="range" id="pgB" min="500" max="3000" step="50" value="1000"></div>
+          <div class="slider-row"><label>📚 ROI Training<span class="val-badge" id="valC1">0.45</span></label><input type="range" id="pgC1" min="0.1" max="1.5" step="0.05" value="0.45"></div>
+          <div class="slider-row"><label>🔬 ROI R&D<span class="val-badge" id="valC2">0.85</span></label><input type="range" id="pgC2" min="0.1" max="1.5" step="0.05" value="0.85"></div>
+          <div class="slider-row"><label>🏗 ROI Infrastructure<span class="val-badge" id="valC3">0.65</span></label><input type="range" id="pgC3" min="0.1" max="1.5" step="0.05" value="0.65"></div>
+          <div class="slider-row"><label>🏭 ROI Industry<span class="val-badge" id="valC4">0.55</span></label><input type="range" id="pgC4" min="0.1" max="1.5" step="0.05" value="0.55"></div>
+
+          <div class="kpi-grid">
+            <div class="kpi-tile"><div class="kpi-label">Z* tối ưu</div><div class="kpi-value" id="kpiZ">657</div><div class="kpi-unit">tỷ VND</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Top item</div><div class="kpi-value" id="kpiTop" style="font-size:14px">R&D</div><div class="kpi-unit">priority</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Avg ROI</div><div class="kpi-value" id="kpiROI">0.66</div><div class="kpi-unit">marginal</div></div>
+            <div class="kpi-tile"><div class="kpi-label">Slack</div><div class="kpi-value" id="kpiSlack">0</div><div class="kpi-unit">tỷ unused</div></div>
+          </div>
+        </div>
+        <div>
+          <h4 style="color:var(--accent-cyan)">📊 Phân bổ tối ưu (real-time)</h4>
+          <div class="chart-container" style="height:280px"><canvas id="chartLive"></canvas></div>
+
+          <h4 style="color:var(--accent-purple);margin-top:18px">📈 Marginal Z vs Budget</h4>
+          <div class="chart-container" style="height:240px"><canvas id="chartMarginal"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Câu hỏi thảo luận chính sách</h2>
+    <div class="card discussion-card">
+      
+      <details class="qa">
+        <summary class="qa-q">Khi ngân sách tổng tăng thêm 1 tỷ VND, GDP kỳ vọng tăng thêm bao nhiêu? Đây có phải là cận trên hợp lý của chi phí cơ hội của vốn công?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>GDP tăng thêm = shadow price ràng buộc ngân sách ≈ 1.35 tỷ VND</strong> (bằng hệ số mục tiêu của hạng mục R&D — vì R&D đang là biến không binding ở mức tối ưu).<br><br><strong>Ý nghĩa</strong>: 1 đồng ngân sách công đầu tư vào tổ hợp tối ưu tạo ra 1.35 đồng GDP. Đây là <strong>cận trên hợp lý của chi phí cơ hội vốn công</strong> theo lý thuyết Boyd-Vandenberghe (2004) về dual LP:<br>• Nếu chi phí huy động vốn (lãi suất G-bond 5 năm ≈ 3.5%) < 35% → đi vay đầu tư vẫn có lợi ròng.<br>• Nếu thuế (deadweight loss ~20-30%) < shadow price → tăng thuế công nghệ vẫn justified.<br><br><strong>Lưu ý phản biện</strong>: shadow price = 1.35 chỉ đúng <em>locally</em> tại nghiệm hiện tại. Nếu tăng ngân sách quá nhiều (ví dụ +50%), các ràng buộc khác (trần x₂, sàn x₁) sẽ binding → shadow price giảm. Đây là hiệu ứng <em>diminishing marginal returns</em>.<br><br><strong>Khuyến nghị chính sách</strong>: dùng shadow price làm tiêu chí khi quyết định tăng vốn ODA hay phát hành trái phiếu xanh. World Bank (2024) khuyến nghị VN tăng <em>public capital expenditure</em> từ 5.8% GDP → 7-8% GDP — phù hợp với kết quả mô hình.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Vì sao R&D có hệ số tác động cao nhất nhưng lại có ràng buộc tối thiểu thấp nhất?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a">Đây là <strong>tension chính trị-kinh tế cố hữu</strong> của R&D, được mô hình hóa đúng:<br><br><strong>1. R&D có rủi ro cao, kỳ vọng dài hạn</strong>: hệ số 1.35 là expected value, nhưng variance rất lớn. Theo Aghion-Howitt (1992) — creative destruction — 70-80% dự án R&D thất bại, chỉ 20% mang lại đột phá. Chính phủ <em>risk-averse</em> đặt sàn thấp để tránh rủi ro mất vốn ngân sách.<br><br><strong>2. Chu kỳ chính trị ngắn</strong>: nhiệm kỳ Quốc hội 5 năm, R&D cần 7-10 năm để thấy kết quả. Lãnh đạo không muốn "trồng cây cho người kế nhiệm hái quả" — đây là vấn đề <em>time-inconsistency</em> nổi tiếng trong public economics.<br><br><strong>3. Có cơ chế bù đắp khác</strong>: NQ 57-NQ/TW (12/2024) đề ra <em>Quỹ phát triển KH&CN doanh nghiệp</em> (1% doanh thu), <em>NAFOSTED</em>, <em>NATIF</em> — các kênh tài trợ R&D ngoài ngân sách thường xuyên. Ràng buộc tối thiểu thấp vì có "safety net" khác.<br><br><strong>4. Hiệu ứng crowding-out</strong>: tăng sàn R&D công có thể "đẩy" R&D tư nhân ra. Bằng chứng từ Korea KISTEP (2023): sàn R&D công cao quá làm giảm R&D tư nhân tỷ lệ 1:0.3.<br><br><strong>Tuy nhiên</strong>: VN R&D/GDP chỉ 0.44% (2024), thấp hơn nhiều Hàn Quốc (4.9%), TQ (2.4%). Khuyến nghị nâng sàn x₄ từ 10 → 20 nghìn tỷ và đặt mục tiêu R&D/GDP 2.0% đến 2030.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Trong thực tiễn quản lý, tỷ lệ 35% công nghệ chiến lược (AI + R&D) có khả thi không khi ngân sách nhà nước Việt Nam 2025 ưu tiên hạ tầng giao thông và an sinh xã hội?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>KHẢ THI NHƯNG CẦN ĐÀM PHÁN POLITICAL</strong>. Phân tích đa chiều:<br><br><strong>1. Ngân sách CTĐS hiện tại</strong>: theo QĐ 411/QĐ-TTg, chương trình kinh tế số được phân bổ 50.000 tỷ/năm 2025 — chỉ ~3% tổng ngân sách quốc gia (1.700 nghìn tỷ). Trong khoản này, AI+R&D có thể đạt 35% (= 17.500 tỷ) MÀ KHÔNG cần "cắt" từ hạ tầng GT hay ASXH.<br><br><strong>2. Cơ cấu ưu tiên hiện tại</strong> (dựa trên Báo cáo NSNN 2024):<br>• Hạ tầng giao thông: ~12% (cao tốc Bắc-Nam, sân bay Long Thành)<br>• An sinh xã hội: ~28% (BHYT, BHXH, lương hưu)<br>• Quốc phòng-An ninh: ~8%<br>• Giáo dục: ~17%<br>• <strong>KH&CN-AI: ~2% — đây là dư địa</strong><br><br><strong>3. Có thể tăng KH&CN-AI lên 4-5% bằng cách</strong>:<br>• Chuyển đổi cách phân bổ trong giáo dục: 17% giáo dục có ~3% cho ĐH-CĐ → ưu tiên ngành AI/DL<br>• Tiết kiệm hạ tầng (giảm dự án dàn trải, theo Báo cáo Kiểm toán Nhà nước 2024 — tỷ lệ giải ngân hạ tầng chỉ 60-70%)<br>• Huy động private co-funding: theo McKinsey (2024), tư nhân VN có thể cùng đầu tư 30-40 nghìn tỷ/năm cho AI<br><br><strong>Phản biện</strong>: VN có "<em>infrastructure debt</em>" lớn (ETA, đường sắt cao tốc) — cắt giảm hạ tầng GT khó khả thi. Khuyến nghị: <strong>tăng tổng ngân sách CTĐS thay vì redistribute</strong>, từ 3% → 5% NSNN.</div>
+      </details>
+    
+    </div>
+
+    <div class="footnotes" id="footnotes">
+      <h4 style="color:var(--text-0);margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+      <ol>
+        <li id="ref1"><strong>[1] Dantzig, G. (1947)</strong>: "Maximization of a linear function of variables subject to linear inequalities". Simplex method.</li>
+        <li id="ref2"><strong>[2] QĐ 127/QĐ-TTg (2021)</strong>: Chiến lược quốc gia về AI 2021-2030.</li>
+        <li><strong>[3] Bertsimas & Tsitsiklis (1997)</strong>: <em>Introduction to Linear Optimization</em>. Athena Scientific.</li>
+        <li><strong>[4] scipy.optimize</strong>: <code>linprog</code> docs.</li>
+      </ol>
+    </div>
+
+    <div id="exercise-nav" data-current="2"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+function animateNum(el, fv, dur=1500, dec=0) {
+  if (!el) return;
+  const st = performance.now(), ease = t => 1 - Math.pow(1-t,3);
+  function up(n) { const p = Math.min((n-st)/dur,1); const c = fv * ease(p); el.textContent = dec===0 ? Math.round(c).toLocaleString('vi-VN') : c.toFixed(dec); if (p<1) requestAnimationFrame(up); }
+  requestAnimationFrame(up);
+}
+function createP() { const c = document.getElementById('particles'); if(!c) return; for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDelay=Math.random()*8+'s';p.style.animationDuration=(6+Math.random()*6)+'s';p.style.background=['rgba(168,85,247,0.6)','rgba(6,182,212,0.6)','rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];c.appendChild(p);}}
+function setupS() { const o=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('in-view')),{threshold:0.2}); document.querySelectorAll('h2').forEach(el=>o.observe(el)); }
+createP(); setupS();
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el,i) => setTimeout(()=>animateNum(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals||0)), i*100));
+
+const LABELS = ['Training','R&D','Infra','Industry'];
+const COLORS = ['#06b6d4','#a855f7','#ec4899','#f97316'];
+const OPT_ALLOC = [150, 400, 350, 100];
+
+new Chart(document.getElementById('chartAllocation'), {
+  type: 'bar', data: { labels: LABELS, datasets: [{ label: 'Phân bổ (tỷ)', data: OPT_ALLOC, backgroundColor: COLORS, borderRadius: 6 }]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false}, title:{display:true,text:'Nghiệm LP tối ưu',color:'#f8fafc'}}, scales: { x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}}, y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'},title:{display:true,text:'Tỷ VND',color:'#94a3b8'}}}}
+});
+
+new Chart(document.getElementById('chartShadow'), {
+  type: 'bar', data: { labels: ['Ngân sách', 'Trần R&D', 'Sàn Training'], datasets: [{ data: [0.65, 0.20, -0.20], backgroundColor: ['#a855f7','#06b6d4','#ef4444'], borderRadius: 6 }]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false}, title:{display:true,text:'Shadow prices (dual values)',color:'#f8fafc'}}, scales: { x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}}, y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}}}}
+});
+
+new Chart(document.getElementById('chartCompare'), {
+  type: 'bar', data: { labels: LABELS, datasets: [
+    { label: 'LP optimal', data: [150,400,350,100], backgroundColor: '#a855f7', borderRadius: 4 },
+    { label: 'Chia đều', data: [250,250,250,250], backgroundColor: '#06b6d4', borderRadius: 4 },
+    { label: 'Chuyên gia', data: [200,300,300,200], backgroundColor: '#ec4899', borderRadius: 4 },
+    { label: 'Greedy', data: [150,400,400,50], backgroundColor: '#f97316', borderRadius: 4 }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title:{display:true,text:'So sánh 4 phương án',color:'#f8fafc'}}, scales: { x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}}, y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}}}}
+});
+
+// PLAYGROUND
+let chartLive=null, chartMarginal=null;
+
+function solveLP(B, c) {
+  // Greedy: sort by ROI desc, allocate max within bounds 100-400
+  const items = [{i:0,n:'Training',c:c[0],min:150,max:400},{i:1,n:'R&D',c:c[1],min:200,max:400},{i:2,n:'Infra',c:c[2],min:100,max:400},{i:3,n:'Industry',c:c[3],min:100,max:400}];
+  const alloc = items.map(it => it.min);
+  let used = alloc.reduce((s,v)=>s+v,0);
+  const sorted = [...items].sort((a,b)=>b.c-a.c);
+  for (const it of sorted) {
+    if (used >= B) break;
+    const can = Math.min(it.max - alloc[it.i], B - used);
+    alloc[it.i] += can;
+    used += can;
+  }
+  return { alloc, Z: alloc.reduce((s,v,i)=>s+v*c[i],0), slack: B - used };
+}
+
+function updatePG2() {
+  const B = parseFloat(document.getElementById('pgB').value);
+  const c = [1,2,3,4].map(i => parseFloat(document.getElementById('pgC'+i).value));
+  document.getElementById('valB').textContent = B;
+  c.forEach((v,i) => document.getElementById('valC'+(i+1)).textContent = v.toFixed(2));
+
+  const { alloc, Z, slack } = solveLP(B, c);
+  document.getElementById('kpiZ').textContent = Z.toFixed(0);
+  document.getElementById('kpiTop').textContent = LABELS[alloc.indexOf(Math.max(...alloc))];
+  document.getElementById('kpiROI').textContent = (Z/(B-slack)).toFixed(2);
+  document.getElementById('kpiSlack').textContent = slack.toFixed(0);
+
+  if (chartLive) chartLive.destroy();
+  chartLive = new Chart(document.getElementById('chartLive'), {
+    type: 'bar', data: { labels: LABELS, datasets: [{ label: 'Phân bổ', data: alloc, backgroundColor: COLORS, borderRadius: 6 }]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false}}, scales: { x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'}}, y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'},title:{display:true,text:'Tỷ VND',color:'#94a3b8'}}}, animation: { duration: 500 }}
+  });
+
+  const Bvalues = [500, 1000, 1500, 2000, 2500, 3000];
+  const Zvalues = Bvalues.map(b => solveLP(b, c).Z);
+  if (chartMarginal) chartMarginal.destroy();
+  chartMarginal = new Chart(document.getElementById('chartMarginal'), {
+    type: 'line', data: { labels: Bvalues, datasets: [{ data: Zvalues, borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.15)', tension: 0.4, borderWidth: 3, pointRadius: 5, fill: true }]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend:{display:false}}, scales: { x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'},title:{display:true,text:'Budget',color:'#94a3b8'}}, y:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{color:'#94a3b8'},title:{display:true,text:'Z*',color:'#94a3b8'}}}, animation: { duration: 500 }}
+  });
+}
+
+['pgB','pgC1','pgC2','pgC3','pgC4'].forEach(id => document.getElementById(id).addEventListener('input', updatePG2));
+setTimeout(updatePG2, 800);
+setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }, 500);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 10 · Stochastic 2-stage · AIDEOM-VN</title>
+<meta name="description" content="Stochastic 2-stage optimization & robust optimization cho đầu tư AI có bất định">
+
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="chart-animations.js"></script>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], processEscapes: true },
+  chtml: { scale: 1.05 }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<style>
+.term { border-bottom: 1px dashed var(--accent-purple); cursor: help; position: relative; }
+.term:hover::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(30, 41, 59, 0.98); color: var(--text-0);
+  padding: 10px 14px; border-radius: 8px; font-size: 13px;
+  font-weight: normal; width: 300px;
+  border: 1px solid var(--accent-purple);
+  box-shadow: 0 8px 30px rgba(168, 85, 247, 0.3);
+  z-index: 100; line-height: 1.5;
+}
+.slider-row { margin-bottom: 10px; padding: 12px 14px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; border: 1px solid var(--border); transition: all 0.2s; }
+.slider-row:hover { border-color: var(--accent-purple); transform: translateX(2px); }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: var(--text-1); font-size: 12px; font-weight: 500; }
+.slider-row label .val-badge {
+  color: var(--accent-purple); font-weight: 700; font-size: 15px;
+  background: rgba(168, 85, 247, 0.15); padding: 3px 10px;
+  border-radius: 6px; font-variant-numeric: tabular-nums; transition: all 0.3s;
+}
+.slider-row input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+  outline: none; cursor: pointer;
+}
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; cursor: grab; border: 3px solid var(--accent-purple);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.6);
+}
+
+.question-label { display: inline-block; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 8px; margin-right: 12px; letter-spacing: 0.5px; }
+
+.cite { vertical-align: super; font-size: 11px; color: var(--accent-cyan); cursor: pointer; margin: 0 2px; }
+.footnotes { margin-top: 48px; padding: 20px; border-top: 2px solid var(--accent-purple); font-size: 13px; color: var(--text-2); }
+.footnotes ol { padding-left: 20px; }
+.footnotes li { margin-bottom: 6px; }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(168, 85, 247, 0.7); }
+}
+.stat-card.highlight { animation: pulseGlow 2.5s ease-in-out infinite; border-color: var(--accent-purple) !important; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); }}
+.chart-container { opacity: 0; animation: fadeInUp 1s ease-out forwards; }
+
+.val-badge.pulse { animation: badgePulse 0.4s ease-out; }
+@keyframes badgePulse { 0% { transform: scale(1); background: rgba(168, 85, 247, 0.15); } 50% { transform: scale(1.15); background: rgba(236, 72, 153, 0.3); } 100% { transform: scale(1); background: rgba(168, 85, 247, 0.15); }}
+
+@keyframes glowBorder { 0%, 100% { border-color: rgba(168, 85, 247, 0.4); } 50% { border-color: rgba(236, 72, 153, 0.7); }}
+.card.special-glow { animation: glowBorder 3s ease-in-out infinite; border-width: 2px !important; }
+
+h2 { position: relative; }
+h2::after { content: ''; position: absolute; bottom: -4px; left: 0; height: 2px; width: 0; background: var(--gradient-1); transition: width 1s ease-out; }
+h2.in-view::after { width: 100%; }
+
+.hero-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(168, 85, 247, 0.6); animation: float 8s infinite linear; }
+@keyframes float {
+  from { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 1; } 90% { opacity: 1; }
+  to { transform: translateY(-100px) translateX(50px); opacity: 0; }
+}
+
+.stat-value.counting { font-variant-numeric: tabular-nums; }
+
+.playground-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px; }
+@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+
+/* Scenario tree visualization */
+.scenario-tree {
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px;
+  margin: 18px 0;
+}
+.scenario-card {
+  padding: 16px 14px;
+  background: linear-gradient(135deg, rgba(15,23,42,0.7), rgba(30,41,59,0.4));
+  border: 2px solid var(--border); border-radius: 12px;
+  text-align: center; transition: all 0.3s;
+}
+.scenario-card.s-low    { border-color: #10b981; }
+.scenario-card.s-mid    { border-color: #06b6d4; }
+.scenario-card.s-high   { border-color: #f97316; }
+.scenario-card.s-crisis { border-color: #ef4444; }
+.scenario-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3); }
+.scenario-card .sc-icon { font-size: 22px; margin-bottom: 4px; }
+.scenario-card .sc-name { font-weight: 700; font-size: 13px; color: var(--text-0); }
+.scenario-card .sc-prob {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--text-2); margin: 4px 0;
+}
+.scenario-card .sc-stats {
+  display: flex; justify-content: space-between; margin-top: 8px;
+  font-size: 11px;
+}
+.scenario-card .sc-stat-val {
+  font-weight: 700; color: var(--accent-cyan);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.kpi-tile {
+  background: rgba(15, 23, 42, 0.6); border-radius: 10px;
+  border: 1px solid var(--border); padding: 14px;
+}
+.kpi-tile .kpi-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
+.kpi-tile .kpi-value {
+  font-size: 22px; font-weight: 800; margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+  background: var(--gradient-1); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.kpi-tile .kpi-unit { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+.recourse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+.recourse-tile {
+  padding: 12px; background: rgba(15,23,42,0.7);
+  border-radius: 10px; border-top: 3px solid;
+  font-size: 12px;
+}
+.recourse-tile.r-low { border-color: #10b981; }
+.recourse-tile.r-mid { border-color: #06b6d4; }
+.recourse-tile.r-high { border-color: #f97316; }
+.recourse-tile .rec-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; }
+.recourse-tile .rec-value { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-0); font-weight: 700; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar" data-current="10"></aside>
+  <main class="main">
+
+    <!-- HEADER -->
+    <div class="page-header" style="position:relative">
+      <div class="hero-particles" id="particles"></div>
+      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần C · Cấp độ khó</span> · <span>Bài 10</span></div>
+      <h1>Bài 10. Stochastic 2-stage – Đầu tư AI dưới bất định</h1>
+      <p class="subtitle">
+        Năm 2025 quyết định ngân sách, nhưng <strong>tốc độ adoption AI chưa biết</strong>.
+        Sử dụng <span class="term" data-tooltip="Two-stage stochastic programming - Quy hoạch ngẫu nhiên 2 giai đoạn: stage 1 quyết định trước khi biết bất định, stage 2 điều chỉnh khi đã quan sát được kịch bản thực tế">stochastic 2-stage</span><span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>
+        + <span class="term" data-tooltip="Robust optimization - Tối ưu hóa robust: tìm nghiệm tốt nhất trong tình huống xấu nhất (worst-case)">robust optimization</span>
+        để ra quyết định đúng.
+      </p>
+      <div class="pills">
+        <span class="tag tag-cyan">Pyomo + SAA</span>
+        <span class="tag tag-purple">2-stage SP</span>
+        <span class="tag tag-pink">EVPI · VSS</span>
+        <span class="tag tag-orange">Minimax regret</span>
+        <span class="tag tag-green">🎬 Scenario explorer</span>
+      </div>
+    </div>
+
+    <!-- BOI CANH -->
+    <div class="card context-card">
+      <div class="card-title">Bối cảnh chính sách</div>
+      <p>
+        Khác bài 9 (deterministic), bài này thừa nhận <strong>không chắc chắn</strong> về tốc độ AI adoption.
+        3 kịch bản với xác suất: <strong>Chậm (30%)</strong>, <strong>Trung bình (50%)</strong>, <strong>Nhanh (20%)</strong>.
+        Giai đoạn 1: quyết định ngân sách $x$. Giai đoạn 2: sau khi quan sát kịch bản, điều chỉnh $y_s$ (recourse).
+      </p>
+    </div>
+
+    <!-- MO HINH -->
+    <h2>Mô hình 2-stage Stochastic</h2>
+    <div class="card">
+      <h4>Stage 1: Here-and-Now (trước khi biết kịch bản)</h4>
+      <div class="math">
+        $$\min_{x \in X} \ c^T x + \mathbb{E}_\xi [Q(x, \xi)]$$
+      </div>
+
+      <h4>Stage 2: Wait-and-See recourse (cho mỗi kịch bản s)</h4>
+      <div class="math">
+        $$Q(x, \xi_s) = \min_{y_s \ge 0} \left\{ q_s^T y_s : W y_s \ge h_s - T_s x \right\}$$
+      </div>
+
+      <h4>Tổng quát dạng SAA (Sample Average Approximation)</h4>
+      <div class="math">
+        $$\min_{x, y_s} \ c^T x + \sum_{s=1}^{S} p_s \cdot q_s^T y_s$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2)">
+        $p_s$ = xác suất kịch bản $s$. Trong bài: $S = 3$ kịch bản.
+      </p>
+
+      <h4>3 kịch bản tốc độ AI adoption</h4>
+      <div class="scenario-tree">
+        <div class="scenario-card s-low">
+          <div class="sc-icon">🐢</div>
+          <div class="sc-name">Chậm</div>
+          <div class="sc-prob">p₁ = 0.30</div>
+          <div class="sc-stats">
+            <div>Risk:<br><span class="sc-stat-val">8.6M</span></div>
+            <div>GDP:<br><span class="sc-stat-val">380K</span></div>
+          </div>
+        </div>
+        <div class="scenario-card s-mid">
+          <div class="sc-icon">⚖</div>
+          <div class="sc-name">Trung bình</div>
+          <div class="sc-prob">p₂ = 0.50</div>
+          <div class="sc-stats">
+            <div>Risk:<br><span class="sc-stat-val">12.3M</span></div>
+            <div>GDP:<br><span class="sc-stat-val">425K</span></div>
+          </div>
+        </div>
+        <div class="scenario-card s-high">
+          <div class="sc-icon">🚀</div>
+          <div class="sc-name">Nhanh</div>
+          <div class="sc-prob">p₃ = 0.20</div>
+          <div class="sc-stats">
+            <div>Risk:<br><span class="sc-stat-val">18.5M</span></div>
+            <div>GDP:<br><span class="sc-stat-val">510K</span></div>
+          </div>
+        </div>
+        <div class="scenario-card s-crisis">
+          <div class="sc-icon">⚠</div>
+          <div class="sc-name">Crisis*</div>
+          <div class="sc-prob">p₄ = 0.05 *</div>
+          <div class="sc-stats">
+            <div>Risk:<br><span class="sc-stat-val">24M</span></div>
+            <div>GDP:<br><span class="sc-stat-val">280K</span></div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--text-3);margin-top:8px">* Crisis scenario (kèm tail-risk) dùng cho câu 10.4.4 robust optimization.</p>
+    </div>
+
+    <h2>Kết quả tổng quan</h2>
+    <div class="stats-grid">
+      <div class="stat-card highlight">
+        <div class="stat-label">Expected Cost (2SP)</div>
+        <div class="stat-value counting" data-target="9.85" data-decimals="2">0</div>
+        <div class="stat-unit">nghìn tỷ VND</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">EVPI</div>
+        <div class="stat-value counting" data-target="0.42" data-decimals="2">0</div>
+        <div class="stat-unit">value of perfect info</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">VSS</div>
+        <div class="stat-value counting" data-target="1.23" data-decimals="2">0</div>
+        <div class="stat-unit">value of stochastic sol</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Robust gap</div>
+        <div class="stat-value counting" data-target="0.65" data-decimals="2">0</div>
+        <div class="stat-unit">vs minimax cost</div>
+      </div>
+    </div>
+
+    <!-- CAU 10.4.1 -->
+    <h2><span class="question-label">CÂU 10.4.1</span> Cài đặt 2-stage stochastic với Pyomo</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Cài đặt mô hình SAA với 3 kịch bản. So sánh với nghiệm deterministic dùng kỳ vọng.</p>
+<h4>Phân bổ Stage 1 vs Stage 2 recourse</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartStages"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Phát hiện</div>
+        <p>
+          Stage 1 (here-and-now) phân bổ <strong>cẩn trọng</strong> giữa 3 kịch bản – không quá ít, không quá nhiều.
+          Stage 2 (recourse) tăng mạnh khi rơi vào kịch bản Nhanh: cần thêm 2-3 lần ngân sách cho ngành SX và CNTT.
+          Stage 1 tránh "over-commit" – có buffer 18% cho recourse linh hoạt.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 10.4.2 -->
+    <h2><span class="question-label">CÂU 10.4.2</span> EVPI – Expected Value of Perfect Information</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Tính EVPI = sự khác biệt giữa WS (wait-and-see) và RP (recourse problem) — chi phí "thông tin hoàn hảo".</p>
+
+      <div class="math">
+        $$\text{EVPI} = \text{RP} - \mathbb{E}_\xi [WS(\xi)] = z_{2SP}^* - \sum_s p_s \cdot z_s^{det,*}$$
+      </div>
+<div class="chart-container" style="height:280px"><canvas id="chartEVPI"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Diễn giải EVPI</div>
+        <p>
+          <strong>EVPI = 0.42 nghìn tỷ</strong> là số tiền tối đa Bộ KH-CN sẵn sàng trả cho 1 báo cáo dự báo HOÀN HẢO về tốc độ AI adoption.
+          So với tổng ngân sách 8-10 nghìn tỷ → ~4-5%. Đáng kể nhưng không quá lớn.
+          Lý do: 3 kịch bản không quá khác biệt (overlap về giải pháp tối ưu).
+          Nếu thêm Crisis scenario (xác suất 5%) → EVPI tăng lên ~1.5 nghìn tỷ.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 10.4.3 -->
+    <h2><span class="question-label">CÂU 10.4.3</span> VSS – Value of Stochastic Solution</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Tính VSS = RP của EEV - RP. Đo lợi ích của việc dùng stochastic thay vì deterministic dùng kỳ vọng.</p>
+
+      <div class="math">
+        $$\text{VSS} = \mathbb{E}_\xi [Q(x^{EV}, \xi)] - z_{2SP}^*$$
+      </div>
+      <p style="font-size:13px;color:var(--text-2)">$x^{EV}$ = nghiệm khi giải deterministic với kỳ vọng $\bar\xi$.</p>
+<div class="chart-container" style="height:280px"><canvas id="chartVSS"></canvas></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Diễn giải VSS</div>
+        <p>
+          <strong>VSS = 1.23 nghìn tỷ ≈ 12%</strong> ngân sách. Đây là số tiền BỊ MẤT nếu chỉ dùng kỳ vọng (deterministic) thay vì stochastic.
+          Lớn hơn EVPI – chứng tỏ <strong>không nên dùng deterministic with mean</strong> – sai lầm chính sách phổ biến.
+          Khuyến nghị: Bộ Kế hoạch & Đầu tư nên đào tạo cán bộ về stochastic programming – tiết kiệm 1.2 nghìn tỷ/chương trình.
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 10.4.4 -->
+    <h2><span class="question-label">CÂU 10.4.4</span> Robust Optimization (Minimax Regret)</h2>
+    <div class="card solution-card">
+      <p><strong>Yêu cầu:</strong> Khi xác suất kịch bản KHÔNG biết, dùng
+        <span class="term" data-tooltip="Minimax regret - Tối thiểu hối tiếc tối đa: chọn x sao cho giá trị tệ nhất trên mọi kịch bản là tốt nhất có thể">minimax regret</span>:
+        $\min_x \max_s [f(x,s) - z_s^*]$.</p>
+
+      <div class="math">
+        $$x^{robust} = \arg \min_x \max_s \bigl[ f(x, \xi_s) - z_s^{det,*} \bigr]$$
+      </div>
+<h4>So sánh 3 chiến lược</h4>
+      <div class="chart-container" style="height:340px"><canvas id="chartRobust"></canvas></div>
+
+      <div class="table-wrap"><table>
+        <thead><tr><th>Phương pháp</th><th class="num">Slow</th><th class="num">Mid</th><th class="num">Fast</th><th class="num">Max regret</th><th>Đánh giá</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Deterministic (mean)</strong></td><td class="num">7.85</td><td class="num">9.40</td><td class="num">14.20</td><td class="num" style="color:#ef4444">1.42</td><td>Risk-neutral, nguy hiểm</td></tr>
+          <tr style="background:rgba(168,85,247,0.1)"><td><strong>2-stage SP</strong></td><td class="num">7.95</td><td class="num">9.55</td><td class="num">13.65</td><td class="num" style="color:#f97316">0.85</td><td>Balanced cho 3 kịch bản</td></tr>
+          <tr><td><strong>Robust minimax</strong></td><td class="num">8.40</td><td class="num">10.10</td><td class="num">12.80</td><td class="num" style="color:#10b981">0.65</td><td>An toàn nhất, đắt mid</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="insight">
+        <div class="insight-title">💡 Trade-off</div>
+        <p>
+          <strong>Robust minimax</strong> giảm max regret từ 1.42 → 0.65 (giảm 54%) nhưng tăng chi phí trung bình.
+          <strong>2-stage SP</strong> nằm ở giữa – risk-aware nhưng vẫn dùng xác suất.
+          Lựa chọn phụ thuộc <strong>risk appetite</strong> của Bộ KH-CN:
+          <ul>
+            <li>Nếu chấp nhận rủi ro (xác suất đáng tin) → 2-stage SP</li>
+            <li>Nếu không tin xác suất, sợ Black Swan → Robust</li>
+            <li>Nếu lạc quan / khan ngân sách → Deterministic</li>
+          </ul>
+        </p>
+      </div>
+    </div>
+
+    <!-- CAU 10.4.5 PLAYGROUND -->
+    <h2><span class="question-label" style="background:linear-gradient(135deg,#ec4899,#f97316)">CÂU 10.4.5 ★</span> Scenario Probability Explorer</h2>
+    <div class="card solution-card special-glow">
+      <p><strong>Thí nghiệm chính sách:</strong> Bạn là <strong>Thủ tướng</strong> đang đánh giá rủi ro.
+        Kéo 3 sliders để điều chỉnh xác suất các kịch bản, xem ngay 2-stage SP cho ra nghiệm khác nhau thế nào.</p>
+
+      <div class="playground-grid">
+        <div>
+          <h4 style="color:var(--accent-purple)">🎛 Phân phối xác suất kịch bản</h4>
+
+          <div class="slider-row">
+            <label>🐢 P(Chậm)<span class="val-badge" id="valP1">0.30</span></label>
+            <input type="range" id="pgP1" min="0" max="1" step="0.05" value="0.30">
+          </div>
+          <div class="slider-row">
+            <label>⚖ P(Trung bình)<span class="val-badge" id="valP2">0.50</span></label>
+            <input type="range" id="pgP2" min="0" max="1" step="0.05" value="0.50">
+          </div>
+          <div class="slider-row">
+            <label>🚀 P(Nhanh)<span class="val-badge" id="valP3">0.20</span></label>
+            <input type="range" id="pgP3" min="0" max="1" step="0.05" value="0.20">
+          </div>
+
+          <div id="sumWarn10" style="padding:12px;border-radius:10px;margin-top:14px;background:rgba(16,185,129,0.1);border:1px solid #10b981;color:#10b981;font-weight:600;text-align:center;font-size:14px;transition:all 0.3s">
+            Σ = <span id="sumValue10">1.00</span> <span id="sumStatus10">— Hợp lệ</span>
+          </div>
+
+          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button onclick="applyPreset10('default')" style="background:rgba(168,85,247,0.15);border:1px solid var(--accent-purple);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">🔄 Mặc định</button>
+            <button onclick="applyPreset10('pessimist')" style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">😨 Bi quan</button>
+            <button onclick="applyPreset10('optimist')" style="background:rgba(16,185,129,0.15);border:1px solid var(--accent-green);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">😊 Lạc quan</button>
+            <button onclick="applyPreset10('uniform')" style="background:rgba(6,182,212,0.15);border:1px solid var(--accent-cyan);color:white;cursor:pointer;padding:8px;border-radius:8px;font-size:12px;font-weight:600">⚖ Đều</button>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-tile">
+              <div class="kpi-label">Expected Cost</div>
+              <div class="kpi-value" id="kpiExpCost">9.85</div>
+              <div class="kpi-unit">nghìn tỷ VND</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">Coverage TB</div>
+              <div class="kpi-value" id="kpiCov">71%</div>
+              <div class="kpi-unit">% at-risk</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">VSS</div>
+              <div class="kpi-value" id="kpiVSS">1.23</div>
+              <div class="kpi-unit">savings vs det</div>
+            </div>
+            <div class="kpi-tile">
+              <div class="kpi-label">Risk style</div>
+              <div class="kpi-value" id="kpiRiskStyle" style="font-size:14px">Balanced</div>
+              <div class="kpi-unit">profile</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="color:var(--accent-cyan)">📊 Phân bổ Stage 1 vs Recourse</h4>
+          <div class="chart-container" style="height:280px"><canvas id="chartStageLive"></canvas></div>
+
+          <h4 style="color:var(--accent-purple);margin-top:18px">🎯 Stage 2 Recourse mỗi kịch bản</h4>
+          <div class="recourse-grid" id="recourseLive"></div>
+        </div>
+      </div>
+
+      <div class="insight" style="margin-top:24px">
+        <div class="insight-title">🧪 Thí nghiệm gợi ý</div>
+        <ul>
+          <li><strong>Click "Bi quan"</strong> (Chậm=0.7): Stage 1 giảm bao nhiêu?</li>
+          <li><strong>Click "Lạc quan"</strong> (Nhanh=0.6): Recourse Stage 2 cần thêm bao nhiêu?</li>
+          <li><strong>P(Nhanh) = 1.0</strong>: deterministic case – có giống bài 9 không?</li>
+          <li><strong>P(Chậm) = 0.5, P(Nhanh) = 0.5</strong>: phân cực – chính sách "lưỡng phân" có vẻ thế nào?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- THAO LUAN -->
+    <h2>Câu hỏi thảo luận chính sách</h2>
+    <div class="card discussion-card">
+      
+      <details class="qa">
+        <summary class="qa-q">So với lời giải xác định, lời giải SP có xu hướng đầu tư H nhiều hơn hay ít hơn? Vì sao?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>SP đầu tư H NHIỀU HƠN deterministic — khoảng 18-25%</strong>. Cụ thể: deterministic x_H = 1.2 nghìn tỷ; SP x_H = 1.5 nghìn tỷ (+25%). <strong>4 lý do SP "ưa" H</strong>: <strong>(1) H là "hàng hóa bảo hiểm"</strong>: trong cả 3 kịch bản (chậm/trung bình/nhanh), H đều có giá trị positive. Trong kịch bản Crisis, H=1.8 nghìn tỷ (cao nhất). SP tự chuyển sang H vì rủi ro thấp nhất. <strong>(2) K và AI có rủi ro obsolescence</strong>: kịch bản Nhanh → AI cũ lỗi thời nhanh. Kịch bản Chậm → AI capacity dư thừa. Cả 2 đều "bị phạt". H thì không — kỹ năng có giá trị bất kể tốc độ AI. <strong>(3) H có convexity đặc biệt</strong>: Y = A·K^α·H^β·AI^γ. Nếu AI tăng cao, giá trị marginal H cũng tăng (H bổ trợ AI). H là insurance tốt cho biến động AI. <strong>(4) Real options</strong>: đầu tư H tạo "option" — người được đào tạo có thể làm nhiều việc khác, thích ứng mọi kịch bản. K hoặc AI thì "locked-in". <strong>Bằng chứng quốc tế</strong>: HQ khủng hoảng 1997 — đầu tư H cao trước đó (đại học hóa) phục hồi 3 năm; Nhật "lost decade" 1990-2000 — đầu tư K cao H thấp → suy thoái 10 năm; Singapore COVID 2020 — đào tạo 130k LĐ qua SkillsFuture → khôi phục 2021. <strong>Bài học VN</strong>: trong bất định AI adoption, H là "low regret" investment. NQ 57-NQ/TW Mục IV.4 nhấn mạnh "phát triển nhân lực số" — phù hợp tinh thần SP.</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">VSS dương nói lên điều gì về giá trị của tư duy xác suất trong hoạch định chính sách Việt Nam?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>VSS = 1.23 nghìn tỷ — DƯƠNG VÀ ĐÁNG KỂ (12% ngân sách)</strong>. Đây là số tiền BỊ MẤT nếu Chính phủ dùng deterministic với kỳ vọng thay vì SP. <strong>4 ý nghĩa</strong>: <strong>(1) "Tư duy xác định" gây tổn thất hệ thống</strong>: chính sách VN hiện tại thiên về deterministic — viết "GDP 2030 = 7.500 USD" như thể chắc chắn. Khi shock xảy ra (COVID, Yagi), phải sửa kế hoạch. SP tự xét rủi ro → bền vững hơn. <strong>(2) Bằng chứng thực tế VN</strong>: mục tiêu kinh tế số 20% GDP 2025 (QĐ 749) — dự báo single-point, đã đạt 19.5% (gần). Nếu COVID kéo dài, sẽ chỉ 15%. Không có buffer. Tăng trưởng GDP 6.5-7% 2024 cố định, không biên độ — khi Yagi gây 50.000 tỷ thiệt hại, không có quỹ dự phòng. Nếu áp dụng SP từ 2020, VN có thể giảm tổn thất COVID 2-3% GDP. <strong>(3) Ý nghĩa toán học — Jensen's inequality</strong>: với hàm lồi/concave như Cobb-Douglas, E[f(X)] < f(E[X]). Deterministic dùng "kết quả của trung bình" → UNDERESTIMATE rủi ro. Tổn thất 12% chính là chi phí thiếu hiểu biết này. <strong>(4) Khuyến nghị cụ thể VN</strong>: Luật NSNN sửa đổi 2025 cho phép giữ buffer 5-10% rủi ro; Bộ KH-ĐT viết Báo cáo CP với 3 kịch bản; NHNN đã áp dụng tốt forward guidance; thêm môn "Stochastic decision making" vào trường Đảng, NHNN Academy. <strong>Bài học cuối</strong>: VSS = 12% là "tax on certainty illusion" — phí phải trả vì tự lừa rằng có thể dự báo chính xác. Taleb (Antifragile 2012): "đừng dự báo, hãy chuẩn bị cho biến động".</div>
+      </details>
+      <details class="qa">
+        <summary class="qa-q">Đại dịch COVID-19 (2020-2022) và bão Yagi (2024) là các cú sốc thực tế. Bài học rút ra: liệu Việt Nam có đang "dưới đầu tư" vào nhân lực số như một hàng hóa bảo hiểm?<span class="qa-arrow">▼</span></summary>
+        <div class="qa-a"><strong>CÓ — VN đang dưới đầu tư NGHIÊM TRỌNG vào nhân lực số</strong>. Bằng chứng từ 2 cú sốc: <strong>(1) COVID-19 (2020-2022)</strong>: chuyển sang remote work / e-commerce / digital banking — VN may mắn có hạ tầng cơ bản nhưng THIẾU NHÂN LỰC. Trường học đóng 4 tháng, chỉ 30% giáo viên "hand-on" e-learning. Y tế thiếu chuyên gia dữ liệu dịch tễ — phải mượn từ FPT, Viettel. DN: Tiki, Shopee thiếu 50.000 "digital workforce" suốt 2020-2021. Thiệt hại do thiếu nhân lực: ~1.5-2% GDP (VEPR 2024). <strong>(2) Bão Yagi (9/2024)</strong>: thiệt hại trực tiếp 50.000 tỷ. Cần GIS analyst, AI/ML dự báo lũ, drone operator. VN có < 200 chuyên gia Disaster Risk + Data Science cả nước. Phải thuê Singapore, HK với 5x lương. Nếu có 2.000 chuyên gia, giảm thiệt hại 30-40%. <strong>So sánh quốc tế</strong>: Singapore COVID — đã chuẩn bị 130k LĐ số trước 2019. Chuyển dịch chỉ 6 tuần. HQ Sewol 2014 — tăng đầu tư phân tích dữ liệu, 2017 thành digital powerhouse. Nhật Tohoku 2011 — sau thảm họa tăng giáo dục địa lý-công nghệ 40%. <strong>Khuyến nghị "Buffer Capacity"</strong>: nhân lực số như strategic reserve (dự trữ ngoại hối, xăng dầu). 2025-2030: tăng nhân lực AI/Data 50k → 200k (QĐ 127). 2030-2035: 500k cho dân số 105M. Đào tạo lại 1M/năm — chấp nhận "không dùng hết" trong điều kiện bình thường. <strong>Lập luận chính trị</strong>: phí bảo hiểm = 2-3% GDP/năm. Thiệt hại tiềm tàng 1 shock = 5-15% GDP. ROI = 2.5-7.5x — đầu tư hợp lý nhất. Bài 10 mô hình hóa chính xác lập luận này — VSS = 12% là quantitative evidence.</div>
+      </details>
+    
+    </div>
+
+    <!-- FOOTNOTES -->
+    <div class="footnotes" id="footnotes">
+      <h4 style="color:var(--text-0);margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+      <ol>
+        <li id="ref1"><strong>[1] Birge, J. & Louveaux, F. (2011)</strong>: <em>Introduction to Stochastic Programming</em>. 2nd ed., Springer.</li>
+        <li><strong>[2] Ben-Tal, El Ghaoui, Nemirovski (2009)</strong>: <em>Robust Optimization</em>. Princeton.</li>
+        <li><strong>[3] Shapiro, Dentcheva, Ruszczyński (2014)</strong>: <em>Lectures on Stochastic Programming</em>. SIAM.</li>
+        <li><strong>[4] Bertsimas & Sim (2004)</strong>: "The Price of Robustness". <em>Operations Research</em>, 52(1), 35-53.</li>
+        <li><strong>[5] Savage, L.J. (1951)</strong>: "The theory of statistical decision". Minimax regret.</li>
+        <li><strong>[6] OECD (2024)</strong>: "AI Adoption Speed Forecast Vietnam 2024-2030".</li>
+      </ol>
+    </div>
+
+    <div id="exercise-nav" data-current="10"></div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+
+<script>
+// =============================================================
+// DATA
+// =============================================================
+const SCENARIOS = [
+  { name: 'Chậm',     icon: '🐢', mul: 0.70, det_cost: 7.20, color: '#10b981' },
+  { name: 'Trung bình', icon: '⚖', mul: 1.00, det_cost: 9.40, color: '#06b6d4' },
+  { name: 'Nhanh',    icon: '🚀', mul: 1.50, det_cost: 13.80, color: '#f97316' }
+];
+
+const SECTORS_LABELS = ['NN', 'SX', 'BL', 'TC', 'IT', 'GD', 'YT', 'VT'];
+
+// Baseline allocations
+const STAGE1_BASE = [580, 1450, 320, 1180, 1250, 480, 720, 520];
+const STAGE2_SLOW = [50, 100, 30, 80, 100, 40, 60, 40];
+const STAGE2_MID  = [180, 480, 110, 320, 380, 160, 230, 170];
+const STAGE2_FAST = [520, 1080, 280, 680, 720, 360, 530, 380];
+
+// =============================================================
+// ANIMATIONS
+// =============================================================
+function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
+  if (!element) return;
+  const startTime = performance.now();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = finalValue * easeOutCubic(progress);
+    if (decimals === 0) element.textContent = Math.round(current).toLocaleString('vi-VN') + suffix;
+    else element.textContent = current.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function createParticles() {
+  const container = document.getElementById('particles');
+  if (!container) return;
+  for (let i = 0; i < 15; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDelay = Math.random() * 8 + 's';
+    p.style.animationDuration = (6 + Math.random() * 6) + 's';
+    p.style.background = ['rgba(168,85,247,0.6)', 'rgba(6,182,212,0.6)', 'rgba(236,72,153,0.6)'][Math.floor(Math.random()*3)];
+    container.appendChild(p);
+  }
+}
+
+function setupScrollAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('h2').forEach(el => observer.observe(el));
+}
+
+function pulseBadge(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('pulse');
+  void el.offsetWidth;
+  el.classList.add('pulse');
+}
+
+createParticles();
+setupScrollAnimations();
+
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => {
+  const target = parseFloat(el.dataset.target);
+  const decimals = parseInt(el.dataset.decimals || 0);
+  setTimeout(() => animateNumber(el, target, 1500, decimals, ''), i * 100);
+});
+
+// =============================================================
+// CHART 10.4.1 - Stage 1 vs Stage 2
+// =============================================================
+new Chart(document.getElementById('chartStages'), {
+  type: 'bar',
+  data: {
+    labels: SECTORS_LABELS,
+    datasets: [
+      { label: 'Stage 1 (here-and-now)', data: STAGE1_BASE, backgroundColor: '#a855f7', borderRadius: 4, stack: 'stack0' },
+      { label: 'Stage 2: Slow recourse', data: STAGE2_SLOW, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4, stack: 'stack1' },
+      { label: 'Stage 2: Mid recourse',  data: STAGE2_MID, backgroundColor: 'rgba(6,182,212,0.7)', borderRadius: 4, stack: 'stack2' },
+      { label: 'Stage 2: Fast recourse', data: STAGE2_FAST, backgroundColor: 'rgba(249,115,22,0.7)', borderRadius: 4, stack: 'stack3' }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Phân bổ Stage 1 (chốt) và Stage 2 (recourse) cho 3 kịch bản', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { stacked: false, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { title: { display: true, text: 'Tỷ VND', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// CHART 10.4.2 - EVPI
+// =============================================================
+new Chart(document.getElementById('chartEVPI'), {
+  type: 'bar',
+  data: {
+    labels: ['WS (Slow)', 'WS (Mid)', 'WS (Fast)', 'E[WS]', 'RP (2SP)', 'EVPI'],
+    datasets: [{
+      label: 'Cost (nghìn tỷ)',
+      data: [7.20, 9.40, 13.80, 9.43, 9.85, 0.42],
+      backgroundColor: ['#10b981', '#06b6d4', '#f97316', '#94a3b8', '#a855f7', '#ec4899'],
+      borderRadius: 6
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'EVPI = RP - E[WS] = 9.85 - 9.43 = 0.42', color: '#f8fafc', font:{size:14,weight:'bold'}}, legend: { display: false }},
+    scales: { x: { grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { title: { display: true, text: 'Nghìn tỷ VND', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// CHART 10.4.3 - VSS
+// =============================================================
+new Chart(document.getElementById('chartVSS'), {
+  type: 'bar',
+  data: {
+    labels: ['RP (2SP)', 'EEV (det with mean)', 'VSS = EEV - RP'],
+    datasets: [{
+      label: 'Cost (nghìn tỷ)',
+      data: [9.85, 11.08, 1.23],
+      backgroundColor: ['#a855f7', '#ef4444', '#10b981'],
+      borderRadius: 6
+    }]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'VSS = lợi ích của stochastic so với deterministic-with-mean', color: '#f8fafc', font:{size:14,weight:'bold'}}, legend: { display: false }},
+    scales: { x: { grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { title: { display: true, text: 'Nghìn tỷ VND', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// CHART 10.4.4 - Robust
+// =============================================================
+new Chart(document.getElementById('chartRobust'), {
+  type: 'bar',
+  data: {
+    labels: ['Slow', 'Mid', 'Fast'],
+    datasets: [
+      { label: 'Deterministic (mean)', data: [7.85, 9.40, 14.20], backgroundColor: '#ef4444', borderRadius: 6 },
+      { label: '2-stage SP',           data: [7.95, 9.55, 13.65], backgroundColor: '#a855f7', borderRadius: 6 },
+      { label: 'Robust minimax',       data: [8.40, 10.10, 12.80], backgroundColor: '#10b981', borderRadius: 6 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { title: { display: true, text: 'Chi phí của 3 chiến lược trên 3 kịch bản', color: '#f8fafc', font:{size:14,weight:'bold'}}},
+    scales: { x: { grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}},
+              y: { title: { display: true, text: 'Cost (nghìn tỷ)', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+    animation: { duration: 1500 }
+  }
+});
+
+// =============================================================
+// PLAYGROUND 10.4.5
+// =============================================================
+let chartStageLive = null;
+let lastProbs = [0.30, 0.50, 0.20];
+
+function updatePlayground10() {
+  const p = [
+    parseFloat(document.getElementById('pgP1').value),
+    parseFloat(document.getElementById('pgP2').value),
+    parseFloat(document.getElementById('pgP3').value)
+  ];
+
+  // Labels with pulse
+  [1,2,3].forEach((i, idx) => {
+    document.getElementById(`valP${i}`).textContent = p[idx].toFixed(2);
+    if (p[idx] !== lastProbs[idx]) pulseBadge(`valP${i}`);
+  });
+  lastProbs = [...p];
+
+  const sum = p.reduce((s,v) => s+v, 0);
+  document.getElementById('sumValue10').textContent = sum.toFixed(2);
+  const sumStatus = document.getElementById('sumStatus10');
+  const sumWarn = document.getElementById('sumWarn10');
+  if (Math.abs(sum - 1.0) < 0.05) {
+    sumStatus.textContent = '— Hợp lệ ✓';
+    sumWarn.style.background = 'rgba(16,185,129,0.1)';
+    sumWarn.style.borderColor = '#10b981';
+    sumWarn.style.color = '#10b981';
+  } else {
+    sumStatus.textContent = sum < 1 ? '— Tổng < 1 ⚠' : '— Tổng > 1 ⚠';
+    sumWarn.style.background = 'rgba(234,179,8,0.1)';
+    sumWarn.style.borderColor = '#eab308';
+    sumWarn.style.color = '#eab308';
+  }
+  const pn = sum > 0 ? p.map(v => v/sum) : [0.33, 0.33, 0.34];
+
+  // Stage 1 increases when fast prob higher (pre-investment to avoid expensive recourse)
+  // Expected cost
+  const expCost = pn[0] * 7.20 + pn[1] * 9.40 + pn[2] * 13.80 + 0.05 * (pn[2] - pn[0]); // penalty term
+  document.getElementById('kpiExpCost').textContent = expCost.toFixed(2);
+
+  const coverage = Math.round(70 - (pn[2] - 0.2) * 25);
+  document.getElementById('kpiCov').textContent = coverage + '%';
+
+  const vss = 1.23 * (1 + Math.abs(pn[2] - pn[0]) * 1.5);
+  document.getElementById('kpiVSS').textContent = vss.toFixed(2);
+
+  let style = 'Balanced';
+  if (pn[0] > 0.55) style = 'Bi quan';
+  else if (pn[2] > 0.45) style = 'Lạc quan';
+  else if (Math.abs(pn[0] - pn[2]) < 0.1) style = 'Cân bằng';
+  document.getElementById('kpiRiskStyle').textContent = style;
+
+  // Adjust Stage 1 base by prob-weighted average
+  const adjFactor = 0.85 + pn[2] * 0.5; // more pessimistic = invest more upfront if fast prob high
+  const stage1Adj = STAGE1_BASE.map(v => v * adjFactor);
+  const stage2Adj = SECTORS_LABELS.map((_, i) => pn[0]*STAGE2_SLOW[i] + pn[1]*STAGE2_MID[i] + pn[2]*STAGE2_FAST[i]);
+
+  if (chartStageLive) chartStageLive.destroy();
+  chartStageLive = new Chart(document.getElementById('chartStageLive'), {
+    type: 'bar',
+    data: {
+      labels: SECTORS_LABELS,
+      datasets: [
+        { label: 'Stage 1 (chốt)', data: stage1Adj, backgroundColor: '#a855f7', borderRadius: 4 },
+        { label: 'Stage 2 E[recourse]', data: stage2Adj, backgroundColor: '#06b6d4', borderRadius: 4 }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 11 }}}},
+      scales: { x: { stacked: true, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8' }},
+                y: { stacked: true, title: { display: true, text: 'Tỷ VND', color: '#94a3b8'}, grid: { color: 'rgba(148,163,184,0.1)'}, ticks: { color: '#94a3b8'}}},
+      animation: { duration: 600 }
+    }
+  });
+
+  // Recourse tiles
+  const recTotals = [
+    STAGE2_SLOW.reduce((s,v) => s+v, 0),
+    STAGE2_MID.reduce((s,v) => s+v, 0),
+    STAGE2_FAST.reduce((s,v) => s+v, 0)
+  ];
+  document.getElementById('recourseLive').innerHTML = SCENARIOS.map((sc, i) => `
+    <div class="recourse-tile r-${['low','mid','high'][i]}">
+      <div class="rec-label">${sc.icon} ${sc.name} (p=${pn[i].toFixed(2)})</div>
+      <div class="rec-value">+${recTotals[i].toLocaleString('vi-VN')} tỷ</div>
+      <div style="font-size:11px;color:var(--text-2);margin-top:4px">Expected: ${(recTotals[i] * pn[i]).toFixed(0)} tỷ</div>
+    </div>
+  `).join('');
+}
+
+function applyPreset10(name) {
+  let preset;
+  switch(name) {
+    case 'default':   preset = [0.30, 0.50, 0.20]; break;
+    case 'pessimist': preset = [0.70, 0.25, 0.05]; break;
+    case 'optimist':  preset = [0.10, 0.30, 0.60]; break;
+    case 'uniform':   preset = [0.34, 0.33, 0.33]; break;
+  }
+  ['pgP1','pgP2','pgP3'].forEach((id, i) => { document.getElementById(id).value = preset[i]; });
+  updatePlayground10();
+}
+
+['pgP1','pgP2','pgP3'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updatePlayground10);
+});
+
+setTimeout(updatePlayground10, 800);
+setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }, 500);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>
