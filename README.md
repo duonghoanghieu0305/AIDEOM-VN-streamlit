@@ -4,6 +4,7 @@
 
 ## 📋 Tổng quan
 
+
 12 bài tập từ cơ bản đến nâng cao, tích hợp 7 phương pháp tối ưu hóa:
 
 | Phần | Bài | Tên | Phương pháp |
@@ -153,5 +154,4 @@ aideom-vn/
 MIT License - Tự do sử dụng cho mục đích học tập, nghiên cứu, phi thương mại.
 
 ---
-
-**Made for** Quân Phan Mạnh · *Đề tài cuối kỳ Các mô hình ra quyết định 2026*
+**DƯƠNG HOÀNG HIẾU - MSV 23050475** · *Đề tài cuối kỳ Các mô hình ra quyết định 2026*
