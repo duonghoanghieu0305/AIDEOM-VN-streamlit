@@ -1,40 +1,230 @@
 /* =============================================================
-   AIDEOM-VN · MODERN CYBER-RED DASHBOARD (V2 UPGRADE)
-   Premium Dark Mode + Neon Red Accents + Deep Glassmorphism
+   AIDEOM-VN · CRISP TECH BLUE & WHITE THEME (V4)
+   Minimalist SaaS Aesthetic · High-Legibility Typography
    ============================================================= */
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+  -webkit-font-smoothing: antialiased;
+}
 
 :root {
-  /* Nền OLED sâu thẳm, tạo độ tương phản tuyệt đối */
-  --bg-base: #050508; 
-  --bg-surface: #0f1015;
-  --bg-card: rgba(20, 21, 28, 0.6);
-
-  /* Văn bản: Trắng sáng cho tiêu đề, Xám bạc cho nội dung (Dễ đọc) */
-  --text-title: #ffffff;
-  --text-body: #cbd5e1;
-  --text-muted: #64748b;
-
-  /* Hệ Đỏ Tinh Tế (Richer, deeper reds - không bị chói) */
-  --red-neon: #ff1a40;       /* Đỏ phát sáng */
-  --red-crimson: #e11d48;    /* Đỏ gắt cốt lõi */
-  --red-deep: #881337;       /* Đỏ mận đổ bóng */
+  /* Không gian nền Trắng - Bạc tinh tế */
+  --bg-app: #f8fafc;        /* Nền canvas xám nhẹ chống chói */
+  --bg-sidebar: #ffffff;    /* Sidebar trắng tinh khiết */
+  --bg-card: #ffffff;       /* Thẻ nội dung trắng nổi bật */
   
-  /* Hiệu ứng viền và phát sáng */
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-red: rgba(225, 29, 72, 0.3);
-  --glow-red: 0 0 20px rgba(225, 29, 72, 0.15);
-  --glow-red-strong: 0 4px 24px rgba(255, 26, 64, 0.3);
+  /* Hệ chữ Navy/Slate cao cấp (Tuyệt đối dễ đọc) */
+  --text-title: #0f172a;    /* Tiêu đề xanh đen đậm sâu */
+  --text-body: #334155;     /* Văn bản chính xám đậm */
+  --text-muted: #64748b;    /* Chú thích / Phân mục xám trung tính */
 
-  /* Chuyển động mượt mà cao cấp */
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Sắc Xanh Công Nghệ Biển Sâu (Premium Sapphire & Sky Blue) */
+  --blue-primary: #0284c7;  /* Xanh ánh trời (Sky Blue) tạo điểm nhấn */
+  --blue-dark: #1e40af;     /* Xanh đại dương đậm cho liên kết chính */
+  --blue-light: #f0f9ff;    /* Nền xanh mượt cho các khối cần chú ý */
+  
+  /* Đường viền hairline siêu mảnh */
+  --border-subtle: #e2e8f0;
+  --border-focus: #cbd5e1;
+
+  /* Đổ bóng mềm đổ bóng dạng lớp (Soft Ambient Shadows) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  
+  /* Chuyển động chuẩn mực, tinh tế */
+  --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-base);
+  background-color: var(--bg-app);
   color: var(--text-body);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ----- THANH CUỘN THANH LỊCH ----- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-app); }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ----- CẤU TRÚC BỐ CỤC ----- */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+
+/* ----- SIDEBAR TRẮNG TINH TẾ (MINIMALIST SIDEBAR) ----- */
+.sidebar {
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-subtle);
+  padding: 40px 24px;
+  position: sticky; top: 0; height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .logo {
+  font-size: 16px; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--text-title);
+  margin-bottom: 40px; padding-left: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sidebar .logo::before {
+  content: ''; display: block; width: 8px; height: 8px;
+  background: var(--blue-primary); border-radius: 50%;
+}
+
+.sidebar .nav-section {
+  font-size: 11px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  font-weight: 700; padding: 0 8px 8px; margin-top: 24px;
+}
+
+/* Menu điều hướng Sidebar */
+.sidebar a.nav-link {
+  display: flex; align-items: center;
+  padding: 10px 14px; margin-bottom: 4px;
+  color: var(--text-body); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; border-radius: 6px;
+  transition: var(--transition-fast);
+}
+.sidebar a.nav-link:hover {
+  background: #f1f5f9;
+  color: var(--text-title);
+}
+.sidebar a.nav-link.active {
+  background: var(--blue-light);
+  color: var(--blue-dark);
+  font-weight: 600;
+}
+
+/* ----- VÙNG NỘI DUNG CHÍNH ----- */
+.main { 
+  padding: 56px 64px 120px; 
+  max-width: 1100px; 
+  width: 100%;
+  margin: 0 auto;
+}
+@media (max-width: 768px) { .main { padding: 32px 20px; }}
+
+/* ----- HEADER BÀI HỌC ----- */
+.page-header { margin-bottom: 40px; }
+.page-header .crumb {
+  font-size: 12px; font-weight: 600; color: var(--blue-primary);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+}
+.page-header h1 {
+  font-size: 32px; font-weight: 800; color: var(--text-title);
+  line-height: 1.3; letter-spacing: -0.5px; margin-bottom: 16px;
+}
+.page-header .subtitle {
+  font-size: 15px; color: var(--text-body); line-height: 1.75;
+}
+
+/* ----- HỆ THỐNG THẺ TAGS (SÁCH SẠCH) ----- */
+.pills { display: flex; gap: 8px; margin-top: 24px; flex-wrap: wrap; }
+.tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; padding: 5px 12px; border-radius: 6px;
+  font-weight: 500; color: var(--text-muted);
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  transition: var(--transition-fast);
+}
+.tag:hover {
+  border-color: var(--blue-primary);
+  color: var(--blue-dark);
+}
+
+/* ----- THẺ KHỐI CHỨA NỘI DUNG (CARDS) ----- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-card);
+  transition: var(--transition-fast);
+}
+.card:hover {
+  border-color: var(--border-focus);
+}
+
+/* Khối đặc biệt: "Bối cảnh chính sách" (Từ ảnh gốc) */
+.context-card {
+  border-left: 4px solid var(--blue-primary);
+  background: linear-gradient(90deg, var(--blue-light) 0%, #ffffff 100%);
+}
+
+.card-title {
+  font-size: 16px; font-weight: 700; color: var(--text-title);
+  margin-bottom: 14px;
+}
+
+/* Định dạng text danh sách bên trong Card */
+.card p { color: var(--text-body); font-size: 14.5px; }
+.card strong { color: var(--text-title); font-weight: 600; }
+
+.card ul { list-style: none; margin-top: 12px; }
+.card li {
+  position: relative; padding-left: 20px; margin-bottom: 8px;
+  font-size: 14px; color: var(--text-body);
+}
+/* Dấu bullet point dạng vạch kẻ ngang thông minh màu xanh */
+.card li::before {
+  content: ''; position: absolute; left: 0; top: 10px;
+  width: 8px; height: 2px; background: var(--blue-primary);
+}
+
+/* ----- TIÊU ĐỀ LỚN ----- */
+h2 {
+  font-size: 22px; font-weight: 700; color: var(--text-title);
+  margin: 48px 0 20px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ----- KHỐI HIỂN THỊ CODE MÁY HỌC ----- */
+pre {
+  background: #0f172a; /* Giữ code block tối để dễ nhìn code màu */
+  border-radius: 8px;
+  padding: 16px; margin: 20px 0;
+  overflow-x: auto;
+}
+pre code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: #e2e8f0; line-height: 1.6;
+}
+
+/* ----- KHỐI ĐÓNG MỞ (DETAILS / SUMMARY) ----- */
+details.qa {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px; margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+details.qa summary {
+  padding: 16px 20px; font-weight: 600; font-size: 14.5px;
+  color: var(--text-title); cursor: pointer; user-select: none;
+}
+details.qa summary:hover { color: var(--blue-primary); }
+details.qa[open] { border-color: var(--blue-primary); }
+details.qa .qa-a {
+  padding: 0 20px 16px; color: var(--text-body);
+  font-size: 14px; border-top: 1px solid var(--border-subtle);
+  padding-top: 12px;
+}  color: var(--text-body);
   line-height: 1.7;
   min-height: 100vh;
   /* Hiệu ứng ánh sáng đỏ hắt từ dưới và góc trên - tạo chiều sâu */
