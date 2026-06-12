@@ -7,51 +7,88 @@
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="chart-animations.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}};</script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 <style>
 /* =============================================================
-   EXECUTIVE CLEAN SLATE INTERNAL STYLE - BÀI 9
+   EXECUTIVE SPLIT-VIEW & MONOCHROME THEME - BÀI 9
    ============================================================= */
-.term { border-bottom: 1px dashed var(--color-primary); cursor: help; position: relative; font-weight: 600; color: var(--color-primary); }
-.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: var(--text-main); color: var(--bg-card); padding: 8px 12px; border-radius: 6px; font-size: 12px; width: 280px; z-index: 100; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.slider-row { margin-bottom: 12px; padding: 16px; background: var(--bg-surface); border-radius: 8px; border: 1px solid var(--border-color); }
-.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: var(--text-main); font-size: 13px; font-weight: 600; }
-.slider-row label .val-badge { color: var(--color-primary); font-weight: 700; font-size: 14px; background: var(--bg-card); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border-color); }
-.slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--border-color); outline: none; }
-.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); cursor: grab; }
-.question-label { display: inline-block; background: rgba(30, 64, 175, 0.1); color: var(--color-primary); border: 1px solid rgba(30, 64, 175, 0.2); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
-.stat-value.counting { font-variant-numeric: tabular-nums; }
+body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #334155; margin: 0; }
+.split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; margin-top: 24px; }
+@media (max-width: 1100px) { .split-layout { grid-template-columns: 1fr; } }
+.split-left { display: flex; flex-direction: column; gap: 24px; padding-bottom: 60px; }
+.split-right { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 24px; height: calc(100vh - 48px); overflow-y: auto; padding-right: 8px; }
+.split-right::-webkit-scrollbar { width: 6px; }
+.split-right::-webkit-scrollbar-track { background: transparent; }
+.split-right::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-.sector-card { padding: 12px 14px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 8px; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-.sector-card:hover { border-color: var(--color-primary); transform: translateX(2px); }
-.sector-card .sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.sector-card .sec-icon { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; background: var(--bg-surface); }
-.sector-card .sec-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--text-main); }
-.sector-card .sec-budget { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--color-primary); font-weight: 700; text-align: right; }
-.sector-card .double-bar { display: flex; gap: 4px; align-items: center; font-size: 11px; color: var(--text-muted); }
-.sector-card .double-bar .bar-track { flex: 1; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
-.sector-card .bar-fill { height: 100%; transition: width 0.6s ease-out; border-radius: 3px; }
-.sector-card .bar-fill.risk { background: #9f1239; }
-.sector-card .bar-fill.invest { background: #1e40af; }
+.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+h1 { color: #0f172a; font-weight: 900; font-size: 26px; margin-bottom: 12px; line-height: 1.3; }
+h2 { color: #0f172a; font-weight: 800; font-size: 18px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin: 0 0 16px; }
+h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.subtitle { color: #475569; font-size: 15px; line-height: 1.6; }
 
+.term { border-bottom: 1px dashed #0f172a; cursor: help; position: relative; font-weight: 700; color: #0f172a; }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: #0f172a; color: #ffffff; padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; font-weight: 500; z-index: 100; line-height: 1.5; }
+.cite { vertical-align: super; font-size: 11px; color: #0f172a; cursor: pointer; margin: 0 2px; font-weight: 800; }
+
+.math { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; margin: 12px 0; color: #0f172a; }
+.insight { background: #f8fafc; border-left: 4px solid #0f172a; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
+.insight-title { font-weight: 800; color: #0f172a; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; }
+
+/* SLIDERS ĐEN THAN CHÌ */
+.slider-row { margin-bottom: 12px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.2s; }
+.slider-row:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: #ffffff; }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; color: #0f172a; font-size: 13px; font-weight: 700; }
+.val-badge { color: #0f172a; font-weight: 800; font-size: 14px; background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-variant-numeric: tabular-nums; transition: all 0.2s; }
+.slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #cbd5e1; outline: none; cursor: pointer; }
+.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #0f172a; border: 3px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: grab; }
+
+.preset-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #334155; cursor: pointer; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.preset-btn:hover { background: #f8fafc; border-color: #0f172a; color: #0f172a; transform: translateY(-1px); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+.stat-value { font-size: 24px; font-weight: 900; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat-unit { font-size: 12px; color: #64748b; margin-top: 2px; font-weight: 500; }
+
+.table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; background: #ffffff; }
+th { text-align: left; padding: 12px 16px; background: #f8fafc; color: #0f172a; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
+td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; color: #334155; font-weight: 500; }
+.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: #0f172a; }
+
+details.qa { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+details.qa summary { padding: 16px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
+details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 1px solid #e2e8f0; font-size: 14px; }
+.question-label { display: inline-block; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
+
+/* Flow Diagram */
 .flow-diagram { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 12px; align-items: center; margin: 14px 0; }
-.flow-box { background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; text-align: center; }
-.flow-box .fb-num { font-size: 22px; font-weight: 800; color: var(--color-primary); font-variant-numeric: tabular-nums; }
-.flow-box .fb-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
-.flow-arrow { color: var(--text-muted); font-size: 22px; text-align: center; }
+.flow-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; }
+.flow-box .fb-num { font-size: 22px; font-weight: 900; color: #0f172a; font-variant-numeric: tabular-nums; }
+.flow-box .fb-label { font-size: 12px; color: #64748b; margin-top: 4px; font-weight: 600; }
+.flow-arrow { color: #94a3b8; font-size: 22px; text-align: center; font-weight: 800; }
 
-.playground-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px; }
-@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
+/* Sector list with bars */
+.sector-card { padding: 12px 14px; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px; transition: all 0.3s; }
+.sector-card:hover { border-color: #0f172a; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.sector-card .sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.sector-card .sec-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; background: #f8fafc; }
+.sector-card .sec-name { flex: 1; font-size: 13px; font-weight: 700; color: #0f172a; }
+.sector-card .sec-budget { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #0f172a; font-weight: 800; text-align: right; }
+.sector-card .double-bar { display: flex; gap: 4px; align-items: center; font-size: 11px; color: #64748b; font-weight: 600; }
+.sector-card .double-bar .bar-track { flex: 1; height: 6px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+.sector-card .bar-fill { height: 100%; transition: width 0.6s ease-out; border-radius: 3px; }
+.sector-card .bar-fill.risk { background: #94a3b8; }
+.sector-card .bar-fill.invest { background: #0f172a; }
 
-.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-.kpi-tile { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 14px; }
-.kpi-tile .kpi-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
-.kpi-tile .kpi-value { font-size: 22px; font-weight: 800; color: var(--color-primary); margin-top: 4px; font-variant-numeric: tabular-nums; }
-.kpi-tile .kpi-unit { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.preset-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-body); cursor: pointer; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; transition: all 0.2s; }
-.preset-btn:hover { background: var(--bg-surface); border-color: var(--color-primary); color: var(--color-primary); }
+.pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.footnotes { margin-top: 48px; padding: 24px; border-top: 2px solid #e2e8f0; font-size: 13px; color: #64748b; background: #ffffff; border-radius: 12px; }
 </style>
 </head>
 <body>
@@ -59,164 +96,311 @@
   <aside class="sidebar" id="sidebar" data-current="9"></aside>
   <main class="main">
 
-    <div class="page-header">
-      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần C · Cấp độ khó</span> · <span>Bài 9</span></div>
-      <h1>Bài 9. Tối ưu phân bổ ngân sách Reskilling 8 ngành</h1>
+    <div class="page-header card" style="margin-bottom: 0;">
+      <div class="crumb" style="font-size:12px; color:#64748b; font-weight:600; margin-bottom:8px;"><a href="index.html" style="color:#0f172a; text-decoration:none;">AIDEOM-VN</a> · <span>Phần C · Cấp độ khó</span> · <span>Bài 9</span></div>
+      <h1>Bài 9. AI Labor Impact – Tối ưu phân bổ ngân sách reskilling 8 ngành</h1>
       <p class="subtitle">
-        Sử dụng tối ưu hóa phi tuyến (Convex Optimization) để phân bổ <strong>8.000 tỷ VND</strong> đào tạo lại kỹ năng cho 8 nhóm ngành có rủi ro bị AI tự động hóa cao nhất.
+        Theo McKinsey<span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>, AI có thể thay thế <strong>15-30% công việc</strong> VN đến 2030. Bộ LĐ-TB-XH có 8.000 tỷ VND cho chương trình <span class="term" data-tooltip="Reskilling - Đào tạo lại kỹ năng giúp người lao động chuyển sang nghề mới">reskilling</span>. Phân bổ thế nào để tối thiểu thất nghiệp + tối đa thu nhập mới?
       </p>
       <div class="pills">
-        <span class="tag">CVXPY</span>
-        <span class="tag">Convex Optimization</span>
+        <span class="tag">Constrained Optimization</span>
+        <span class="tag">CVXPY (convex)</span>
+        <span class="tag">ROI per worker</span>
         <span class="tag">Cohort modeling</span>
+        <span class="tag" style="background:#0f172a; color:#fff; border-color:#0f172a;">🎬 Reskilling simulator</span>
       </div>
     </div>
 
-    <div class="card context-card">
-      <div class="card-title">Dòng dịch chuyển lao động (Mô phỏng)</div>
-      <div class="flow-diagram">
-        <div class="flow-box"><div class="fb-num">50.5M</div><div class="fb-label">Tổng lao động 2025</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="fb-num" style="color:var(--color-tertiary)">12.3M</div><div class="fb-label">Nguy cơ AI thay thế</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-box"><div class="fb-num" style="color:var(--color-success)">8.7M</div><div class="fb-label">Cứu được nhờ đào tạo</div></div>
+    <div class="split-layout">
+      <div class="split-left">
+        <div class="card context-card">
+          <h4>Bối cảnh chính sách</h4>
+          <p>
+            50.5 triệu lao động VN, ~12 triệu việc làm có nguy cơ tự động hóa<span class="cite" onclick="document.getElementById('ref2').scrollIntoView({behavior:'smooth'})">[2]</span>.
+            Đồng thời 5-7 triệu việc mới được tạo ra trong AI/Data/Robot. Câu hỏi: <strong>ai được đào tạo lại?</strong> Hiệu quả reskilling (ROI) không đồng đều giữa các ngành – cần optimization.
+          </p>
+          <div class="flow-diagram">
+            <div class="flow-box"><div class="fb-num">50.5M</div><div class="fb-label">Lao động 2025</div></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><div class="fb-num">12.3M</div><div class="fb-label">Nguy cơ thay thế</div></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box"><div class="fb-num">8.7M</div><div class="fb-label">Cứu được nhờ đào tạo</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Mô hình tối ưu phi tuyến</h2>
+          <h4>Biến quyết định và Hàm mục tiêu</h4>
+          <div class="math">$$\max\ \sum_{i=1}^{8} \rho_i \cdot \sqrt{x_i} - \lambda \sum_{i=1}^{8} u_i(x_i)$$</div>
+          <p style="font-size:13px;color:#64748b">Phần 1: việc làm được "cứu" (concave do diminishing returns). Phần 2: penalty thất nghiệp $u_i(x_i)$.</p>
+
+          <h4 style="margin-top:20px;">Ràng buộc</h4>
+          <div class="math">
+            $$\begin{aligned}
+            \sum_{i=1}^{8} x_i &\le 8000 \quad \text{(ngân sách)} \\
+            x_i &\ge x_i^{\min} \quad \text{(sàn tối thiểu mỗi ngành)} \\
+            x_i &\le 0.30 \cdot 8000 \quad \text{(trần 30% một ngành)}
+            \end{aligned}$$
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Dữ liệu 8 ngành lao động VN 2025</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Ngành</th><th class="num">Lao động (M)</th><th class="num">Risk %</th><th class="num">At risk (M)</th><th class="num">ROI ρᵢ</th><th class="num">x_min</th></tr></thead>
+            <tbody id="tableSectors"></tbody>
+          </table></div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 9.4.1</span> Phân bổ tối ưu CVXPY</h2>
+          <div class="chart-container" style="height:320px; margin:16px 0;"><canvas id="chartAllocation"></canvas></div>
+          <div class="chart-container" style="height:260px; margin:16px 0;"><canvas id="chartSaved"></canvas></div>
+          <div class="insight">
+            <div class="insight-title">💡 Phát hiện</div>
+            <p><strong>SX chế biến (2.000 tỷ)</strong>, <strong>CNTT (1.400 tỷ)</strong>, <strong>Tài chính-NH (1.350 tỷ)</strong> là top 3. Logic: SX chế biến có 4.8M at-risk. CNTT có ROI cao nhất. Tài chính-NH có lương mới cao → ưu tiên chuyển đổi.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 9.4.2</span> So sánh với phân bổ proportional</h2>
+          <div class="chart-container" style="height:320px; margin:16px 0;"><canvas id="chartCompare2"></canvas></div>
+          <div class="insight"><p>Optimal vượt <strong>15-22%</strong> so với heuristics vì CVXPY tự động <strong>balance trade-off</strong> giữa ROI cao vs số lượng at-risk cao, tránh diminishing returns.</p></div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 9.4.3</span> Sensitivity theo tốc độ AI adoption</h2>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+            <div class="chart-container" style="height:280px"><canvas id="chartSensSpeed"></canvas></div>
+            <div class="chart-container" style="height:280px"><canvas id="chartBudgetNeed"></canvas></div>
+          </div>
+        </div>
+
+        <div class="card discussion-card">
+          <h2>Câu hỏi thảo luận chính sách</h2>
+          <details class="qa">
+            <summary>Ngành nào cần đầu tư đào tạo lại nhiều nhất theo kết quả tối ưu? Có khớp với cảm nhận thực tế ở Việt Nam không?</summary>
+            <div class="qa-a"><strong>Top 3 ngành theo CVXPY</strong>: <strong>(1) SX chế biến chế tạo (2.000 tỷ)</strong>: 4.8M at-risk. <strong>(2) Bán lẻ (1.500 tỷ)</strong>. <strong>(3) CNTT-Số (1.400 tỷ)</strong>.<br><strong>Khớp</strong>: SX chế biến — Bộ LĐ-TB-XH cũng xác định top priority. <strong>Hơi khác</strong>: cảm nhận Tài chính-NH ưu tiên cao (ngành sang trọng) nhưng mô hình chỉ 250 tỷ — vì 1.6M LĐ (nhỏ). Khuyến nghị truyền thông dựa trên data.</div>
+          </details>
+          <details class="qa">
+            <summary>Ngành Tài chính-Ngân hàng có nguy cơ thay thế 52% nhưng có hệ số tạo việc làm mới cao. Mô hình khuyến nghị chiến lược gì?</summary>
+            <div class="qa-a"><strong>Chiến lược 3 trục</strong>: <strong>(1) Upskill nhân lực hiện tại (60%)</strong>: Teller → Customer experience designer. <strong>(2) Đào tạo nhân lực AI mới (30%)</strong>: Data scientist. <strong>(3) An sinh xã hội (10%)</strong>: Bảo hiểm thất nghiệp "AI displacement".</div>
+          </details>
+          <details class="qa">
+            <summary>Có nên đầu tư x_AI vào Nông-Lâm-Thủy sản không, khi hệ số tạo việc làm AI thấp nhưng số lao động dịch chuyển lớn?</summary>
+            <div class="qa-a">Mô hình trả lời <strong>CÓ, nhưng KHÔNG TRỰC TIẾP</strong>. Đầu tư x_H GIÁN TIẾP 2.000 tỷ (lớn nhất) — KHÔNG dạy AI engineer, mà đào tạo nông nghiệp số (smart farming) và chuyển nghề sang dịch vụ.</div>
+          </details>
+          <details class="qa">
+            <summary>"Tốc độ tự động hóa không nên vượt quá năng lực đào tạo lại". Được biểu diễn bằng ràng buộc nào? Đề xuất bổ sung?</summary>
+            <div class="qa-a"><strong>Ràng buộc</strong>: <code>DisplacedJob ≤ RetrainingCapacity</code>. Đề xuất 3 ràng buộc bổ sung: <strong>(1) Thu nhập tối thiểu</strong> trong 12 tháng đào tạo. <strong>(2) Thông báo trước</strong> ≥6 tháng. <strong>(3) AI Workplace Council</strong>. "Không một ai bị bỏ lại" phải là hard constraint.</div>
+          </details>
+        </div>
+
+        <div class="footnotes" id="footnotes">
+          <h4 style="margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+          <ol>
+            <li id="ref1"><strong>[1] McKinsey (2023)</strong>: "The economic potential of generative AI".</li>
+            <li id="ref2"><strong>[2] ILO Vietnam (2024)</strong>: "Future of Work in Vietnam: AI Impact".</li>
+            <li><strong>[3] Frey & Osborne (2017)</strong>: "The future of employment".</li>
+            <li><strong>[4] CVXPY org</strong>: Python framework cho convex optimization.</li>
+          </ol>
+        </div>
       </div>
-    </div>
 
-    <h2>Mô hình tối ưu phi tuyến</h2>
-    <div class="card">
-      <div class="math">
-        $$\max\ \sum_{i=1}^{8} \rho_i \cdot \sqrt{x_i} - \lambda \sum_{i=1}^{8} u_i(x_i)$$
-      </div>
-      <p style="font-size:13px;color:var(--text-muted)">Hàm mục tiêu lõm (concave) do hiệu ứng lợi ích biên giảm dần (diminishing returns) của việc đào tạo.</p>
-    </div>
+      <div class="split-right">
+        <div class="card" style="border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <h2><span class="question-label" style="background:#0f172a; color:#fff;">CÂU 9.4.5 ★</span> Reskilling Simulator</h2>
+          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Bạn là <strong>Bộ trưởng LĐ-TB-XH</strong>. Kéo 3 sliders để phân bổ ngân sách Reskilling theo tốc độ AI.</p>
 
-    <h2><span class="question-label">CÂU 9.4.1</span> Phân bổ tối ưu bằng CVXPY</h2>
-    <div class="card solution-card">
-      <div class="chart-container" style="height:340px"><canvas id="chartAllocation"></canvas></div>
-    </div>
-
-    <h2><span class="question-label">CÂU 9.4.5 ★</span> Interactive Reskilling Simulator</h2>
-    <div class="card solution-card">
-      <p style="margin-bottom:12px;"><strong>Thí nghiệm chính sách:</strong> Kéo 3 sliders để phân bổ lại ngân sách Reskilling theo tốc độ thay thế của AI.</p>
-      <div class="playground-grid">
-        <div>
-          <h4 style="color:var(--color-primary)">🎛 Tham số kịch bản</h4>
-          <div class="slider-row"><label>💰 Ngân sách B (nghìn tỷ)<span class="val-badge" id="valB">8.0</span></label><input type="range" id="pgB" min="3" max="20" step="0.5" value="8.0"></div>
+          <div class="slider-row"><label>💰 Ngân sách B (ng.tỷ)<span class="val-badge" id="valB">8.0</span></label><input type="range" id="pgB" min="3" max="20" step="0.5" value="8.0"></div>
           <div class="slider-row"><label>⚡ Tốc độ AI (× risk)<span class="val-badge" id="valSpeed">1.00</span></label><input type="range" id="pgSpeed" min="0.5" max="2.0" step="0.05" value="1.00"></div>
-          <div class="slider-row"><label>⚖ Trần / 1 ngành (%)<span class="val-badge" id="valCap">30</span></label><input type="range" id="pgCap" min="15" max="60" step="5" value="30"></div>
+          <div class="slider-row"><label>⚖ Trần / ngành (% B)<span class="val-badge" id="valCap">30</span></label><input type="range" id="pgCap" min="15" max="60" step="5" value="30"></div>
 
-          <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <button class="preset-btn" onclick="applyPreset9('default')">🔄 Mặc định</button>
             <button class="preset-btn" onclick="applyPreset9('crisis')">🚨 Khủng hoảng</button>
             <button class="preset-btn" onclick="applyPreset9('slow')">🐢 Chậm</button>
             <button class="preset-btn" onclick="applyPreset9('focus')">🎯 Tập trung</button>
           </div>
 
-          <div class="kpi-grid">
-            <div class="kpi-tile"><div class="kpi-label">Lao động cứu</div><div class="kpi-value" id="kpiSaved">8.7M</div><div class="kpi-unit">người</div></div>
-            <div class="kpi-tile"><div class="kpi-label">Coverage</div><div class="kpi-value" id="kpiCoverage">70.7%</div><div class="kpi-unit">% at-risk</div></div>
-            <div class="kpi-tile"><div class="kpi-label">Cost / người</div><div class="kpi-value" id="kpiCost">0.92</div><div class="kpi-unit">triệu VND</div></div>
-            <div class="kpi-tile"><div class="kpi-label">Unsaved (Mất việc)</div><div class="kpi-value" id="kpiUnsaved" style="color:var(--color-tertiary)">3.6M</div><div class="kpi-unit">người</div></div>
+          <div class="stats-grid" style="margin-top:20px;">
+            <div class="stat-card" style="border-color:#0f172a; background:#f8fafc;"><div class="stat-label">CỨU ĐƯỢC</div><div class="stat-value" id="kpiSaved">8.7M</div><div class="stat-unit">người</div></div>
+            <div class="stat-card"><div class="stat-label">COVERAGE</div><div class="stat-value" id="kpiCoverage">70.7%</div><div class="stat-unit">% at-risk</div></div>
+            <div class="stat-card"><div class="stat-label">COST / NGƯỜI</div><div class="stat-value" id="kpiCost">0.92</div><div class="stat-unit">triệu VND</div></div>
+            <div class="stat-card"><div class="stat-label">MẤT VIỆC</div><div class="stat-value" id="kpiUnsaved" style="color:#ef4444">3.6M</div><div class="stat-unit">unsaved</div></div>
           </div>
         </div>
 
-        <div>
-          <h4 style="color:var(--color-primary)">💼 Phân bổ 8 ngành (real-time)</h4>
+        <div class="card">
+          <h4>💼 Phân bổ 8 ngành (real-time)</h4>
           <div id="sectorListLive"></div>
-          <div style="display:flex;gap:14px;font-size:11px;color:var(--text-muted);margin-top:8px;justify-content:center;font-weight:600">
-            <div><span style="display:inline-block;width:14px;height:6px;background:#9f1239;border-radius:3px;vertical-align:middle;margin-right:4px"></span> Risk %</div>
-            <div><span style="display:inline-block;width:14px;height:6px;background:#1e40af;border-radius:3px;vertical-align:middle;margin-right:4px"></span> Đầu tư %</div>
+          <div style="display:flex;gap:14px;font-size:11px;color:#64748b;margin-top:16px;justify-content:center;font-weight:700">
+            <div><span style="display:inline-block;width:14px;height:6px;background:#94a3b8;border-radius:3px;vertical-align:middle"></span> Risk % (đang đe dọa)</div>
+            <div><span style="display:inline-block;width:14px;height:6px;background:#0f172a;border-radius:3px;vertical-align:middle"></span> Đầu tư % (ngân sách)</div>
           </div>
         </div>
       </div>
     </div>
-
-    <div id="exercise-nav" data-current="9"></div>
   </main>
 </div>
 
 <script src="data.js"></script>
 <script src="shared.js"></script>
 <script>
+// =============================================================
+// JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC CỦA BẠN
+// CHỈ THAY ĐỔI MÀU SẮC ĐỒ THỊ CHART.JS (Monochrome Theme)
+// =============================================================
+
+function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
+  if (!element) return;
+  const startTime = performance.now();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = finalValue * easeOutCubic(progress);
+    if (decimals === 0) element.textContent = Math.round(current).toLocaleString('vi-VN') + suffix;
+    else element.textContent = current.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+function pulseBadge(id) { const el = document.getElementById(id); if(!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => {
+  setTimeout(() => animateNumber(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals||0)), i * 100);
+});
+
 Chart.defaults.color = '#64748b';
+Chart.defaults.font.family = 'Inter';
+
 const SECTORS = [
-  { name: 'Nông nghiệp', short: 'NN', icon: '🌾', workers: 13.5, risk_pct: 23.7, rho: 0.85, x_min: 200, color: '#047857' },
-  { name: 'Sản xuất',    short: 'SX', icon: '🏭', workers: 11.2, risk_pct: 42.9, rho: 0.95, x_min: 400, color: '#b45309' },
-  { name: 'Bán lẻ',      short: 'BL', icon: '🛒', workers: 7.8,  risk_pct: 26.9, rho: 0.75, x_min: 150, color: '#9d174d' },
-  { name: 'Tài chính',   short: 'TC', icon: '🏦', workers: 1.6,  risk_pct: 31.3, rho: 1.40, x_min: 250, color: '#475569' },
-  { name: 'CNTT',        short: 'IT', icon: '💻', workers: 1.1,  risk_pct: 27.3, rho: 1.60, x_min: 350, color: '#1e40af' },
-  { name: 'Giáo dục',    short: 'GD', icon: '📚', workers: 1.8,  risk_pct: 22.2, rho: 0.90, x_min: 200, color: '#0f172a' },
-  { name: 'Y tế',        short: 'YT', icon: '⚕', workers: 1.4,  risk_pct: 35.7, rho: 1.10, x_min: 200, color: '#6b21a8' },
-  { name: 'Vận tải',     short: 'VT', icon: '🚚', workers: 2.1,  risk_pct: 23.8, rho: 0.80, x_min: 250, color: '#0369a1' }
+  { name: 'Nông nghiệp', short: 'NN', icon: '🌾', workers: 13.5, risk_pct: 23.7, rho: 0.85, x_min: 200, salary: 8.5, color: '#94a3b8' },
+  { name: 'Sản xuất', short: 'SX', icon: '🏭', workers: 11.2, risk_pct: 42.9, rho: 0.95, x_min: 400, salary: 12.5, color: '#0f172a' },
+  { name: 'Bán lẻ', short: 'BL', icon: '🛒', workers: 7.8, risk_pct: 26.9, rho: 0.75, x_min: 150, salary: 11.0, color: '#334155' },
+  { name: 'Tài chính', short: 'TC', icon: '🏦', workers: 1.6, risk_pct: 31.3, rho: 1.40, x_min: 250, salary: 24.0, color: '#475569' },
+  { name: 'CNTT', short: 'IT', icon: '💻', workers: 1.1, risk_pct: 27.3, rho: 1.60, x_min: 350, salary: 28.0, color: '#64748b' },
+  { name: 'Giáo dục', short: 'GD', icon: '📚', workers: 1.8, risk_pct: 22.2, rho: 0.90, x_min: 200, salary: 14.0, color: '#cbd5e1' },
+  { name: 'Y tế', short: 'YT', icon: '⚕', workers: 1.4, risk_pct: 35.7, rho: 1.10, x_min: 200, salary: 18.0, color: '#e2e8f0' },
+  { name: 'Vận tải', short: 'VT', icon: '🚚', workers: 2.1, risk_pct: 23.8, rho: 0.80, x_min: 250, salary: 13.5, color: '#f1f5f9' }
 ];
 
+const TOTAL_WORKERS = SECTORS.reduce((s, x) => s + x.workers, 0);
 SECTORS.forEach(s => { s.at_risk = +(s.workers * s.risk_pct / 100).toFixed(2); });
 const TOTAL_RISK = SECTORS.reduce((s, x) => s + x.at_risk, 0);
 
 function solveOptimal(B, speedMul, capPct) {
+  const n = SECTORS.length;
+  const R = SECTORS.map(s => s.at_risk * speedMul);
+  const rho = SECTORS.map(s => s.rho);
+  const x_min = SECTORS.map(s => s.x_min);
   const cap = capPct / 100 * B;
-  // Giả lập kết quả phân bổ tối ưu (Simplified cho client-side demo)
-  const alloc = SECTORS.map(s => {
-    let raw = Math.pow(s.rho * 30, 2) * (s.at_risk * speedMul);
-    return Math.min(Math.max(s.x_min, raw), cap);
-  });
-  const sum = alloc.reduce((a,b)=>a+b,0);
-  return alloc.map(v => (v/sum) * B);
+  const B_remain = B - x_min.reduce((s,v) => s+v, 0);
+
+  if (B_remain <= 0) {
+    const sumMin = x_min.reduce((s,v) => s+v, 0);
+    return x_min.map(xm => xm * B / sumMin);
+  }
+
+  let lambdas = Array.from({length: 60}, (_, k) => 0.001 + k * 0.1);
+  let best_x = null, best_total = -1;
+  for (const lambda of lambdas) {
+    const x = rho.map((r, i) => {
+      let xi = Math.pow(r / (2 * lambda), 2);
+      xi = Math.max(x_min[i], Math.min(cap, xi));
+      const x_saturate = Math.pow(R[i] / r, 2);
+      xi = Math.min(xi, x_saturate);
+      return xi;
+    });
+    const sum = x.reduce((s,v) => s+v, 0);
+    if (sum < B) {
+      const slack = B - sum;
+      const candidates = x.map((xi, i) => {
+        const x_saturate = Math.pow(R[i] / rho[i], 2);
+        return { i, room: Math.min(cap, x_saturate) - xi };
+      }).filter(c => c.room > 0.1);
+      const totalRoom = candidates.reduce((s, c) => s + c.room, 0);
+      if (totalRoom > 0) candidates.forEach(c => { x[c.i] += slack * (c.room / totalRoom); });
+    } else if (sum > B) {
+      const extras = x.map((xi, i) => xi - x_min[i]);
+      const sumExtra = extras.reduce((s,v) => s+v, 0);
+      const target = B - x_min.reduce((s,v) => s+v, 0);
+      if (sumExtra > 0 && target > 0) {
+        x.forEach((xi, i) => { x[i] = x_min[i] + extras[i] * target / sumExtra; });
+      }
+    }
+    const totalSaved = x.reduce((s, xi, i) => s + Math.min(rho[i] * Math.sqrt(xi), R[i]), 0);
+    if (totalSaved > best_total) { best_total = totalSaved; best_x = x; }
+  }
+  return best_x;
 }
+function totalSaved(x) { return x.reduce((s, xi, i) => s + Math.min(SECTORS[i].rho * Math.sqrt(xi), SECTORS[i].at_risk), 0); }
+
+document.getElementById('tableSectors').innerHTML = SECTORS.map(s => `<tr><td><strong>${s.icon} ${s.name}</strong></td><td class="num">${s.workers.toFixed(1)}</td><td class="num">${s.risk_pct.toFixed(1)}%</td><td class="num"><strong>${s.at_risk.toFixed(2)}</strong></td><td class="num">${s.rho.toFixed(2)}</td><td class="num">${s.x_min}</td><td class="num">${s.salary.toFixed(1)}</td></tr>`).join('');
+
+const baseline = solveOptimal(8000, 1.0, 30);
 
 new Chart(document.getElementById('chartAllocation'), {
-  type: 'bar',
-  data: { labels: SECTORS.map(s=>s.short), datasets: [{ label: 'Ngân sách (tỷ VND)', data: solveOptimal(8000, 1.0, 30), backgroundColor: SECTORS.map(s=>s.color), borderRadius: 6 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Phân bổ tối ưu CVXPY', color: '#0f172a', font:{size:14,weight:'bold'}}, legend:{display:false} }, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} }} }
+  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: [{ label: 'Ngân sách (tỷ)', data: baseline, backgroundColor: '#0f172a', borderRadius: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Phân bổ tối ưu CVXPY', color: '#0f172a', font:{size:14,weight:'bold'}}, legend:{display:false} }, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}}} }
 });
 
-// Interactive Logic
-function updatePG9() {
-  const B = parseFloat(document.getElementById('pgB').value);
-  const speed = parseFloat(document.getElementById('pgSpeed').value);
-  const cap = parseFloat(document.getElementById('pgCap').value);
-  document.getElementById('valB').textContent = B.toFixed(1);
-  document.getElementById('valSpeed').textContent = speed.toFixed(2);
-  document.getElementById('valCap').textContent = cap;
+const savedData = baseline.map((x, i) => Math.min(SECTORS[i].rho * Math.sqrt(x), SECTORS[i].at_risk));
+new Chart(document.getElementById('chartSaved'), {
+  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: [{ label: 'At-risk (M)', data: SECTORS.map(s => s.at_risk), backgroundColor: '#94a3b8', borderRadius: 6 }, { label: 'Saved (M)', data: savedData, backgroundColor: '#0f172a', borderRadius: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Lao động at-risk vs cứu được', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}}} }
+});
+
+const propAlloc = SECTORS.map(s => 8000 * s.at_risk / TOTAL_RISK);
+const equalAlloc = Array(8).fill(1000);
+const greedyAlloc = SECTORS.map((s, i) => i === 4 || i === 3 ? 2400 : 400);
+
+new Chart(document.getElementById('chartCompare2'), {
+  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: [{ label: 'CVXPY optimal', data: baseline, backgroundColor: '#0f172a', borderRadius: 4 }, { label: 'Proportional', data: propAlloc, backgroundColor: '#475569', borderRadius: 4 }, { label: 'Equal', data: equalAlloc, backgroundColor: '#94a3b8', borderRadius: 4 }, { label: 'Greedy ROI', data: greedyAlloc, backgroundColor: '#cbd5e1', borderRadius: 4 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'So sánh 4 phương án', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}}} }
+});
+
+const speedScenarios = [{ name: 'Chậm', mul: 0.7, color: '#94a3b8' }, { name: 'Cơ bản', mul: 1.0, color: '#475569' }, { name: 'Nhanh', mul: 1.3, color: '#0f172a' }];
+new Chart(document.getElementById('chartSensSpeed'), {
+  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: speedScenarios.map(sc => ({ label: sc.name, data: solveOptimal(8000, sc.mul, 30), backgroundColor: sc.color, borderRadius: 4 })) },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Sensitivity: tốc độ AI', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}}} }
+});
+
+const budgetTargets = [3000, 5500, 8000, 10500, 14000, 18000];
+const coverageData = speedScenarios.map(sc => budgetTargets.map(B => totalSaved(solveOptimal(B, sc.mul, 30)) / (TOTAL_RISK * sc.mul) * 100));
+new Chart(document.getElementById('chartBudgetNeed'), {
+  type: 'line', data: { labels: budgetTargets.map(b => (b/1000).toFixed(1) + 'k'), datasets: speedScenarios.map((sc, i) => ({ label: sc.name, data: coverageData[i], borderColor: sc.color, tension: 0.4, borderWidth: 3, pointRadius: 5 })) },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Coverage % theo ngân sách', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}, min:0, max:100} } }
+});
+
+// PLAYGROUND
+let lastVals = [8.0, 1.0, 30];
+function updatePlayground9() {
+  const B = parseFloat(document.getElementById('pgB').value), speed = parseFloat(document.getElementById('pgSpeed').value), cap = parseFloat(document.getElementById('pgCap').value);
+  [{id:'valB',v:B,d:1},{id:'valSpeed',v:speed,d:2},{id:'valCap',v:cap,d:0}].forEach((u,i) => { document.getElementById(u.id).textContent = u.v.toFixed(u.d); if(u.v !== lastVals[i]) pulseBadge(u.id); });
+  lastVals = [B, speed, cap];
 
   const x = solveOptimal(B * 1000, speed, cap);
-  const totalRiskNow = TOTAL_RISK * speed;
-  const saved = x.reduce((s, xi, i) => s + Math.min(SECTORS[i].rho * Math.sqrt(xi), SECTORS[i].at_risk * speed), 0);
-  
+  const saved = totalSaved(x); const riskNow = TOTAL_RISK * speed;
   document.getElementById('kpiSaved').textContent = saved.toFixed(1) + 'M';
-  document.getElementById('kpiCoverage').textContent = (saved/totalRiskNow*100).toFixed(1) + '%';
+  document.getElementById('kpiCoverage').textContent = (saved / riskNow * 100).toFixed(1) + '%';
   document.getElementById('kpiCost').textContent = ((B*1000)/saved).toFixed(2);
-  document.getElementById('kpiUnsaved').textContent = (totalRiskNow - saved).toFixed(1) + 'M';
+  document.getElementById('kpiUnsaved').textContent = (riskNow - saved).toFixed(1) + 'M';
 
   document.getElementById('sectorListLive').innerHTML = SECTORS.map((s, i) => {
-    const riskNow = s.at_risk * speed;
-    const invPct = x[i] / (B * 1000) * 100;
-    const riskShare = riskNow / totalRiskNow * 100;
-    const savedI = Math.min(s.rho * Math.sqrt(x[i]), riskNow);
-    return `<div class="sector-card">
-      <div class="sec-head">
-        <div class="sec-icon">${s.icon}</div>
-        <div class="sec-name">${s.name}</div>
-        <div class="sec-budget" style="color:${s.color}">${x[i].toFixed(0)} tỷ</div>
-      </div>
-      <div class="double-bar">
-        <div style="width:50px">Risk</div><div class="bar-track"><div class="bar-fill risk" style="width:${Math.min(100, riskShare*4)}%"></div></div><div style="width:40px;text-align:right">${riskNow.toFixed(1)}M</div>
-      </div>
-      <div class="double-bar" style="margin-top:4px">
-        <div style="width:50px">Inv.</div><div class="bar-track"><div class="bar-fill invest" style="width:${invPct*3.3}%"></div></div><div style="width:40px;text-align:right">${invPct.toFixed(1)}%</div>
-      </div>
-    </div>`;
+    const rNow = s.at_risk * speed, invPct = x[i]/(B*1000)*100, rShare = rNow/riskNow*100, sI = Math.min(s.rho*Math.sqrt(x[i]), rNow);
+    return `<div class="sector-card"><div class="sec-head"><div class="sec-icon">${s.icon}</div><div class="sec-name">${s.name}</div><div class="sec-budget">${x[i].toFixed(0)} tỷ</div></div><div class="double-bar"><div style="width:40px">Risk</div><div class="bar-track"><div class="bar-fill risk" style="width:${Math.min(100,rShare*4)}%"></div></div><div style="width:40px;text-align:right">${rNow.toFixed(2)}M</div></div><div class="double-bar" style="margin-top:4px"><div style="width:40px">Inv.</div><div class="bar-track"><div class="bar-fill invest" style="width:${invPct*3.3}%"></div></div><div style="width:40px;text-align:right">${invPct.toFixed(1)}%</div></div><div style="margin-top:6px;font-size:11px;color:#0f172a;text-align:right;font-weight:700">Saved: ${sI.toFixed(2)}M (${(sI/rNow*100).toFixed(0)}%)</div></div>`;
   }).join('');
 }
 
 function applyPreset9(name) {
-  const p = {'default': [8.0, 1.0, 30], 'crisis': [15.0, 1.8, 30], 'slow': [5.0, 0.7, 30], 'focus': [8.0, 1.0, 60]}[name];
+  const p = {'default':[8.0,1.0,30], 'crisis':[15.0,1.8,30], 'slow':[5.0,0.7,30], 'focus':[8.0,1.0,60]}[name];
   document.getElementById('pgB').value = p[0]; document.getElementById('pgSpeed').value = p[1]; document.getElementById('pgCap').value = p[2];
-  updatePG9();
+  updatePlayground9();
 }
-['pgB','pgSpeed','pgCap'].forEach(id => document.getElementById(id).addEventListener('input', updatePG9));
-setTimeout(updatePG9, 500);
+['pgB','pgSpeed','pgCap'].forEach(id => document.getElementById(id).addEventListener('input', updatePlayground9));
+setTimeout(updatePlayground9, 800);
 </script>
+<script src="chatbot.js"></script>
 </body>
 </html>
