@@ -2,6 +2,7 @@
 // AIDEOM-VN AI CHATBOT — Gemini 2.0 Flash (God-Tier Edition)
 // =============================================================
 // Nâng cấp: Context-Aware, MathJax Rendering, Cross-Page Memory
+// Tích hợp: 100% Kiến thức từ tài liệu Đề cương môn học
 // =============================================================
 
 (function() {
@@ -11,18 +12,24 @@
   const currentPageTitle = document.title || "AIDEOM-VN Dashboard";
   const titleLower = currentPageTitle.toLowerCase();
 
-  // ----- 2. SYSTEM PROMPT (PERSONA GIÁO SƯ AI) -----
-  const SYSTEM_PROMPT = `Bạn là Giáo sư AI của hệ thống AIDEOM-VN (AI Decision Optimization Model for Vietnam).
-Bạn là một chuyên gia xuất sắc về Kinh tế lượng, Tối ưu hóa Toán học (Operations Research), Học máy và Chính sách Vĩ mô.
+  // ----- 2. SYSTEM PROMPT (PERSONA GIÁO SƯ AI - TÍCH HỢP ĐỀ CƯƠNG) -----
+  const SYSTEM_PROMPT = `Bạn là Trợ giảng / Giáo sư AI tối cao cho môn học "Các mô hình ra quyết định phát triển kinh tế Việt Nam trong kỉ nguyên AI" (Hệ thống AIDEOM-VN).
+Triết lý sư phạm của môn học: "Học bằng làm" (learning by doing). Sinh viên không chỉ giải toán hình thức mà phải biết diễn giải kết quả trong bối cảnh thể chế Việt Nam (NQ 57-NQ/TW, QĐ 749, QĐ 127, QĐ 411, COP26).
 
-Hệ thống gồm 12 bài (Từ Cobb-Douglas, LP, MIP, TOPSIS, NSGA-II, DP, Stochastic đến Q-Learning).
+Bạn nắm rõ toàn bộ cấu trúc 12 bài tập gồm 4 cấp độ:
+1. Cấp độ DỄ: Bài 1 (Cobb-Douglas mở rộng, Solow), Bài 2 (LP phân bổ 4 hạng mục), Bài 3 (LP Priority 10 ngành, chuẩn hóa Min-Max).
+2. Cấp độ TRUNG BÌNH: Bài 4 (LP Không gian 6 vùng x 4 hạng mục, ràng buộc công bằng vùng miền), Bài 5 (MIP chọn 15 dự án, tiên quyết/loại trừ/bắt buộc), Bài 6 (TOPSIS 6 vùng, Entropy khách quan vs AHP chuyên gia).
+3. Cấp độ KHÁ KHÓ: Bài 7 (NSGA-II 4 mục tiêu: GDP, Gini, CO2, Rủi ro an ninh mạng), Bài 8 (Dynamic Programming lộ trình 2026-2035, Bellman, Backward Induction), Bài 9 (Mô phỏng lao động, Convex Opt CVXPY tối ưu ngân sách Reskilling).
+4. Cấp độ KHÓ: Bài 10 (Stochastic 2-stage, SAA, EVPI, VSS, Robust Minimax Regret), Bài 11 (Q-learning, SARSA, MDP 3 trạng thái điều tiết AI), Bài 12 (Đồ án tích hợp 6 Module, Master Dashboard Streamlit).
+
+Bộ Dữ liệu bắt buộc sử dụng: vietnam_macro_2020_2025.csv, vietnam_sectors_2024.csv, vietnam_regions_2024.csv.
+Tiêu chí chấm điểm (Rubric Phụ lục F2): Toán học (20%), Lập trình Python (20%), Dữ liệu thực (15%), Phân tích chính sách (20%), Trực quan hóa (15%), Báo cáo và thuyết trình (10%).
 
 NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
-1. NHẬN THỨC NGỮ CẢNH: Sinh viên đang xem trang "${currentPageTitle}". Hãy liên kết câu trả lời với bối cảnh của bài học này nếu có thể.
-2. TOÁN HỌC CHUẨN MỰC: Khi nhắc đến biến số, công thức, mô hình, BẮT BUỘC bọc trong thẻ LaTeX. Dùng dấu $ cho công thức nội dòng (ví dụ: $x_i$) và $$ cho khối công thức độc lập. 
-3. TRÌNH BÀY HIỆN ĐẠI: Dùng **in đậm** cho từ khóa trọng tâm.
-4. TÍNH THỰC TẾ: Nhắc đến các chính sách VN (QĐ 127, NQ 57, COP26) khi phân tích rủi ro/lợi ích.
-5. SÚC TÍCH: Giải thích cặn kẽ nhưng không viết quá dài lan man. Nhắm thẳng vào bản chất Toán học và Kinh tế.`;
+1. NHẬN THỨC NGỮ CẢNH: Sinh viên đang xem trang "${currentPageTitle}". Hãy xoáy sâu vào các khái niệm của bài đó.
+2. TOÁN HỌC & LẬP TRÌNH CHUẨN MỰC: Khi nhắc đến biến số, công thức, mô hình, BẮT BUỘC bọc trong thẻ LaTeX ($x_i$ cho inline, $$x$$ cho block). Hỗ trợ sinh viên debug code Python (numpy, scipy, pulp, cvxpy, pymoo, pyomo, gymnasium).
+3. PHÂN TÍCH VĨ MÔ: Luôn liên hệ toán học với thực tiễn. Nhắc nhở sinh viên rằng tối ưu kinh tế không nhất thiết là tối ưu xã hội (vd: Shadow price có ý nghĩa gì? Tại sao cần giới hạn trần/sàn ngân sách?).
+4. CÁCH TRÌNH BÀY: Dùng **in đậm** từ khóa cốt lõi. Súc tích (3-7 câu), giọng điệu học thuật, khắt khe nhưng tận tình chỉ dẫn. Khuyến khích tư duy phản biện.`;
 
   // ----- 3. STYLES (MONOCHROME / CHARCOAL THEME) -----
   const STYLES = `
@@ -87,7 +94,7 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
     .acb-msg {
       padding: 12px 16px; border-radius: 12px; font-size: 13.5px; line-height: 1.6;
       max-width: 88%; word-wrap: break-word; animation: acb-fadein 0.3s ease-out;
-      white-space: pre-wrap; /* Kích hoạt định dạng xuống dòng chuẩn */
+      white-space: pre-wrap; 
     }
     .acb-msg strong { font-weight: 800; color: inherit; }
     .acb-msg pre { background: #f1f5f9; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; margin: 8px 0; }
@@ -162,27 +169,33 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
   fab.title = 'AIDEOM-VN AI Expert';
   document.body.appendChild(fab);
 
-  // Gợi ý thông minh theo trang
+  // Gợi ý thông minh dựa trên Đề Cương F2/F3
   let dynamicSuggestions = `
-    <button class="acb-sug" data-q="AIDEOM-VN là hệ thống gì?">AIDEOM-VN là gì?</button>
-    <button class="acb-sug" data-q="Hãy tóm tắt phương pháp toán học được dùng ở bài này.">Tóm tắt thuật toán bài này</button>
+    <button class="acb-sug" data-q="Hệ thống 12 bài tập AIDEOM-VN được chia thành 4 cấp độ nào?">Cấu trúc 4 cấp độ đồ án?</button>
+    <button class="acb-sug" data-q="Tiêu chí chấm điểm (Rubric) của môn học này bao gồm những phần nào?">Tiêu chí chấm điểm (Rubric)</button>
   `;
   if (titleLower.includes('bài 1') || titleLower.includes('cobb')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Hệ số TFP đóng vai trò gì trong mô hình Cobb-Douglas mở rộng?">Ý nghĩa TFP?</button>`;
-  } else if (titleLower.includes('bài 2') || titleLower.includes('bài 3') || titleLower.includes('bài 4')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Shadow Price (Giá bóng) trong quy hoạch tuyến tính mang ý nghĩa kinh tế gì?">Phân tích Giá bóng</button>`;
+    dynamicSuggestions += `<button class="acb-sug" data-q="Theo đề bài, các biến $D_t$, $AI_t$, $H_t$ trong phương trình Cobb-Douglas đại diện cho điều gì?">Các biến trong Cobb-Douglas</button>`;
+  } else if (titleLower.includes('bài 2') || titleLower.includes('bài 3')) {
+    dynamicSuggestions += `<button class="acb-sug" data-q="Theo đề bài, shadow price của ràng buộc ngân sách có ý nghĩa gì trong thực tiễn?">Ý nghĩa Shadow Price</button>`;
+  } else if (titleLower.includes('bài 4')) {
+    dynamicSuggestions += `<button class="acb-sug" data-q="Tại sao ràng buộc công bằng vùng miền (C5) lại quan trọng theo Nghị quyết 13-NQ/TW?">Ý nghĩa công bằng vùng miền</button>`;
   } else if (titleLower.includes('bài 5')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Sự khác biệt giữa MIP (Quy hoạch nguyên hỗn hợp) và LP thông thường là gì?">MIP vs LP?</button>`;
+    dynamicSuggestions += `<button class="acb-sug" data-q="Trong MIP chọn dự án, hiệu ứng cộng hưởng giữa AI (P8) và Bán dẫn (P13) được mô hình hóa thế nào?">Hiệu ứng cộng hưởng AI & Bán dẫn</button>`;
   } else if (titleLower.includes('bài 6') || titleLower.includes('topsis')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="So sánh sự khác biệt khi dùng trọng số Entropy khách quan và AHP chuyên gia trong TOPSIS.">Entropy vs AHP?</button>`;
+    dynamicSuggestions += `<button class="acb-sug" data-q="So sánh sự khác biệt khi dùng trọng số Entropy khách quan và AHP chuyên gia trong đánh giá vùng.">Entropy vs AHP (Bài 6)</button>`;
   } else if (titleLower.includes('bài 7') || titleLower.includes('nsga')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Tại sao lại dùng NSGA-II để tìm tập Pareto thay vì cộng gộp các mục tiêu (Weighted Sum)?">Lợi ích của NSGA-II?</button>`;
+    dynamicSuggestions += `<button class="acb-sug" data-q="Tại sao NSGA-II không trả về 1 nghiệm duy nhất mà trả về tập Pareto? Điều này có thay thế quyết định chính trị không?">Vai trò của NSGA-II</button>`;
   } else if (titleLower.includes('bài 8') || titleLower.includes('dynamic')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Giải thích phương trình tối ưu Bellman và ứng dụng Backward Induction trong lộ trình đầu tư.">Phương trình Bellman?</button>`;
+    dynamicSuggestions += `<button class="acb-sug" data-q="Mô hình Dynamic Programming trong bài 8 đề xuất chiến lược Front-loaded hay Back-loaded? Giải thích lý do.">Front-loaded vs Back-loaded (Bài 8)</button>`;
+  } else if (titleLower.includes('bài 9') || titleLower.includes('labor')) {
+    dynamicSuggestions += `<button class="acb-sug" data-q="Theo bài 9, ngành Nông nghiệp có nên đầu tư trực tiếp vào AI không khi nguy cơ mất việc lớn?">Chiến lược cho Nông nghiệp (Bài 9)</button>`;
   } else if (titleLower.includes('bài 10') || titleLower.includes('stochastic')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="EVPI (Giá trị thông tin hoàn hảo) và VSS (Giá trị giải pháp ngẫu nhiên) mang ý nghĩa gì?">Phân tích EVPI & VSS</button>`;
+    dynamicSuggestions += `<button class="acb-sug" data-q="Chỉ số EVPI và VSS trong bài 10 mang ý nghĩa gì đối với tư duy hoạch định chính sách dưới bất định?">Ý nghĩa EVPI & VSS (Bài 10)</button>`;
   } else if (titleLower.includes('bài 11') || titleLower.includes('q-learning')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Tại sao Q-learning có thể hội tụ và tìm được chính sách tối ưu mà không cần biết Model (Model-free)?">Q-learning Model-free?</button>`;
+    dynamicSuggestions += `<button class="acb-sug" data-q="So sánh tính chất của Q-learning (Off-policy) và SARSA (On-policy) trong bài 11.">Q-learning vs SARSA (Bài 11)</button>`;
+  } else if (titleLower.includes('bài 12') || titleLower.includes('dashboard')) {
+    dynamicSuggestions += `<button class="acb-sug" data-q="Liệt kê 6 module chức năng (M1 đến M6) trong hệ thống AIDEOM-VN tổng hợp.">Cấu trúc 6 Module (Bài 12)</button>`;
   }
 
   const panel = document.createElement('div');
@@ -277,7 +290,7 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
 
   // Khôi phục UI Chat
   if (chatHistory.length === 0) {
-    const welcome = `Chào bạn! Tôi là Giáo sư AI của hệ thống. Tôi nhận thấy bạn đang xem **${currentPageTitle}**.\n\nBạn cần tôi phân tích công thức, giải thích code hay thảo luận về chính sách vĩ mô của phần này?`;
+    const welcome = `Chào bạn! Tôi là Giáo sư AI của hệ thống. Tôi nhận thấy bạn đang xem **${currentPageTitle}**.\n\nTrong bài tập này, chúng ta không chỉ giải bài toán tối ưu mà còn phải phân tích kết quả dựa trên các chiến lược quốc gia (như QĐ 127/QĐ-TTg, NQ 57-NQ/TW). Bạn cần tôi hỗ trợ phần nào?`;
     addMsg('bot', welcome, false);
   } else {
     chatHistory.forEach(h => {
@@ -311,7 +324,7 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
     const k = apikeyInput.value.trim();
     if (!k) { alert('Vui lòng nhập API key hợp lệ.'); return; }
     setApiKey(k); config.classList.remove('show');
-    addMsg('system', '✓ Đã kích hoạt hệ thống AI thành công.', false);
+    addMsg('system', '✓ Đã kích hoạt hệ thống AI thành công. Sẵn sàng nhận câu hỏi!', false);
   });
   
   // Xóa bộ nhớ
@@ -343,10 +356,11 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
 
     try {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+      
       const body = {
         contents: chatHistory.slice(-20), // Trí nhớ lên tới 20 lượt hội thoại gần nhất
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        generationConfig: { temperature: 0.3, maxOutputTokens: 1024, topK: 40 } // IQ cao, không bịa đặt, suy luận logic toán học tốt
+        generationConfig: { temperature: 0.3, maxOutputTokens: 1024, topK: 40 } // Temp thấp (0.3) cho độ chính xác cao về Toán học
       };
 
       const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
