@@ -1,8 +1,8 @@
 // =============================================================
-// AIDEOM-VN AI CHATBOT — Gemini 2.0 Flash (God-Tier Edition)
+// AIDEOM-VN AI CHATBOT — Gemini 1.5 Flash (God-Tier Edition)
 // =============================================================
-// Nâng cấp: Context-Aware, MathJax Rendering, Cross-Page Memory
-// Tích hợp: 100% Kiến thức từ tài liệu Đề cương môn học
+// Nâng cấp: Tự động bắt lỗi Quota (Hết lượt), Context-Aware, 
+// MathJax Rendering, Cross-Page Memory.
 // =============================================================
 
 (function() {
@@ -205,7 +205,7 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
       <div class="acb-avatar">AI</div>
       <div class="acb-info">
         <div class="acb-name">Giáo sư AIDEOM-VN</div>
-        <div class="acb-status">Online · Gemini 2.0 Flash Enhanced</div>
+        <div class="acb-status">Online · Gemini 1.5 Flash Enhanced</div>
       </div>
       <button class="acb-settings" title="Cài đặt hệ thống">⚙ Cấu hình</button>
     </div>
@@ -251,7 +251,6 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
   function setApiKey(k) { localStorage.setItem(STORAGE_KEY, k); }
   function saveHistory() { sessionStorage.setItem('acb_history', JSON.stringify(chatHistory)); }
 
-  // Cấu trúc lại markdown nhẹ nhàng để MathJax hoạt động
   function formatMarkdown(text) {
     let html = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -288,7 +287,6 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
     return div;
   }
 
-  // Khôi phục UI Chat
   if (chatHistory.length === 0) {
     const welcome = `Chào bạn! Tôi là Giáo sư AI của hệ thống. Tôi nhận thấy bạn đang xem **${currentPageTitle}**.\n\nTrong bài tập này, chúng ta không chỉ giải bài toán tối ưu mà còn phải phân tích kết quả dựa trên các chiến lược quốc gia (như QĐ 127/QĐ-TTg, NQ 57-NQ/TW). Bạn cần tôi hỗ trợ phần nào?`;
     addMsg('bot', welcome, false);
@@ -307,7 +305,6 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
     setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([messages]); }, 300);
   }
 
-  // ----- EVENT LISTENERS -----
   fab.addEventListener('click', () => {
     panel.classList.toggle('open');
     fab.classList.toggle('open');
@@ -327,7 +324,6 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
     addMsg('system', '✓ Đã kích hoạt hệ thống AI thành công. Sẵn sàng nhận câu hỏi!', false);
   });
   
-  // Xóa bộ nhớ
   document.getElementById('acb-cfg-clear').addEventListener('click', () => {
     sessionStorage.removeItem('acb_history');
     chatHistory = [];
@@ -355,28 +351,38 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
     showTyping();
 
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+      // SỬ DỤNG GEMINI 1.5 FLASH: Ổn định hơn, quota rộng rãi hơn (15 RPM)
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
       
       const body = {
-        contents: chatHistory.slice(-20), // Trí nhớ lên tới 20 lượt hội thoại gần nhất
+        contents: chatHistory.slice(-20),
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        generationConfig: { temperature: 0.3, maxOutputTokens: 1024, topK: 40 } // Temp thấp (0.3) cho độ chính xác cao về Toán học
+        generationConfig: { temperature: 0.3, maxOutputTokens: 1024, topK: 40 }
       };
 
       const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const data = await resp.json();
 
       hideTyping();
+      
+      // BỘ LỌC LỖI THÔNG MINH (Xử lý lỗi Quota Exceeded)
       if (data.error) {
-        addMsg('error', '❌ Lỗi hệ thống: ' + (data.error.message || 'Không rõ nguyên nhân'), false);
-        chatHistory.pop(); saveHistory();
+        let errorMsg = data.error.message || 'Không rõ nguyên nhân';
+        
+        // Bắt lỗi Hết Quota (429 Too Many Requests)
+        if (errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exceeded') || errorMsg.toLowerCase().includes('429')) {
+            errorMsg = 'API Key của bạn đã đạt giới hạn sử dụng miễn phí (Hết Quota) hoặc hệ thống đang xử lý quá nhiều yêu cầu. Vui lòng đợi một phút rồi thử lại, hoặc kiểm tra lại gói cước tại Google AI Studio nhé!';
+        }
+        
+        addMsg('error', '❌ Lỗi hệ thống: ' + errorMsg, false);
+        chatHistory.pop(); saveHistory(); // Xóa câu hỏi vừa rồi khỏi lịch sử để không bị kẹt
       } else {
         const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '(Phản hồi trống)';
         addMsg('bot', reply, true);
       }
     } catch (e) {
       hideTyping();
-      addMsg('error', '❌ Mất kết nối API: ' + e.message, false);
+      addMsg('error', '❌ Lỗi kết nối mạng: Không thể kết nối tới máy chủ Google Gemini. Vui lòng kiểm tra lại kết nối mạng của bạn.', false);
       chatHistory.pop(); saveHistory();
     } finally {
       sendBtn.disabled = false; input.focus();
