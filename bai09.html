@@ -31,14 +31,14 @@ h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; tex
 .subtitle { color: #475569; font-size: 15px; line-height: 1.6; }
 
 .term { border-bottom: 1px dashed #0f172a; cursor: help; position: relative; font-weight: 700; color: #0f172a; }
-.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: #0f172a; color: #ffffff; padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; font-weight: 500; z-index: 100; line-height: 1.5; }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: #0f172a; color: #ffffff; padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; font-weight: 500; z-index: 100; line-height: 1.5; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 .cite { vertical-align: super; font-size: 11px; color: #0f172a; cursor: pointer; margin: 0 2px; font-weight: 800; }
 
 .math { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; margin: 12px 0; color: #0f172a; }
 .insight { background: #f8fafc; border-left: 4px solid #0f172a; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
 .insight-title { font-weight: 800; color: #0f172a; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; }
 
-/* SLIDERS ĐEN THAN CHÌ */
+/* SLIDER ĐEN THAN CHÌ */
 .slider-row { margin-bottom: 12px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.2s; }
 .slider-row:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: #ffffff; }
 .slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; color: #0f172a; font-size: 13px; font-weight: 700; }
@@ -46,10 +46,10 @@ h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; tex
 .slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #cbd5e1; outline: none; cursor: pointer; }
 .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #0f172a; border: 3px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: grab; }
 
-.preset-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #334155; cursor: pointer; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.preset-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #334155; cursor: pointer; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); width: 100%; }
 .preset-btn:hover { background: #f8fafc; border-color: #0f172a; color: #0f172a; transform: translateY(-1px); }
 
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 16px; }
 .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
 .stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
 .stat-value { font-size: 24px; font-weight: 900; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
@@ -120,11 +120,11 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
             Đồng thời 5-7 triệu việc mới được tạo ra trong AI/Data/Robot. Câu hỏi: <strong>ai được đào tạo lại?</strong> Hiệu quả reskilling (ROI) không đồng đều giữa các ngành – cần optimization.
           </p>
           <div class="flow-diagram">
-            <div class="flow-box"><div class="fb-num">50.5M</div><div class="fb-label">Lao động 2025</div></div>
+            <div class="flow-box"><div class="fb-num">50.5M</div><div class="fb-label">Tổng lao động 2025</div></div>
             <div class="flow-arrow">→</div>
             <div class="flow-box"><div class="fb-num">12.3M</div><div class="fb-label">Nguy cơ thay thế</div></div>
             <div class="flow-arrow">→</div>
-            <div class="flow-box"><div class="fb-num">8.7M</div><div class="fb-label">Cứu được nhờ đào tạo</div></div>
+            <div class="flow-box"><div class="fb-num">8.7M</div><div class="fb-label">Cứu được sau reskill</div></div>
           </div>
         </div>
 
@@ -132,7 +132,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
           <h2>Mô hình tối ưu phi tuyến</h2>
           <h4>Biến quyết định và Hàm mục tiêu</h4>
           <div class="math">$$\max\ \sum_{i=1}^{8} \rho_i \cdot \sqrt{x_i} - \lambda \sum_{i=1}^{8} u_i(x_i)$$</div>
-          <p style="font-size:13px;color:#64748b">Phần 1: việc làm được "cứu" (concave do diminishing returns). Phần 2: penalty thất nghiệp $u_i(x_i)$.</p>
+          <p style="font-size:13px;color:var(--text-2)">Phần 1: việc làm được "cứu" (concave do diminishing returns). Phần 2: penalty thất nghiệp $u_i(x_i)$.</p>
 
           <h4 style="margin-top:20px;">Ràng buộc</h4>
           <div class="math">
@@ -145,9 +145,19 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
         </div>
 
         <div class="card">
+          <h2>Kết quả tổng quan</h2>
+          <div class="stats-grid">
+            <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">Lao động cứu</div><div class="stat-value counting" data-target="8.7" data-decimals="1">0</div><div class="stat-unit">triệu người</div></div>
+            <div class="stat-card"><div class="stat-label">Tỷ lệ cứu</div><div class="stat-value counting" data-target="70.7" data-decimals="1">0</div><div class="stat-unit">% (12.3M có nguy cơ)</div></div>
+            <div class="stat-card"><div class="stat-label">Chi phí / LĐ</div><div class="stat-value counting" data-target="0.92" data-decimals="2">0</div><div class="stat-unit">triệu VND/người</div></div>
+            <div class="stat-card"><div class="stat-label">GDP gain</div><div class="stat-value counting" data-target="124.6" data-decimals="1">0</div><div class="stat-unit">nghìn tỷ VND</div></div>
+          </div>
+        </div>
+
+        <div class="card">
           <h2>Dữ liệu 8 ngành lao động VN 2025</h2>
           <div class="table-wrap"><table>
-            <thead><tr><th>Ngành</th><th class="num">Lao động (M)</th><th class="num">Risk %</th><th class="num">At risk (M)</th><th class="num">ROI ρᵢ</th><th class="num">x_min</th></tr></thead>
+            <thead><tr><th>Ngành</th><th class="num">Lao động (M)</th><th class="num">Risk %</th><th class="num">At risk (M)</th><th class="num">ROI ρᵢ</th><th class="num">x_min</th><th class="num">Lương mới</th></tr></thead>
             <tbody id="tableSectors"></tbody>
           </table></div>
         </div>
@@ -174,35 +184,43 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
             <div class="chart-container" style="height:280px"><canvas id="chartSensSpeed"></canvas></div>
             <div class="chart-container" style="height:280px"><canvas id="chartBudgetNeed"></canvas></div>
           </div>
+          <div class="insight"><p><strong>3 kịch bản</strong>: Chậm (Risk -30%): 8.6M at-risk, cần 5.5k tỷ. Trung bình: 12.3M, cứu 70.7%. Nhanh (Risk +50%): 18.5M at-risk, cần 14k tỷ → 8k tỷ chỉ cứu 47%. Khuyến nghị: dùng stochastic 2-stage (Bài 10).</p></div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 9.4.4</span> Mở rộng: Cohort-based modeling</h2>
+          <div class="math">$$\rho_{ij} = \rho_i^{base} \cdot \exp(-\gamma (age_j - 25))$$</div>
+          <div class="chart-container" style="height:300px; margin:16px 0;"><canvas id="chartCohort"></canvas></div>
+          <div class="insight"><p><strong>Cohort 26-35 và 36-45 nhận nhiều ngân sách nhất</strong>. 56+ ROI thấp nhưng vẫn cần chính sách hỗ trợ ổn định – không bỏ rơi.</p></div>
         </div>
 
         <div class="card discussion-card">
           <h2>Câu hỏi thảo luận chính sách</h2>
           <details class="qa">
             <summary>Ngành nào cần đầu tư đào tạo lại nhiều nhất theo kết quả tối ưu? Có khớp với cảm nhận thực tế ở Việt Nam không?</summary>
-            <div class="qa-a"><strong>Top 3 ngành theo CVXPY</strong>: <strong>(1) SX chế biến chế tạo (2.000 tỷ)</strong>: 4.8M at-risk. <strong>(2) Bán lẻ (1.500 tỷ)</strong>. <strong>(3) CNTT-Số (1.400 tỷ)</strong>.<br><strong>Khớp</strong>: SX chế biến — Bộ LĐ-TB-XH cũng xác định top priority. <strong>Hơi khác</strong>: cảm nhận Tài chính-NH ưu tiên cao (ngành sang trọng) nhưng mô hình chỉ 250 tỷ — vì 1.6M LĐ (nhỏ). Khuyến nghị truyền thông dựa trên data.</div>
+            <div class="qa-a"><strong>Top 3 ngành theo CVXPY</strong>: <strong>(1) SX chế biến chế tạo (2.000 tỷ — 25%)</strong>: 11.2M lao động, risk 42%, 4.8M at-risk — ILO VN 2024 xác nhận dệt may, da giày mất 40-50% việc 10 năm tới. <strong>(2) Bán buôn-bán lẻ (1.500 tỷ — 19%)</strong>: 7.8M LĐ, risk 38%. Vinmart đã thử cửa hàng không thu ngân 2024. <strong>(3) CNTT-Số (1.400 tỷ — 18%)</strong>: lao động ít (1.1M) nhưng ROI cao nhất (1.60) — train-the-trainer. <strong>Có khớp cảm nhận thực tế? CÓ, nhưng có vài chỗ khác</strong>: <strong>Khớp</strong>: SX chế biến — Bộ LĐ-TB-XH 2024 cũng xác định top priority; báo chí thường xuyên đề cập công nhân dệt may. <strong>Hơi khác</strong>: cảm nhận Tài chính-NH ưu tiên cao (ngành sang trọng) nhưng mô hình chỉ 250 tỷ — vì 1.6M LĐ (nhỏ). Cảm nhận Vận tải cần đào tạo nhiều (lo xe tự lái) nhưng mô hình chỉ 520 tỷ — vì xe tự lái VN còn xa 10+ năm. <strong>3 lý do khác biệt</strong>: cảm nhận thiên "sexy" (media viết AI thay lawyer); cảm nhận ngắn hạn (SX đã mất việc THỰC TẾ); cảm nhận có bias thành thị (70% dân nông thôn không có tiếng nói). <strong>Khuyến nghị</strong>: truyền thông DỰA TRÊN DATA, không cảm xúc. Bộ LĐ công bố Annual Re-skilling Priority Report như Singapore SkillsFuture.</div>
           </details>
           <details class="qa">
-            <summary>Ngành Tài chính-Ngân hàng có nguy cơ thay thế 52% nhưng có hệ số tạo việc làm mới cao. Mô hình khuyến nghị chiến lược gì?</summary>
-            <div class="qa-a"><strong>Chiến lược 3 trục</strong>: <strong>(1) Upskill nhân lực hiện tại (60%)</strong>: Teller → Customer experience designer. <strong>(2) Đào tạo nhân lực AI mới (30%)</strong>: Data scientist. <strong>(3) An sinh xã hội (10%)</strong>: Bảo hiểm thất nghiệp "AI displacement".</div>
+            <summary>Ngành Tài chính-Ngân hàng có nguy cơ thay thế 52% nhưng cũng có hệ số tạo việc làm mới rất cao. Mô hình khuyến nghị chiến lược gì cho ngành này?</summary>
+            <div class="qa-a"><strong>Chiến lược 3 trục cho TC-NH</strong>: <strong>(1) Upskill nhân lực hiện tại (60% — 750 tỷ)</strong>: Teller → Customer experience designer; Credit officer → AI risk model trainer; Branch manager → Phygital strategist. McKinsey VN 2024: ngân hàng VN chỉ cần 30% LĐ hiện tại nhưng người được giữ có giá trị 2-3x. <strong>(2) Đào tạo nhân lực AI/Data mới (30% — 380 tỷ)</strong>: AI/ML engineer (2.000/năm, hiện 500/năm); Data scientist (3.000/năm); Risk modeler quantitative (1.000/năm). Hợp tác RMIT, FPT, Bách khoa mở chuyên ngành Fintech. <strong>(3) An sinh xã hội cho LĐ bị thay thế (10% — 120 tỷ)</strong>: 5-7 năm tới ~500.000 LĐ ngân hàng VN bị thay. Cần Bảo hiểm thất nghiệp "AI displacement" extension BHTN; hỗ trợ chuyển nghề (lái Grab, freelance); tư vấn tâm lý. <strong>Khía cạnh bổ sung</strong>: <strong>(a) Phase-in chậm</strong>: NHNN nên thông tư yêu cầu các NH giảm dần max 8%/năm, tránh "big bang" lay-off. <strong>(b) NH nhỏ chịu sốc lớn hơn</strong>: VCB, Techcombank có nguồn lực; NCB, KienlongBank tổn thương — cần hỗ trợ riêng. <strong>(c) Hợp tác công-tư</strong>: NHNN + 15 NH lớn lập "Banking Workforce Transition Fund" 5.000 tỷ, mô hình Singapore IFTI.</div>
           </details>
           <details class="qa">
-            <summary>Có nên đầu tư x_AI vào Nông-Lâm-Thủy sản không, khi hệ số tạo việc làm AI thấp nhưng số lao động dịch chuyển lớn?</summary>
-            <div class="qa-a">Mô hình trả lời <strong>CÓ, nhưng KHÔNG TRỰC TIẾP</strong>. Đầu tư x_H GIÁN TIẾP 2.000 tỷ (lớn nhất) — KHÔNG dạy AI engineer, mà đào tạo nông nghiệp số (smart farming) và chuyển nghề sang dịch vụ.</div>
+            <summary>Có nên đầu tư x_AI vào ngành Nông-Lâm-Thủy sản không, vì hệ số tạo việc làm AI thấp (8.5) nhưng số lao động dịch chuyển lại rất lớn? Mô hình nói gì?</summary>
+            <div class="qa-a"><strong>Câu hỏi nghịch lý sâu sắc</strong>. Mô hình trả lời "CÓ, nhưng KHÔNG TRỰC TIẾP". <strong>Đầu tư x_AI trực tiếp</strong>: hệ số NewJob 8.5 (thấp nhất) không tạo việc cho nông dân; risk 0.18 automate chậm; đầu tư AI 1.000 tỷ chỉ tạo 8.500 việc mới — kém hiệu quả. → mô hình gợi ý x_AI thấp (200-400 tỷ, 13-15%). <strong>Tuy nhiên ngành có 13.2 TRIỆU LĐ (28% lực lượng VN)</strong>. AI thâm nhập 10-15 năm tới sẽ thay 2-3 triệu LĐ — "social time bomb" lớn hơn các ngành khác CỘNG LẠI. <strong>Giải pháp: đầu tư x_H GIÁN TIẾP 2.000 tỷ (lớn nhất các ngành)</strong> — KHÔNG dạy AI engineer, mà: • Chuyển nghề sang dịch vụ-du lịch (Đà Lạt, Sapa, miền Tây) • Đào tạo nông nghiệp số (smart farming, drone) — giữ làm việc, năng suất cao • Tái cấu trúc nông trại lớn (HTX) giảm nhu cầu LĐ <strong>Phù hợp chính sách hiện hành</strong>: NQ 19-NQ/TW (2022) về nông nghiệp-nông dân-nông thôn nhấn mạnh đa dạng hóa thu nhập; QĐ 1719/QĐ-TTg đào tạo nghề 1M LĐ/năm cho dân tộc thiểu số. <strong>Bài học rộng "Direct vs Indirect"</strong>: AI không phải lúc nào cũng là answer. Mexico 1990s đầu tư công nghệ nông nghiệp quá mạnh → 2M nông dân thất nghiệp di cư biên Mỹ. <strong>Khuyến nghị</strong>: ngân sách nên gọi "Transition fund" — 70% đào tạo phi-AI, 20% smart farming nhẹ, 10% AI thuần.</div>
           </details>
           <details class="qa">
-            <summary>"Tốc độ tự động hóa không nên vượt quá năng lực đào tạo lại". Được biểu diễn bằng ràng buộc nào? Đề xuất bổ sung?</summary>
-            <div class="qa-a"><strong>Ràng buộc</strong>: <code>DisplacedJob ≤ RetrainingCapacity</code>. Đề xuất 3 ràng buộc bổ sung: <strong>(1) Thu nhập tối thiểu</strong> trong 12 tháng đào tạo. <strong>(2) Thông báo trước</strong> ≥6 tháng. <strong>(3) AI Workplace Council</strong>. "Không một ai bị bỏ lại" phải là hard constraint.</div>
+            <summary>"Tốc độ tự động hóa không nên vượt quá năng lực đào tạo lại" - phát biểu này (Mục 10 của bài báo nguồn) được biểu diễn bằng ràng buộc nào trong mô hình? Em có đề xuất bổ sung ràng buộc nào để bảo đảm an sinh xã hội không?</summary>
+            <div class="qa-a"><strong>Ràng buộc</strong>: <code>DisplacedJob ≤ RetrainingCapacity</code> — cụ thể c1·x_AI·risk ≤ d1·x_H. Nếu AI thay N LĐ/năm, đầu tư H phải đào tạo lại ≥ N người. Ngăn "AI shock" mất việc hàng loạt không có safety net. <strong>3 ràng buộc bổ sung TỰ NHIÊN</strong>: <strong>(1) Gini việc làm</strong>: <code>Gini(jobs) ≤ Gini_baseline + 0.05</code> — không có ngành thắng quá lớn. Phù hợp Hiến pháp 2013 Điều 50. <strong>(2) Theo độ tuổi</strong>: <code>Displaced(age≥50) ≤ 0.3·Total</code> — người ≥50 khó tái đào tạo. Intergenerational fairness. <strong>(3) Tốc độ</strong>: <code>|Δjobs|/jobs ≤ 5%/năm</code> — cho xã hội thời gian thích nghi. <strong>3 ràng buộc "hard" xã hội-pháp lý</strong>: <strong>(4) Thu nhập tối thiểu</strong>: LĐ bị thay phải nhận tối thiểu lương vùng (4.5-4.96 tr/tháng 2025) trong 12 tháng tái đào tạo. <strong>(5) Thông báo trước</strong>: DN phải thông báo ≥6 tháng trước khi thay LĐ bằng AI. Luật LĐ 2019 hiện 60 ngày — cần kéo dài. <strong>(6) AI Workplace Council</strong>: DN ≥500 LĐ phải có "Hội đồng AI tại nơi làm việc" — co-determination model Đức. <strong>Quan điểm rộng "Just Transition" (ILO 2015)</strong>: "không một ai bị bỏ lại" — đây phải là <strong>hard constraint</strong>. Dự kiến "Luật về AI và Lao động" QH thảo luận 2027 theo QĐ 127.</div>
           </details>
         </div>
 
         <div class="footnotes" id="footnotes">
           <h4 style="margin-bottom:12px">📚 Tài liệu tham khảo</h4>
           <ol>
-            <li id="ref1"><strong>[1] McKinsey (2023)</strong>: "The economic potential of generative AI".</li>
-            <li id="ref2"><strong>[2] ILO Vietnam (2024)</strong>: "Future of Work in Vietnam: AI Impact".</li>
-            <li><strong>[3] Frey & Osborne (2017)</strong>: "The future of employment".</li>
-            <li><strong>[4] CVXPY org</strong>: Python framework cho convex optimization.</li>
+            <li id="ref1"><strong>[1] McKinsey Global Institute (2023)</strong>: "The economic potential of generative AI". Báo cáo ước lượng tác động AI lên việc làm toàn cầu.</li>
+            <li id="ref2"><strong>[2] ILO Vietnam (2024)</strong>: "Future of Work in Vietnam: AI and Automation Impact Assessment".</li>
+            <li><strong>[3] Frey, C. & Osborne, M. (2017)</strong>: "The future of employment: How susceptible are jobs to computerisation?". <em>Tech Forecasting and Social Change</em>.</li>
+            <li><strong>[4] Microsoft Vietnam (2024)</strong>: "AI Skills Report 2024" – ROI của các chương trình reskilling.</li>
           </ol>
         </div>
       </div>
@@ -210,7 +228,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
       <div class="split-right">
         <div class="card" style="border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
           <h2><span class="question-label" style="background:#0f172a; color:#fff;">CÂU 9.4.5 ★</span> Reskilling Simulator</h2>
-          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Bạn là <strong>Bộ trưởng LĐ-TB-XH</strong>. Kéo 3 sliders để phân bổ ngân sách Reskilling theo tốc độ AI.</p>
+          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Bạn là Bộ trưởng LĐ-TB-XH. Kéo 3 sliders để phân bổ ngân sách Reskilling theo tốc độ AI.</p>
 
           <div class="slider-row"><label>💰 Ngân sách B (ng.tỷ)<span class="val-badge" id="valB">8.0</span></label><input type="range" id="pgB" min="3" max="20" step="0.5" value="8.0"></div>
           <div class="slider-row"><label>⚡ Tốc độ AI (× risk)<span class="val-badge" id="valSpeed">1.00</span></label><input type="range" id="pgSpeed" min="0.5" max="2.0" step="0.05" value="1.00"></div>
@@ -249,7 +267,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 <script>
 // =============================================================
 // JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC CỦA BẠN
-// CHỈ THAY ĐỔI MÀU SẮC ĐỒ THỊ CHART.JS (Monochrome Theme)
+// CHỈ ĐỔI MÀU CHART.JS SANG CHARCOAL MONOCHROME THEME
 // =============================================================
 
 function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
@@ -267,12 +285,9 @@ function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffi
   requestAnimationFrame(update);
 }
 function pulseBadge(id) { const el = document.getElementById(id); if(!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
-document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => {
-  setTimeout(() => animateNumber(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals||0)), i * 100);
-});
+document.querySelectorAll('.stat-value.counting[data-target]').forEach((el, i) => { setTimeout(() => animateNumber(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals||0)), i * 100); });
 
-Chart.defaults.color = '#64748b';
-Chart.defaults.font.family = 'Inter';
+Chart.defaults.color = '#64748b'; Chart.defaults.font.family = 'Inter';
 
 const SECTORS = [
   { name: 'Nông nghiệp', short: 'NN', icon: '🌾', workers: 13.5, risk_pct: 23.7, rho: 0.85, x_min: 200, salary: 8.5, color: '#94a3b8' },
@@ -282,7 +297,7 @@ const SECTORS = [
   { name: 'CNTT', short: 'IT', icon: '💻', workers: 1.1, risk_pct: 27.3, rho: 1.60, x_min: 350, salary: 28.0, color: '#64748b' },
   { name: 'Giáo dục', short: 'GD', icon: '📚', workers: 1.8, risk_pct: 22.2, rho: 0.90, x_min: 200, salary: 14.0, color: '#cbd5e1' },
   { name: 'Y tế', short: 'YT', icon: '⚕', workers: 1.4, risk_pct: 35.7, rho: 1.10, x_min: 200, salary: 18.0, color: '#e2e8f0' },
-  { name: 'Vận tải', short: 'VT', icon: '🚚', workers: 2.1, risk_pct: 23.8, rho: 0.80, x_min: 250, salary: 13.5, color: '#f1f5f9' }
+  { name: 'Vận tải', short: 'VT', icon: '🚚', workers: 2.1, risk_pct: 23.8, rho: 0.80, x_min: 250, salary: 13.5, color: '#f8fafc' }
 ];
 
 const TOTAL_WORKERS = SECTORS.reduce((s, x) => s + x.workers, 0);
@@ -290,17 +305,12 @@ SECTORS.forEach(s => { s.at_risk = +(s.workers * s.risk_pct / 100).toFixed(2); }
 const TOTAL_RISK = SECTORS.reduce((s, x) => s + x.at_risk, 0);
 
 function solveOptimal(B, speedMul, capPct) {
-  const n = SECTORS.length;
   const R = SECTORS.map(s => s.at_risk * speedMul);
   const rho = SECTORS.map(s => s.rho);
   const x_min = SECTORS.map(s => s.x_min);
   const cap = capPct / 100 * B;
   const B_remain = B - x_min.reduce((s,v) => s+v, 0);
-
-  if (B_remain <= 0) {
-    const sumMin = x_min.reduce((s,v) => s+v, 0);
-    return x_min.map(xm => xm * B / sumMin);
-  }
+  if (B_remain <= 0) return x_min.map(xm => xm * B / x_min.reduce((s,v) => s+v, 0));
 
   let lambdas = Array.from({length: 60}, (_, k) => 0.001 + k * 0.1);
   let best_x = null, best_total = -1;
@@ -315,19 +325,14 @@ function solveOptimal(B, speedMul, capPct) {
     const sum = x.reduce((s,v) => s+v, 0);
     if (sum < B) {
       const slack = B - sum;
-      const candidates = x.map((xi, i) => {
-        const x_saturate = Math.pow(R[i] / rho[i], 2);
-        return { i, room: Math.min(cap, x_saturate) - xi };
-      }).filter(c => c.room > 0.1);
+      const candidates = x.map((xi, i) => ({ i, room: Math.min(cap, Math.pow(R[i] / rho[i], 2)) - xi })).filter(c => c.room > 0.1);
       const totalRoom = candidates.reduce((s, c) => s + c.room, 0);
       if (totalRoom > 0) candidates.forEach(c => { x[c.i] += slack * (c.room / totalRoom); });
     } else if (sum > B) {
       const extras = x.map((xi, i) => xi - x_min[i]);
       const sumExtra = extras.reduce((s,v) => s+v, 0);
       const target = B - x_min.reduce((s,v) => s+v, 0);
-      if (sumExtra > 0 && target > 0) {
-        x.forEach((xi, i) => { x[i] = x_min[i] + extras[i] * target / sumExtra; });
-      }
+      if (sumExtra > 0 && target > 0) x.forEach((xi, i) => { x[i] = x_min[i] + extras[i] * target / sumExtra; });
     }
     const totalSaved = x.reduce((s, xi, i) => s + Math.min(rho[i] * Math.sqrt(xi), R[i]), 0);
     if (totalSaved > best_total) { best_total = totalSaved; best_x = x; }
@@ -339,16 +344,15 @@ function totalSaved(x) { return x.reduce((s, xi, i) => s + Math.min(SECTORS[i].r
 document.getElementById('tableSectors').innerHTML = SECTORS.map(s => `<tr><td><strong>${s.icon} ${s.name}</strong></td><td class="num">${s.workers.toFixed(1)}</td><td class="num">${s.risk_pct.toFixed(1)}%</td><td class="num"><strong>${s.at_risk.toFixed(2)}</strong></td><td class="num">${s.rho.toFixed(2)}</td><td class="num">${s.x_min}</td><td class="num">${s.salary.toFixed(1)}</td></tr>`).join('');
 
 const baseline = solveOptimal(8000, 1.0, 30);
-
 new Chart(document.getElementById('chartAllocation'), {
-  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: [{ label: 'Ngân sách (tỷ)', data: baseline, backgroundColor: '#0f172a', borderRadius: 6 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Phân bổ tối ưu CVXPY', color: '#0f172a', font:{size:14,weight:'bold'}}, legend:{display:false} }, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}}} }
+  type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: [{ label: 'Ngân sách (tỷ VND)', data: baseline, backgroundColor: '#0f172a', borderRadius: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Phân bổ tối ưu CVXPY', color: '#0f172a', font:{size:14,weight:'bold'}}, legend:{display:false} }, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} }} }
 });
 
 const savedData = baseline.map((x, i) => Math.min(SECTORS[i].rho * Math.sqrt(x), SECTORS[i].at_risk));
 new Chart(document.getElementById('chartSaved'), {
   type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: [{ label: 'At-risk (M)', data: SECTORS.map(s => s.at_risk), backgroundColor: '#94a3b8', borderRadius: 6 }, { label: 'Saved (M)', data: savedData, backgroundColor: '#0f172a', borderRadius: 6 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Lao động at-risk vs cứu được', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}}} }
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Lao động at-risk vs cứu được', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} }} }
 });
 
 const propAlloc = SECTORS.map(s => 8000 * s.at_risk / TOTAL_RISK);
@@ -357,20 +361,27 @@ const greedyAlloc = SECTORS.map((s, i) => i === 4 || i === 3 ? 2400 : 400);
 
 new Chart(document.getElementById('chartCompare2'), {
   type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: [{ label: 'CVXPY optimal', data: baseline, backgroundColor: '#0f172a', borderRadius: 4 }, { label: 'Proportional', data: propAlloc, backgroundColor: '#475569', borderRadius: 4 }, { label: 'Equal', data: equalAlloc, backgroundColor: '#94a3b8', borderRadius: 4 }, { label: 'Greedy ROI', data: greedyAlloc, backgroundColor: '#cbd5e1', borderRadius: 4 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'So sánh 4 phương án', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}}} }
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'So sánh 4 phương án', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} }} }
 });
 
 const speedScenarios = [{ name: 'Chậm', mul: 0.7, color: '#94a3b8' }, { name: 'Cơ bản', mul: 1.0, color: '#475569' }, { name: 'Nhanh', mul: 1.3, color: '#0f172a' }];
 new Chart(document.getElementById('chartSensSpeed'), {
   type: 'bar', data: { labels: SECTORS.map(s=>s.short), datasets: speedScenarios.map(sc => ({ label: sc.name, data: solveOptimal(8000, sc.mul, 30), backgroundColor: sc.color, borderRadius: 4 })) },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Sensitivity: tốc độ AI', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}}} }
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Sensitivity: tốc độ AI', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} }} }
 });
 
 const budgetTargets = [3000, 5500, 8000, 10500, 14000, 18000];
 const coverageData = speedScenarios.map(sc => budgetTargets.map(B => totalSaved(solveOptimal(B, sc.mul, 30)) / (TOTAL_RISK * sc.mul) * 100));
 new Chart(document.getElementById('chartBudgetNeed'), {
   type: 'line', data: { labels: budgetTargets.map(b => (b/1000).toFixed(1) + 'k'), datasets: speedScenarios.map((sc, i) => ({ label: sc.name, data: coverageData[i], borderColor: sc.color, tension: 0.4, borderWidth: 3, pointRadius: 5 })) },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Coverage % theo ngân sách', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}}, y: { grid: {color: '#e2e8f0'}, min:0, max:100} } }
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Coverage % theo ngân sách', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'}, min:0, max:100} } }
+});
+
+const cohorts = ['18-25', '26-35', '36-45', '46-55', '56+'];
+const cohortAlloc = SECTORS.map((s, i) => { const base = baseline[i]; const weights = [0.20, 0.35, 0.28, 0.13, 0.04]; return weights.map(w => base * w); });
+new Chart(document.getElementById('chartCohort'), {
+  type: 'bar', data: { labels: SECTORS.map(s => s.short), datasets: cohorts.map((coh, j) => ({ label: coh, data: SECTORS.map((_, i) => cohortAlloc[i][j]), backgroundColor: ['#cbd5e1','#94a3b8','#64748b','#334155','#0f172a'][j], borderRadius: 4 })) },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Phân bổ ngân sách theo cohort tuổi (stacked)', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { stacked: true, grid: {color: '#e2e8f0'} }, y: { stacked: true, grid: {color: '#e2e8f0'} }} }
 });
 
 // PLAYGROUND
@@ -388,19 +399,18 @@ function updatePlayground9() {
   document.getElementById('kpiUnsaved').textContent = (riskNow - saved).toFixed(1) + 'M';
 
   document.getElementById('sectorListLive').innerHTML = SECTORS.map((s, i) => {
-    const rNow = s.at_risk * speed, invPct = x[i]/(B*1000)*100, rShare = rNow/riskNow*100, sI = Math.min(s.rho*Math.sqrt(x[i]), rNow);
-    return `<div class="sector-card"><div class="sec-head"><div class="sec-icon">${s.icon}</div><div class="sec-name">${s.name}</div><div class="sec-budget">${x[i].toFixed(0)} tỷ</div></div><div class="double-bar"><div style="width:40px">Risk</div><div class="bar-track"><div class="bar-fill risk" style="width:${Math.min(100,rShare*4)}%"></div></div><div style="width:40px;text-align:right">${rNow.toFixed(2)}M</div></div><div class="double-bar" style="margin-top:4px"><div style="width:40px">Inv.</div><div class="bar-track"><div class="bar-fill invest" style="width:${invPct*3.3}%"></div></div><div style="width:40px;text-align:right">${invPct.toFixed(1)}%</div></div><div style="margin-top:6px;font-size:11px;color:#0f172a;text-align:right;font-weight:700">Saved: ${sI.toFixed(2)}M (${(sI/rNow*100).toFixed(0)}%)</div></div>`;
+    const rNow = s.at_risk * speed, invPct = x[i] / (B * 1000) * 100, riskShare = rNow / riskNow * 100, savedI = Math.min(s.rho * Math.sqrt(x[i]), rNow);
+    return `<div class="sector-card"><div class="sec-head"><div class="sec-icon" style="background:#f8fafc">${s.icon}</div><div class="sec-name">${s.name}</div><div class="sec-budget">${x[i].toFixed(0)} tỷ</div></div><div class="double-bar"><div style="width:40px">Risk</div><div class="bar-track"><div class="bar-fill risk" style="width:${Math.min(100, rShare*4)}%; background:#94a3b8"></div></div><div style="width:50px;text-align:right">${rNow.toFixed(2)}M</div></div><div class="double-bar" style="margin-top:4px"><div style="width:40px">Inv.</div><div class="bar-track"><div class="bar-fill invest" style="width:${invPct*3.3}%; background:#0f172a"></div></div><div style="width:50px;text-align:right">${invPct.toFixed(1)}%</div></div><div style="margin-top:6px;font-size:11px;color:#0f172a;text-align:right;font-weight:700">Saved: ${savedI.toFixed(2)}M (${(savedI/rNow*100).toFixed(0)}%)</div></div>`;
   }).join('');
 }
 
 function applyPreset9(name) {
-  const p = {'default':[8.0,1.0,30], 'crisis':[15.0,1.8,30], 'slow':[5.0,0.7,30], 'focus':[8.0,1.0,60]}[name];
+  const p = {'default': [8.0, 1.0, 30], 'crisis': [15.0, 1.8, 30], 'slow': [5.0, 0.7, 30], 'focus': [8.0, 1.0, 60]}[name];
   document.getElementById('pgB').value = p[0]; document.getElementById('pgSpeed').value = p[1]; document.getElementById('pgCap').value = p[2];
   updatePlayground9();
 }
 ['pgB','pgSpeed','pgCap'].forEach(id => document.getElementById(id).addEventListener('input', updatePlayground9));
-setTimeout(updatePlayground9, 800);
+setTimeout(updatePlayground9, 500);
 </script>
-<script src="chatbot.js"></script>
 </body>
 </html>
