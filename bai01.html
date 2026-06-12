@@ -361,4 +361,26 @@ function updatePlayground1() {
       data: [a*8, b*0.5, g*15, cagr*100 - (a*8 + b*0.5 + g*15)],
       backgroundColor: ['#1e40af','#047857','#6b21a8','#9d174d'], borderRadius: 6
     }]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}, title: { display: true, text: 'Decomposition (Interactive)', color: '#0f172a', font:{size: 14, weight: 'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}, ticks: {color: '#64748b'}}, y: {
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}, title: { display: true, text: 'Decomposition (Interactive)', color: '#0f172a', font:{size: 14, weight: 'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'}, ticks: {color: '#64748b'}}, y: { title: {display: true, text: 'pp / năm', color: '#64748b'}, grid: {color: '#e2e8f0'}, ticks: {color: '#64748b'}}}, animation: { duration: 500 }}
+  });
+}
+
+function applyPreset1(name) {
+  let p;
+  switch(name) {
+    case 'default':  p = [0.38, 0.30, 0.22, 0.014, 0.008]; break;
+    case 'ai-heavy': p = [0.30, 0.20, 0.40, 0.030, 0.012]; break;
+    case 'labor':    p = [0.30, 0.45, 0.15, 0.010, 0.005]; break;
+    case 'capital':  p = [0.55, 0.20, 0.15, 0.008, 0.015]; break;
+  }
+  ['pgA1','pgB1','pgG1','pgD1','pgT1'].forEach((id, i) => { document.getElementById(id).value = p[i]; });
+  updatePlayground1();
+}
+
+['pgA1','pgB1','pgG1','pgD1','pgT1'].forEach(id => document.getElementById(id).addEventListener('input', updatePlayground1));
+setTimeout(updatePlayground1, 800);
+</script>
+
+<script src="chatbot.js"></script>
+</body>
+</html>
