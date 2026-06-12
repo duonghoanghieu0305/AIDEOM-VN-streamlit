@@ -1,20 +1,19 @@
 // =============================================================
-// AIDEOM-VN AI CHATBOT — Gemini (Ultimate Edition - Bulletproof)
+// AIDEOM-VN AI CHATBOT — Gemini 2.0 Flash (Ultimate Edition)
 // =============================================================
-// Đã fix lỗi: Đảm bảo DOM load xong 100% mới render nút Chatbot
+// Chạy độc lập trên file chatbot.js
+// Tính năng: Auto-Rotate API Keys, Context-Aware, MathJax, Memory
 // =============================================================
 
 function initAideomChatbot() {
   'use strict';
-
-  // Tránh việc chatbot bị khởi tạo 2 lần nếu gọi file js nhiều lần
+  
+  // Ngăn chặn render 2 lần nếu file bị gọi nhiều lần
   if (document.getElementById('aideom-chatbot-fab')) return;
 
-  // ----- 1. NHẬN THỨC NGỮ CẢNH TRANG HIỆN TẠI -----
   const currentPageTitle = document.title || "AIDEOM-VN Dashboard";
   const titleLower = currentPageTitle.toLowerCase();
 
-  // ----- 2. SYSTEM PROMPT (PERSONA GIÁO SƯ AI) -----
   const SYSTEM_PROMPT = `Bạn là Trợ giảng / Giáo sư AI tối cao cho môn học "Các mô hình ra quyết định phát triển kinh tế Việt Nam trong kỉ nguyên AI" (Hệ thống AIDEOM-VN).
 Triết lý sư phạm: "Học bằng làm". Sinh viên phải biết diễn giải kết quả trong bối cảnh thể chế Việt Nam (NQ 57-NQ/TW, QĐ 749, QĐ 127, QĐ 411, COP26).
 
@@ -30,32 +29,13 @@ NGUYÊN TẮC TRẢ LỜI:
 3. PHÂN TÍCH VĨ MÔ: Luôn liên hệ toán học với thực tiễn Việt Nam. 
 4. TRÌNH BÀY: Dùng **in đậm** từ khóa. Súc tích, giọng điệu học thuật.`;
 
-  // ----- 3. STYLES (MONOCHROME / CHARCOAL THEME) -----
   const STYLES = `
-    #aideom-chatbot-fab {
-      position: fixed; bottom: 24px; right: 24px;
-      width: 60px; height: 60px; border-radius: 50%;
-      background: #0f172a; color: white; font-size: 24px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.4);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2147483647; /* Đảm bảo luôn nổi trên cùng */
-      border: 2px solid #ffffff; padding: 0; outline: none;
-    }
+    #aideom-chatbot-fab { position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px; border-radius: 50%; background: #0f172a; color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.4); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2147483647; border: 2px solid #ffffff; padding: 0; outline: none; }
     #aideom-chatbot-fab:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 30px rgba(15, 23, 42, 0.5); }
     #aideom-chatbot-fab.open { background: #334155; transform: rotate(90deg); }
-
-    #aideom-chatbot-panel {
-      position: fixed; bottom: 100px; right: 24px;
-      width: 400px; max-width: calc(100vw - 48px);
-      height: 600px; max-height: calc(100vh - 140px);
-      background: #ffffff; border: 1px solid #cbd5e1; border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
-      display: none; flex-direction: column; z-index: 2147483646;
-      font-family: 'Inter', -apple-system, sans-serif; overflow: hidden;
-    }
+    #aideom-chatbot-panel { position: fixed; bottom: 100px; right: 24px; width: 400px; max-width: calc(100vw - 48px); height: 600px; max-height: calc(100vh - 140px); background: #ffffff; border: 1px solid #cbd5e1; border-radius: 16px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15); display: none; flex-direction: column; z-index: 2147483646; font-family: 'Inter', -apple-system, sans-serif; overflow: hidden; }
     #aideom-chatbot-panel.open { display: flex; animation: slideUp 0.3s ease-out; }
     @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
     .acb-header { padding: 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; }
     .acb-header .acb-avatar { width: 40px; height: 40px; border-radius: 10px; background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; }
     .acb-header .acb-info { flex: 1; }
@@ -64,33 +44,27 @@ NGUYÊN TẮC TRẢ LỜI:
     .acb-header .acb-status::before { content: ''; width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
     .acb-header .acb-settings { background: transparent; border: 1px solid #cbd5e1; color: #475569; cursor: pointer; padding: 6px 10px; border-radius: 6px; font-size: 14px; transition: all 0.2s; }
     .acb-header .acb-settings:hover { background: #e2e8f0; color: #0f172a; }
-
     .acb-messages { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; background: #ffffff; }
     .acb-messages::-webkit-scrollbar { width: 6px; }
     .acb-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-
     .acb-msg { padding: 12px 16px; border-radius: 12px; font-size: 13.5px; line-height: 1.6; max-width: 88%; word-wrap: break-word; animation: acb-fadein 0.3s ease-out; white-space: pre-wrap; }
     .acb-msg strong { font-weight: 800; color: inherit; }
     .acb-msg pre { background: #f1f5f9; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; margin: 8px 0; }
     .acb-msg code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
     @keyframes acb-fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    
     .acb-msg.user { background: #0f172a; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15); }
     .acb-msg.bot { background: #f8fafc; color: #334155; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #e2e8f0; }
     .acb-msg.system { background: #fffbeb; color: #b45309; align-self: center; border: 1px solid #fde68a; font-size: 12px; text-align: center; font-weight: 600; white-space: normal; padding: 8px 12px; border-radius: 8px; }
     .acb-msg.error { background: #fef2f2; color: #ef4444; align-self: center; border: 1px solid #fecaca; font-size: 12px; font-weight: 600; white-space: normal; padding: 8px 12px; border-radius: 8px; }
-
     .acb-typing { align-self: flex-start; background: #f8fafc; padding: 12px 18px; border-radius: 12px; display: none; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
     .acb-typing.show { display: inline-block; }
     .acb-typing span { width: 6px; height: 6px; border-radius: 50%; background: #64748b; display: inline-block; margin: 0 2px; animation: acb-bounce 1.2s infinite; }
     .acb-typing span:nth-child(2) { animation-delay: 0.2s; }
     .acb-typing span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes acb-bounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
-
     .acb-suggestions { padding: 0 16px 12px; display: flex; flex-wrap: wrap; gap: 8px; background: #ffffff; }
     .acb-suggestions .acb-sug { background: #ffffff; border: 1px solid #cbd5e1; color: #475569; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
     .acb-suggestions .acb-sug:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; transform: translateY(-1px); }
-
     .acb-input-area { padding: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; background: #f8fafc; }
     .acb-input-area input { flex: 1; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px 14px; color: #0f172a; font-size: 14px; font-family: inherit; font-weight: 500; outline: none; transition: all 0.2s; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); margin:0; }
     .acb-input-area input:focus { border-color: #0f172a; box-shadow: 0 0 0 2px rgba(15,23,42,0.1); }
@@ -98,7 +72,6 @@ NGUYÊN TẮC TRẢ LỜI:
     .acb-input-area button { background: #0f172a; color: white; border: none; cursor: pointer; padding: 0 20px; border-radius: 8px; font-size: 14px; font-weight: 700; transition: all 0.2s; box-shadow: 0 2px 4px rgba(15,23,42,0.1); margin:0; }
     .acb-input-area button:hover { background: #334155; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(15,23,42,0.2); }
     .acb-input-area button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
     .acb-config { position: absolute; inset: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); padding: 30px 24px; display: none; flex-direction: column; gap: 16px; z-index: 10; }
     .acb-config.show { display: flex; }
     .acb-config h3 { color: #0f172a; font-size: 20px; font-weight: 900; margin: 0 0 4px; }
@@ -117,7 +90,6 @@ NGUYÊN TẮC TRẢ LỜI:
   `;
   const styleEl = document.createElement('style'); styleEl.textContent = STYLES; document.head.appendChild(styleEl);
 
-  // ----- 4. TẠO HTML BỘ KHUNG -----
   const fab = document.createElement('button'); fab.id = 'aideom-chatbot-fab'; fab.innerHTML = '✨'; fab.title = 'AIDEOM-VN AI Expert'; document.body.appendChild(fab);
 
   let dynamicSuggestions = `
@@ -155,7 +127,8 @@ NGUYÊN TẮC TRẢ LỜI:
     </div>
     <div class="acb-config" id="acb-config">
       <h3>🔑 Quản lý API Key (Chống hết lượt)</h3>
-      <p>Nhập <strong>nhiều API Key</strong> cách nhau bằng dấu phẩy (,). Khi một Key bị Google báo hết lượt, hệ thống sẽ tự động xoay vòng sang Key tiếp theo.</p>
+      <p style="color:#ef4444; font-weight:700">Lưu ý: API Key cũ của bạn đã bị Google cấm (Limit: 0). Hãy dùng 1 tài khoản Gmail mới để lấy API Key khác.</p>
+      <p>Bạn có thể nhập <strong>nhiều API Key</strong> cách nhau bằng dấu phẩy (,). Hệ thống sẽ tự động xoay vòng sang Key tiếp theo nếu Key đầu tiên bị quá tải.</p>
       <textarea id="acb-apikey" placeholder="AIzaSy...key1,\nAIzaSy...key2,\nAIzaSy...key3"></textarea>
       <div class="acb-btn-row">
         <button class="acb-btn-cancel" id="acb-cfg-cancel">Đóng</button>
@@ -166,23 +139,30 @@ NGUYÊN TẮC TRẢ LỜI:
   `;
   document.body.appendChild(panel);
 
-  // ----- STATE & MEMORY -----
   const messages = document.getElementById('acb-messages');
   const input = document.getElementById('acb-input');
   const sendBtn = document.getElementById('acb-send');
   const config = document.getElementById('acb-config');
   const apikeyInput = document.getElementById('acb-apikey');
   
-  let chatHistory = JSON.parse(sessionStorage.getItem('acb_history')) || [];
+  let chatHistory = [];
+  try { chatHistory = JSON.parse(sessionStorage.getItem('acb_history')) || []; } catch(e){}
+  
   let currentKeyIndex = 0; 
-
+  let windowTempKeys = [];
   const STORAGE_KEY = 'aideom_gemini_apikey_array';
+
   function getApiKeys() { 
-      const keysStr = localStorage.getItem(STORAGE_KEY) || ''; 
-      return keysStr.split(',').map(k => k.trim()).filter(k => k.length > 10);
+      try { const keysStr = localStorage.getItem(STORAGE_KEY) || ''; return keysStr.split(',').map(k => k.trim()).filter(k => k.length > 10); } 
+      catch(e) { return windowTempKeys; }
   }
-  function setApiKeys(kStr) { localStorage.setItem(STORAGE_KEY, kStr); }
-  function saveHistory() { sessionStorage.setItem('acb_history', JSON.stringify(chatHistory)); }
+  function setApiKeys(kStr) { 
+      try { localStorage.setItem(STORAGE_KEY, kStr); } 
+      catch(e) { windowTempKeys = kStr.split(',').map(k => k.trim()).filter(k => k.length > 10); }
+  }
+  function saveHistory() { 
+      try { sessionStorage.setItem('acb_history', JSON.stringify(chatHistory)); } catch(e){} 
+  }
 
   function formatMarkdown(text) {
     let html = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -191,7 +171,7 @@ NGUYÊN TẮC TRẢ LỜI:
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
     return html;
   }
-  function renderMath(element) { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([element]).catch(e => console.log(e)); }
+  function renderMath(element) { try { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([element]).catch(e => console.log(e)); } catch(e){} }
 
   function addMsg(type, text, saveToHistory = true) {
     const div = document.createElement('div'); div.className = `acb-msg ${type}`;
@@ -215,26 +195,33 @@ NGUYÊN TẮC TRẢ LỜI:
         messages.appendChild(div);
     });
     messages.scrollTop = messages.scrollHeight;
-    setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([messages]); }, 300);
+    setTimeout(() => { try { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([messages]); } catch(e){} }, 300);
   }
 
   fab.addEventListener('click', () => {
     panel.classList.toggle('open'); fab.classList.toggle('open');
-    if (panel.classList.contains('open') && getApiKeys().length === 0) config.classList.add('show');
+    if (panel.classList.contains('open') && getApiKeys().length === 0) {
+        config.classList.add('show');
+        try { apikeyInput.value = localStorage.getItem(STORAGE_KEY) || ''; } catch(e) { apikeyInput.value = windowTempKeys.join(', '); }
+    }
     else if (panel.classList.contains('open')) input.focus();
   });
 
-  panel.querySelector('.acb-settings').addEventListener('click', () => { config.classList.add('show'); apikeyInput.value = localStorage.getItem(STORAGE_KEY) || ''; });
+  panel.querySelector('.acb-settings').addEventListener('click', () => { 
+      config.classList.add('show'); 
+      try { apikeyInput.value = localStorage.getItem(STORAGE_KEY) || ''; } catch(e) { apikeyInput.value = windowTempKeys.join(', '); }
+  });
   document.getElementById('acb-cfg-cancel').addEventListener('click', () => config.classList.remove('show'));
   document.getElementById('acb-cfg-save').addEventListener('click', () => {
     const kStr = apikeyInput.value.trim();
     if (!kStr) { alert('Vui lòng nhập ít nhất 1 API key.'); return; }
     setApiKeys(kStr); currentKeyIndex = 0; config.classList.remove('show');
-    addMsg('system', `✓ Đã lưu ${getApiKeys().length} API Key. Hệ thống tự động xoay vòng khi hết lượt.`, false);
+    addMsg('system', `✓ Đã lưu ${getApiKeys().length} API Key. Hệ thống tự động xoay vòng khi có Key bị chặn.`, false);
   });
   
   document.getElementById('acb-cfg-clear').addEventListener('click', () => {
-    sessionStorage.removeItem('acb_history'); chatHistory = []; messages.innerHTML = ''; 
+    try { sessionStorage.removeItem('acb_history'); } catch(e){}
+    chatHistory = []; messages.innerHTML = ''; 
     addMsg('bot', `Lịch sử liên trang đã được xóa sạch. Tôi đã sẵn sàng phân tích **${currentPageTitle}** cùng bạn!`, false);
     config.classList.remove('show');
   });
@@ -248,12 +235,11 @@ NGUYÊN TẮC TRẢ LỜI:
   async function sendRequestWithRetry(keys, attemptCount = 0) {
     if (attemptCount >= keys.length) {
         hideTyping();
-        addMsg('error', '❌ TẤT CẢ các API Key của bạn đều đã bị Google báo hết lượt hoặc bị lỗi. Vui lòng tạo 1 tài khoản Gmail mới, lấy Key mới tinh và dán đè vào phần Cấu hình.', false);
+        addMsg('error', '❌ TẤT CẢ các API Key của bạn đều bị Google chặn (Hết lượt hoặc Bị khóa tài khoản). Vui lòng tạo 1 tài khoản Gmail mới tinh để lấy Key mới.', false);
         chatHistory.pop(); saveHistory(); sendBtn.disabled = false; input.focus(); return;
     }
 
     const currentKey = keys[currentKeyIndex];
-    // SỬ DỤNG BẢN LATEST FLASH ĐỂ TRÁNH LỖI NOT FOUND 404
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${currentKey}`;
     const body = {
         contents: chatHistory.slice(-20), 
@@ -267,8 +253,7 @@ NGUYÊN TẮC TRẢ LỜI:
 
         if (data.error) {
             let errorMsg = data.error.message || '';
-            // Xoay vòng key nếu gặp 429 hoặc 404
-            if (errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exceeded') || errorMsg.toLowerCase().includes('429') || errorMsg.toLowerCase().includes('not found')) {
+            if (errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exceeded') || errorMsg.toLowerCase().includes('429') || errorMsg.toLowerCase().includes('not found') || errorMsg.toLowerCase().includes('limit')) {
                 currentKeyIndex = (currentKeyIndex + 1) % keys.length; 
                 if (keys.length > 1) addMsg('system', `⚠ API Key thứ ${attemptCount + 1} bị quá tải. Đang tự động chuyển sang Key tiếp theo...`, false);
                 return await sendRequestWithRetry(keys, attemptCount + 1); 
@@ -307,14 +292,12 @@ NGUYÊN TẮC TRẢ LỜI:
   panel.querySelectorAll('.acb-sug').forEach(btn => {
     btn.addEventListener('click', () => { input.value = btn.dataset.q; send(); });
   });
-
 }
 
-// KÍCH HOẠT KHI DOM ĐÃ LOAD XONG
+// BẢO ĐẢM KHÔNG BAO GIỜ BỊ LỖI DOM TRÊN MỌI TRÌNH DUYỆT
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAideomChatbot);
 } else {
     initAideomChatbot();
 }
-
 })();
