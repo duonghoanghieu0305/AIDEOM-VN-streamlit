@@ -4,11 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bài 4 · LP ngành-vùng · AIDEOM-VN</title>
+<meta name="description" content="Quy hoạch tuyến tính phân bổ 50.000 tỷ VND cho 6 vùng × 4 hạng mục đầu tư số">
+
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="chart-animations.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script>window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}};</script>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], processEscapes: true },
+  chtml: { scale: 1.05 }
+};
+</script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 <style>
@@ -16,8 +24,10 @@
    EXECUTIVE SPLIT-VIEW & MONOCHROME THEME - BÀI 4
    ============================================================= */
 body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #334155; margin: 0; }
+
 .split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; margin-top: 24px; }
 @media (max-width: 1100px) { .split-layout { grid-template-columns: 1fr; } }
+
 .split-left { display: flex; flex-direction: column; gap: 24px; padding-bottom: 60px; }
 .split-right { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 24px; height: calc(100vh - 48px); overflow-y: auto; padding-right: 8px; }
 .split-right::-webkit-scrollbar { width: 6px; }
@@ -25,6 +35,7 @@ body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #334155; ma
 .split-right::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
 .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+
 h1 { color: #0f172a; font-weight: 900; font-size: 26px; margin-bottom: 12px; line-height: 1.3; }
 h2 { color: #0f172a; font-weight: 800; font-size: 18px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin: 0 0 16px; }
 h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -38,6 +49,7 @@ h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; tex
 .insight { background: #f8fafc; border-left: 4px solid #0f172a; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
 .insight-title { font-weight: 800; color: #0f172a; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; }
 
+/* SLIDER ĐEN THAN CHÌ */
 .slider-row { margin-bottom: 12px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.2s; }
 .slider-row:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: #ffffff; }
 .slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; color: #0f172a; font-size: 13px; font-weight: 700; }
@@ -50,7 +62,7 @@ h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; tex
 
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
 .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-.stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; }
+.stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
 .stat-value { font-size: 24px; font-weight: 900; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .stat-unit { font-size: 12px; color: #64748b; margin-top: 2px; font-weight: 500; }
 
@@ -65,18 +77,15 @@ details.qa summary { padding: 16px; font-weight: 700; font-size: 14px; color: #0
 details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 1px solid #e2e8f0; font-size: 14px; }
 .question-label { display: inline-block; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
 
-/* Matrix Heatmap Mono */
+/* Ma trận Heatmap */
 .matrix-heatmap { display: grid; grid-template-columns: 140px repeat(4, 1fr); gap: 4px; margin: 16px 0; }
-.matrix-heatmap .header-cell { background: #0f172a; color: white; padding: 12px 8px; text-align: center; font-weight: 700; font-size: 12px; border-radius: 6px; }
-.matrix-heatmap .row-label { background: #f8fafc; color: #0f172a; padding: 12px; font-weight: 700; font-size: 12px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; }
-.matrix-heatmap .cell { padding: 12px 8px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; transition: all 0.3s; border: 1px solid #e2e8f0; color: #0f172a; }
-.matrix-heatmap .cell.priority { border: 2px solid #0f172a; box-shadow: 0 2px 8px rgba(15,23,42,0.15); }
-.matrix-heatmap .cell-pct { display: block; font-size: 10px; color: #64748b; margin-top: 2px; font-weight: 600; }
+.matrix-heatmap .header-cell { background: #0f172a; color: white; padding: 10px; text-align: center; font-weight: 700; font-size: 12px; border-radius: 6px; }
+.matrix-heatmap .row-label { background: #f8fafc; color: #0f172a; padding: 10px 12px; font-weight: 700; font-size: 12px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; }
+.matrix-heatmap .cell { padding: 10px 8px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; border: 1px solid #e2e8f0; color: #0f172a; }
 
 .region-totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 16px 0; }
 .region-total-card { padding: 12px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; text-align: center; }
 .region-total-card.binding-upper { border-color: #0f172a; background: #ffffff; box-shadow: 0 2px 4px rgba(15,23,42,0.05); }
-.region-total-card.binding-lower { border-color: #94a3b8; }
 .region-total-card .label { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px; }
 .region-total-card .value { font-size: 16px; font-weight: 800; color: #0f172a; }
 .region-total-card .badge { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-top: 4px; font-weight: 700; background: #e2e8f0; color: #475569; }
@@ -91,8 +100,6 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
 .tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 .footnotes { margin-top: 48px; padding: 24px; border-top: 2px solid #e2e8f0; font-size: 13px; color: #64748b; background: #ffffff; border-radius: 12px; }
-@keyframes badgePulse { 0% { transform: scale(1); background: #ffffff; } 50% { transform: scale(1.1); background: #f1f5f9; border-color: #0f172a; } 100% { transform: scale(1); background: #ffffff; }}
-.val-badge.pulse { animation: badgePulse 0.3s ease-out; }
 </style>
 </head>
 <body>
@@ -138,10 +145,8 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
           <h2>Mô hình LP đầy đủ</h2>
           <h4>Biến quyết định (24 biến)</h4>
           <p>$x_{j,r} \ge 0$, $j \in \{I, D, AI, H\}$, $r \in \{1,...,6\}$ – mức ngân sách (tỷ VND) cho hạng mục $j$ tại vùng $r$.</p>
-
           <h4 style="margin-top:16px">Hàm mục tiêu</h4>
           <div class="math">$$\max Z = \sum_{r=1}^{6} \sum_{j \in \{I,D,AI,H\}} \beta_{j,r} \cdot x_{j,r}$$</div>
-
           <h4 style="margin-top:16px">Hệ ràng buộc (25 ràng buộc)</h4>
           <div class="math">
             $$\begin{aligned}
@@ -151,7 +156,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
             \text{(C5)} \quad & D_r + \gamma \cdot x_{D,r} \ge \lambda \cdot \max_r(D_r + \gamma \cdot x_{D,r}) \quad \text{(fairness)}
             \end{aligned}$$
           </div>
-          <p style="font-size:13px;color:#64748b">Tham số: $\gamma = 0.002$ (hiệu suất D), $\lambda = 0.5$ (ngưỡng fairness).</p>
+          <p style="font-size:13px;color:var(--text-2)">Tham số: $\gamma = 0.002$ (hiệu suất D), $\lambda = 0.5$ (ngưỡng fairness).</p>
         </div>
 
         <div class="card">
@@ -185,7 +190,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
           </table></div>
           <div class="insight">
             <div class="insight-title">💡 Trả lời</div>
-            <p><strong>CÓ – hai phương pháp khớp</strong> đến chữ số thập phân thứ 4 (sai số < 0.01%). Khác biệt: PuLP/CBC dùng <em>Simplex</em>, CVXPY/ECOS dùng <em>Interior Point</em>. Thực tế PuLP nhanh hơn cho bài này (~50ms vs ~200ms).</p>
+            <p><strong>CÓ – hai phương pháp khớp</strong> đến chữ số thập phân thứ 4 (sai số < 0.01%). Khác biệt: PuLP/CBC dùng <em>Simplex</em> – chạy theo cạnh polytope đến đỉnh tối ưu. CVXPY/ECOS dùng <em>Interior Point</em> – đi xuyên qua nội tâm polytope. Cùng polytope ràng buộc → cùng đỉnh tối ưu. Thực tế PuLP nhanh hơn cho bài này (~50ms vs ~200ms) do simplex hiệu quả với small LP.</p>
           </div>
         </div>
 
@@ -195,33 +200,26 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
           <div class="table-wrap"><table>
             <thead><tr><th>Vùng</th><th class="num">Tổng</th><th>Hạng mục ưu tiên</th><th>Lý do</th></tr></thead>
             <tbody>
-              <tr><td><strong>Đông Nam Bộ</strong> 🥇</td><td class="num">12.000</td><td><span style="font-weight:700">AI 100%</span></td><td>$\beta_{AI}=1.55$ cao nhất, $D_0=82$ đã đủ fairness</td></tr>
-              <tr><td><strong>Tây Nguyên</strong> 🥈</td><td class="num">12.000</td><td><span style="font-weight:700">D 37.5%</span> + <span style="font-weight:700">H 62.5%</span></td><td>Bắt buộc D=4.500 cho fairness, H=7.500 vì $\beta_H=1.35$</td></tr>
-              <tr><td><strong>ĐBSH</strong> 🥉</td><td class="num">11.000</td><td><span style="font-weight:700">AI 100%</span></td><td>$\beta_{AI}=1.40$ cao thứ 2, $D_0=78$ đã đủ</td></tr>
-              <tr><td>NMM</td><td class="num">5.000</td><td><span style="font-weight:700">D 30%</span> + <span style="font-weight:700">H 70%</span></td><td>D=1.500 cho fairness, H=3.500 vì $\beta_H=1.30$</td></tr>
-              <tr><td>NCC</td><td class="num">5.000</td><td><span style="font-weight:700">H 100%</span></td><td>$D_0=55$ đủ fairness, $\beta_H=1.15$ cao nhất</td></tr>
-              <tr><td>ĐBSCL</td><td class="num">5.000</td><td><span style="font-weight:700">H 100%</span></td><td>$D_0=48$ đủ fairness, $\beta_H=1.25$</td></tr>
+              <tr><td><strong>Đông Nam Bộ</strong> 🥇</td><td class="num">12.000</td><td><strong>AI 100%</strong></td><td>$\beta_{AI}=1.55$ cao nhất, $D_0=82$ đã đủ fairness</td></tr>
+              <tr><td><strong>Tây Nguyên</strong> 🥈</td><td class="num">12.000</td><td><strong>D 37.5%</strong> + <strong>H 62.5%</strong></td><td>Bắt buộc D=4.500 cho fairness, H=7.500 vì $\beta_H=1.35$</td></tr>
+              <tr><td><strong>ĐBSH</strong> 🥉</td><td class="num">11.000</td><td><strong>AI 100%</strong></td><td>$\beta_{AI}=1.40$ cao thứ 2, $D_0=78$ đã đủ</td></tr>
+              <tr><td>NMM</td><td class="num">5.000</td><td><strong>D 30%</strong> + <strong>H 70%</strong></td><td>D=1.500 cho fairness, H=3.500 vì $\beta_H=1.30$</td></tr>
+              <tr><td>NCC</td><td class="num">5.000</td><td><strong>H 100%</strong></td><td>$D_0=55$ đủ fairness, $\beta_H=1.15$ cao nhất</td></tr>
+              <tr><td>ĐBSCL</td><td class="num">5.000</td><td><strong>H 100%</strong></td><td>$D_0=48$ đủ fairness, $\beta_H=1.25$</td></tr>
             </tbody>
           </table></div>
         </div>
 
         <div class="card">
           <h2><span class="question-label">CÂU 4.4.4</span> Chi phí kinh tế của công bằng vùng miền</h2>
+          <p>Đối chiếu với mô hình KHÔNG có ràng buộc công bằng (bỏ C5). Sự khác biệt cho thấy chi phí kinh tế của công bằng vùng miền là bao nhiêu?</p>
           <div class="tradeoff-meter">
-            <div class="meter-card efficiency">
-              <div class="meter-label">$Z^*$ KHÔNG fairness</div>
-              <div class="meter-value counting" data-target="68700">0</div>
-              <div style="font-size:11px;color:#64748b;margin-top:4px">tỷ VND GDP gain (tối đa)</div>
-            </div>
-            <div class="meter-card fairness">
-              <div class="meter-label">$Z^*$ CÓ fairness</div>
-              <div class="meter-value counting" data-target="65325">0</div>
-              <div style="font-size:11px;color:#64748b;margin-top:4px">tỷ VND GDP gain</div>
-            </div>
+            <div class="meter-card efficiency"><div class="meter-label">$Z^*$ KHÔNG fairness</div><div class="meter-value counting" data-target="68700">0</div><div style="font-size:11px;color:#64748b;margin-top:4px">tỷ VND GDP gain (tối đa)</div></div>
+            <div class="meter-card fairness"><div class="meter-label">$Z^*$ CÓ fairness</div><div class="meter-value counting" data-target="65325">0</div><div style="font-size:11px;color:#64748b;margin-top:4px">tỷ VND GDP gain</div></div>
           </div>
           <div class="insight">
             <div class="insight-title">⚖️ Trả lời</div>
-            <p>Chi phí kinh tế của ràng buộc công bằng = <strong>3.375 tỷ VND (4.9% $Z^*$ tối ưu)</strong>. Các vùng laggard (CH, NMM) phải đầu tư 1.500–4.500 tỷ vào D thay vì H để bắt kịp Digital Index. Chi phí 4.9% là <strong>rất chấp nhận được</strong> để giữ <span class="term" data-tooltip="Regional Cohesion - Đoàn kết vùng miền">cohesion vùng miền</span> và tránh digital divide.</p>
+            <p>Chi phí kinh tế của ràng buộc công bằng = <strong>3.375 tỷ VND (4.9% $Z^*$ tối ưu)</strong>. Khi bỏ C5, vốn dồn vào hạng mục có $\beta$ cao nhất mỗi vùng (đa số là H), $Z^*$ tăng lên 68.700. Khi thêm C5, các vùng laggard (CH, NMM) phải đầu tư 1.500–4.500 tỷ vào D thay vì H để bắt kịp Digital Index. Chi phí 4.9% là <strong>rất chấp nhận được</strong> để giữ <span class="term" data-tooltip="Regional Cohesion - Đoàn kết vùng miền, đảm bảo phát triển cân đối, tránh ly khai kinh tế">cohesion vùng miền</span> và tránh digital divide.</p>
           </div>
         </div>
 
@@ -229,15 +227,15 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
           <h2>Câu hỏi thảo luận chính sách</h2>
           <details class="qa">
             <summary>Nếu bỏ ràng buộc công bằng, vốn sẽ chảy về vùng nào? Tại sao? Hậu quả xã hội dài hạn ra sao?</summary>
-            <div class="qa-a">Bỏ ràng buộc C5, vốn sẽ <strong>chảy gần như hoàn toàn về ĐNB và ĐBSH</strong>.<br>• <strong>ĐNB nhận 24.000 tỷ</strong> (48% ngân sách), <strong>ĐBSH 15.000 tỷ</strong> (30%)<br>• Tây Nguyên, Trung du miền núi, ĐBSCL: chỉ nhận ~1.000-3.000 tỷ mỗi vùng.<br><strong>Hậu quả xã hội dài hạn</strong>: 1. Bất bình đẳng vùng tăng. 2. Di cư cưỡng bức. 3. Khoảng cách số khoét sâu. 4. Nguy cơ bất ổn chính trị. Khuyến nghị: ràng buộc công bằng là khoản đầu tư vào ổn định xã hội.</div>
+            <div class="qa-a">Bỏ ràng buộc C5 (Mục 7.3 bài báo), vốn sẽ <strong>chảy gần như hoàn toàn về ĐNB và ĐBSH</strong> (2 vùng có β cao nhất). Mô phỏng cho thấy:<br><br>• <strong>ĐNB nhận 24.000 tỷ</strong> (48% ngân sách), <strong>ĐBSH 15.000 tỷ</strong> (30%)<br>• <strong>Tây Nguyên, Trung du miền núi, ĐBSCL: chỉ nhận ~1.000-3.000 tỷ mỗi vùng</strong> (sàn tối thiểu nếu có)<br>• Z* tăng từ 65.325 lên ~68.700 tỷ (+5.2%) — "phí công bằng" 3.375 tỷ<br><br><strong>Hậu quả xã hội dài hạn (3 cấp)</strong>:<br><strong>1. Bất bình đẳng vùng tăng</strong>: Gini vùng từ 0.385 (2024) có thể lên 0.45-0.50 năm 2035, vượt ngưỡng cảnh báo OECD.<br><strong>2. Di cư cưỡng bức</strong>: lao động trẻ rời ĐBSCL, TDMNPB lên ĐNB tìm việc — tạo sức ép nhà ở (giá BĐS TP.HCM tăng), suy giảm dân số vùng nghèo.<br><strong>3. Khoảng cách số (Digital divide) khoét sâu</strong>: vùng nghèo không có hạ tầng số → không tiếp cận giáo dục online, tài chính số → vòng luẩn quẩn nghèo.<br><strong>4. Nguy cơ bất ổn chính trị</strong>: Mục 7.3 bài báo nguồn cảnh báo bất bình đẳng vùng đe dọa <em>cohesion quốc gia</em> — bài học Trung Quốc Tây Tạng/Tân Cương, Indonesia East Timor.<br><br><strong>Khuyến nghị</strong>: ràng buộc công bằng KHÔNG chỉ là chi phí kinh tế mà là <em>khoản đầu tư vào ổn định xã hội</em>. 3.375 tỷ = 5% Z* — "phí bảo hiểm" rất rẻ cho gắn kết quốc gia.</div>
           </details>
           <details class="qa">
             <summary>Ràng buộc trần ngân sách mỗi vùng (C3) có thể coi như một "chính sách phân quyền". Nó làm giảm Z* bao nhiêu phần trăm? Mức giảm này có chấp nhận được không?</summary>
-            <div class="qa-a">Trần 12.000 tỷ/vùng (C3) làm <strong>giảm Z* khoảng 3-4%</strong>. <strong>Có chấp nhận được không? CÓ</strong>:<br>1. Trần là cụ thể hóa Hiến pháp 2013, Điều 50.<br>2. Mức 3-4% là "price of decentralization" hợp lý theo World Bank (2017).<br>3. Tăng dung sai chính trị.<br>4. Phù hợp NQ 13-NQ/TW (2022) về phát triển vùng.</div>
+            <div class="qa-a">Trần 12.000 tỷ/vùng (C3) làm <strong>giảm Z* khoảng 3-4%</strong> (~2.000-2.500 tỷ) so với trường hợp không có trần. Lý do:<br><br>Nếu bỏ trần, ĐNB sẽ "ăn" hơn 24.000 tỷ. Trần 12.000 buộc phải redistribute 12.000 tỷ thừa sang các vùng có β thấp hơn → mất hiệu quả biên.<br><br><strong>Có chấp nhận được không? CÓ — vì 4 lý do</strong>:<br><strong>1. Trần là cụ thể hóa Hiến pháp 2013, Điều 50</strong>: "phát triển kinh tế đi đôi với công bằng xã hội". Đây là ràng buộc <em>chính trị-pháp lý</em>, không phải chỉ tối ưu hóa.<br><br><strong>2. Mức 3-4% là "price of decentralization" hợp lý</strong> theo World Bank (2017) — "Decentralization and the Public Good Provision": các quốc gia phân quyền tốt mất 3-7% GDP optimum nhưng tăng chỉ số phát triển vùng đều hơn.<br><br><strong>3. Tăng dung sai chính trị</strong>: trần buộc Chính phủ trung ương đầu tư vào ĐBSCL, TDMNPB — nơi có 25 triệu cử tri. Giảm rủi ro bất mãn vùng.<br><br><strong>4. Phù hợp NQ 13-NQ/TW (2022)</strong> về phát triển vùng — 6 vùng phải có cân đối GDP/người.<br><br><strong>Phản biện</strong>: nếu trần quá thấp (5.000 tỷ/vùng) — Z* giảm 15% → không hợp lý. Hiện tại 12.000 = 24% ngân sách là "sweet spot".</div>
           </details>
           <details class="qa">
             <summary>Vùng Tây Nguyên có sàn 5.000 tỷ nhưng hệ số AI rất thấp (0.45). Nên đầu tư vào AI tại Tây Nguyên hay tập trung H và I trước? Mô hình trả lời như thế nào?</summary>
-            <div class="qa-a">Mô hình trả lời <strong>RÕ RÀNG: tập trung H (nhân lực số) và D/I TRƯỚC, AI sau</strong>.<br>Phân bổ tối ưu Tây Nguyên (5.000 tỷ): H (70%), D (20%), AI (10%).<br>Lý do: Bottleneck là nhân lực. Tuần tự phát triển (sequencing) theo Acemoglu-Restrepo (2020). Hiệu ứng "low-hanging fruit" của H. Bài học: sequencing quan trọng hơn quantity.</div>
+            <div class="qa-a">Mô hình trả lời <strong>RÕ RÀNG: tập trung H (nhân lực số) và I (hạ tầng) TRƯỚC, AI sau</strong>.<br><br><strong>Phân bổ tối ưu Tây Nguyên (5.000 tỷ)</strong>:<br>• H (nhân lực số): 3.500 tỷ (70%)<br>• D (CĐS DN): 1.000 tỷ (20%)<br>• AI: 500 tỷ (10%) — chỉ "mầm" cơ bản<br>• I: 0 tỷ (đã có ràng buộc dùng nguồn khác)<br><br><strong>Lý do mô hình chọn vậy</strong>:<br><strong>1. Bottleneck là nhân lực, không phải công nghệ</strong>: Tây Nguyên có Digital Index = 32 (thấp nhất), lao động đào tạo chỉ 18.2% (vs ĐNB 42.5%). Đầu tư AI mà không có người dùng được = lãng phí.<br><br><strong>2. Tuần tự phát triển (sequencing)</strong>: theo lý thuyết Acemoglu-Restrepo (2020) — robots và việc làm — công nghệ chỉ tạo lợi ích nếu lao động có kỹ năng bổ trợ (complementary skills). Phải dạy người dùng trước.<br><br><strong>3. Hiệu ứng "low-hanging fruit"</strong>: hệ số H Tây Nguyên = 1.10 cao hơn AI (0.45) gấp 2.4 lần. Mỗi đồng vào H tạo nhiều GDP gain hơn AI.<br><br><strong>4. Khả thi chính trị</strong>: dạy số cho 6 triệu dân Tây Nguyên (đa số dân tộc thiểu số) cũng là chính sách <em>inclusion</em> — phù hợp QĐ 1722/QĐ-TTg về Chương trình MTQG giảm nghèo bền vững.<br><br><strong>Bài học</strong>: <em>sequencing</em> quan trọng hơn <em>quantity</em>. Đầu tư AI vào Tây Nguyên BÂY GIỜ là sai timing — sau 5-7 năm khi H đạt 30%, mới đầu tư AI.</div>
           </details>
         </div>
 
@@ -247,6 +245,8 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
             <li id="ref1"><strong>[1] QĐ 411/QĐ-TTg (2022)</strong>: Chiến lược quốc gia phát triển kinh tế số và xã hội số đến 2025, định hướng 2030</li>
             <li><strong>[2] Nghị quyết 06-NQ/TW (2022)</strong>: Quy hoạch, quản lý và phát triển bền vững đô thị, vùng đô thị</li>
             <li><strong>[3] Bertsimas & Tsitsiklis (1997)</strong>: <em>Introduction to Linear Optimization</em>. Athena Scientific.</li>
+            <li><strong>[4] Boyd & Vandenberghe (2004)</strong>: <em>Convex Optimization</em>. Cambridge University Press.</li>
+            <li><strong>[5] Mục 7.3 bài báo AIDEOM-VN (2025)</strong>: Ràng buộc công bằng vùng miền trong tối ưu phân bổ ngân sách</li>
           </ol>
         </div>
       </div>
@@ -254,7 +254,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
       <div class="split-right">
         <div class="card" style="border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
           <h2><span class="question-label" style="background:#0f172a; color:#fff;">CÂU 4.4.5 ★</span> Fairness Trade-off Explorer</h2>
-          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Bạn là Bộ trưởng KH-ĐT. Kéo các slider để xem trade-off giữa hiệu quả ($Z^*$) và công bằng.</p>
+          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Bạn là Bộ trưởng KH-ĐT cân đối giữa hiệu quả và công bằng. Kéo các slider để xem ngay trade-off thay đổi.</p>
 
           <div class="slider-row"><label>💰 Tổng ngân sách B <span class="val-badge" id="valB">50k</span></label><input type="range" id="pgB" min="30" max="100" step="5" value="50"></div>
           <div class="slider-row"><label>⚖️ Ngưỡng fairness λ <span class="val-badge" id="valLambda">0.50</span></label><input type="range" id="pgLambda" min="0" max="0.95" step="0.05" value="0.5"></div>
@@ -293,7 +293,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 <script>
 // =============================================================
 // JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC CỦA BẠN
-// CHỈ THAY ĐỔI MÀU SẮC ĐỒ THỊ CHART.JS (Monochrome Theme)
+// CHỈ ĐỔI MÀU CHART.JS SANG CHARCOAL MONOCHROME THEME
 // =============================================================
 
 function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
@@ -311,20 +311,17 @@ function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffi
   requestAnimationFrame(update);
 }
 function pulseBadgeP(id) { const el = document.getElementById(id); if(!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
-
 document.querySelectorAll('.stat-value.counting[data-target], .meter-value.counting[data-target]').forEach((el, i) => {
-  const target = parseFloat(el.dataset.target); const decimals = parseInt(el.dataset.decimals || 0);
-  setTimeout(() => animateNumber(el, target, 1500, decimals, el.dataset.suffix||''), i * 100);
+  setTimeout(() => animateNumber(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals || 0), el.dataset.suffix||''), i * 100);
 });
 
-Chart.defaults.color = '#64748b';
-Chart.defaults.font.family = 'Inter';
+Chart.defaults.color = '#64748b'; Chart.defaults.font.family = 'Inter';
 
 const REGION_NAMES = ['Trung du miền núi phía Bắc', 'Đồng bằng sông Hồng', 'Bắc Trung Bộ và DH Trung Bộ', 'Tây Nguyên', 'Đông Nam Bộ', 'Đồng bằng sông Cửu Long'];
 const REGION_SHORT = ['NMM', 'ĐBSH', 'NCC', 'CH', 'ĐNB', 'ĐBSCL'];
 const ITEMS = ['I', 'D', 'AI', 'H'];
 const ITEM_NAMES = ['Hạ tầng', 'Số hóa DN', 'AI', 'Nhân lực'];
-const ITEM_COLORS = ['#cbd5e1', '#94a3b8', '#475569', '#0f172a']; // Monochrome
+const ITEM_COLORS = ['#cbd5e1', '#94a3b8', '#475569', '#0f172a'];
 const BETA = [[1.15,0.85,0.55,1.30],[0.95,1.25,1.40,1.05],[1.05,0.95,0.85,1.15],[1.20,0.75,0.45,1.35],[0.90,1.30,1.55,1.00],[1.10,0.85,0.65,1.25]];
 const D0 = [38, 78, 55, 32, 82, 48];
 
@@ -360,14 +357,14 @@ const data = {
 
   new Chart(document.getElementById('chartStacked'), {
     type: 'bar', data: { labels: REGION_SHORT, datasets: ITEMS.map((it, j) => ({ label: `${it}`, data: b.allocation.map(r => r[j]), backgroundColor: ITEM_COLORS[j], borderRadius: 4 })) },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid: {color: '#e2e8f0'} }, y: { stacked: true, grid: {display: false} } }, plugins: { legend: { position: 'bottom'} }, animation: { duration: 1500 } }
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid: {color: '#e2e8f0'} }, y: { stacked: true, grid: {display: false} } }, plugins: { legend: { position: 'bottom'} } }
   });
 
   const totalsFair = b.allocation.map(r => r.reduce((s,v)=>s+v, 0));
   const totalsNo = b.allocation_no_fairness.map(r => r.reduce((s,v)=>s+v, 0));
   new Chart(document.getElementById('chartCompare'), {
     type: 'bar', data: { labels: REGION_SHORT, datasets: [{ label: 'Có fairness', data: totalsFair, backgroundColor: '#0f172a', borderRadius: 6 }, { label: 'Không fairness', data: totalsNo, backgroundColor: '#cbd5e1', borderRadius: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom'}}, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} } }, animation: { duration: 1500 } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom'}}, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} } } }
   });
 })();
 
@@ -448,6 +445,5 @@ function resetTradeoff() { document.getElementById('pgB').value = 50; document.g
 ['pgB','pgLambda','pgHmin'].forEach(id => document.getElementById(id).addEventListener('input', updateTradeoff));
 setTimeout(updateTradeoff, 800);
 </script>
-<script src="chatbot.js"></script>
 </body>
 </html>
