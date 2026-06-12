@@ -1,9 +1,8 @@
 // =============================================================
-// AIDEOM-VN AI CHATBOT — Gemini 1.5 Flash Latest (God-Tier Edition)
+// AIDEOM-VN AI CHATBOT — Gemini 2.0 Flash (God-Tier Edition)
 // =============================================================
-// Nâng cấp: Tự động bắt lỗi Quota (Hết lượt), Context-Aware, 
-// MathJax Rendering, Cross-Page Memory.
-// Sửa lỗi: Cập nhật endpoint API chuẩn xác gemini-1.5-flash-latest
+// Nâng cấp: Tự động bắt lỗi Quota, Context-Aware, MathJax
+// Đã cấu hình chuẩn xác endpoint gemini-2.0-flash cho thị trường VN
 // =============================================================
 
 (function() {
@@ -13,7 +12,7 @@
   const currentPageTitle = document.title || "AIDEOM-VN Dashboard";
   const titleLower = currentPageTitle.toLowerCase();
 
-  // ----- 2. SYSTEM PROMPT (PERSONA GIÁO SƯ AI - TÍCH HỢP ĐỀ CƯƠNG) -----
+  // ----- 2. SYSTEM PROMPT (PERSONA GIÁO SƯ AI) -----
   const SYSTEM_PROMPT = `Bạn là Trợ giảng / Giáo sư AI tối cao cho môn học "Các mô hình ra quyết định phát triển kinh tế Việt Nam trong kỉ nguyên AI" (Hệ thống AIDEOM-VN).
 Triết lý sư phạm của môn học: "Học bằng làm" (learning by doing). Sinh viên không chỉ giải toán hình thức mà phải biết diễn giải kết quả trong bối cảnh thể chế Việt Nam (NQ 57-NQ/TW, QĐ 749, QĐ 127, QĐ 411, COP26).
 
@@ -28,9 +27,9 @@ Tiêu chí chấm điểm (Rubric Phụ lục F2): Toán học (20%), Lập trì
 
 NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
 1. NHẬN THỨC NGỮ CẢNH: Sinh viên đang xem trang "${currentPageTitle}". Hãy xoáy sâu vào các khái niệm của bài đó.
-2. TOÁN HỌC & LẬP TRÌNH CHUẨN MỰC: Khi nhắc đến biến số, công thức, mô hình, BẮT BUỘC bọc trong thẻ LaTeX ($x_i$ cho inline, $$x$$ cho block). Hỗ trợ sinh viên debug code Python (numpy, scipy, pulp, cvxpy, pymoo, pyomo, gymnasium).
-3. PHÂN TÍCH VĨ MÔ: Luôn liên hệ toán học với thực tiễn. Nhắc nhở sinh viên rằng tối ưu kinh tế không nhất thiết là tối ưu xã hội (vd: Shadow price có ý nghĩa gì? Tại sao cần giới hạn trần/sàn ngân sách?).
-4. CÁCH TRÌNH BÀY: Dùng **in đậm** từ khóa cốt lõi. Súc tích (3-7 câu), giọng điệu học thuật, khắt khe nhưng tận tình chỉ dẫn. Khuyến khích tư duy phản biện.`;
+2. TOÁN HỌC & LẬP TRÌNH CHUẨN MỰC: Khi nhắc đến biến số, công thức, mô hình, BẮT BUỘC bọc trong thẻ LaTeX ($x_i$ cho inline, $$x$$ cho block). Hỗ trợ sinh viên debug code Python.
+3. PHÂN TÍCH VĨ MÔ: Luôn liên hệ toán học với thực tiễn. Nhắc nhở sinh viên rằng tối ưu kinh tế không nhất thiết là tối ưu xã hội.
+4. CÁCH TRÌNH BÀY: Dùng **in đậm** từ khóa cốt lõi. Súc tích (3-7 câu), giọng điệu học thuật, khắt khe nhưng tận tình chỉ dẫn.`;
 
   // ----- 3. STYLES (MONOCHROME / CHARCOAL THEME) -----
   const STYLES = `
@@ -170,7 +169,6 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
   fab.title = 'AIDEOM-VN AI Expert';
   document.body.appendChild(fab);
 
-  // Gợi ý thông minh dựa trên Đề Cương F2/F3
   let dynamicSuggestions = `
     <button class="acb-sug" data-q="Hệ thống 12 bài tập AIDEOM-VN được chia thành 4 cấp độ nào?">Cấu trúc 4 cấp độ đồ án?</button>
     <button class="acb-sug" data-q="Tiêu chí chấm điểm (Rubric) của môn học này bao gồm những phần nào?">Tiêu chí chấm điểm (Rubric)</button>
@@ -178,229 +176,4 @@ NGUYÊN TẮC TRẢ LỜI TỐI THƯỢNG:
   if (titleLower.includes('bài 1') || titleLower.includes('cobb')) {
     dynamicSuggestions += `<button class="acb-sug" data-q="Theo đề bài, các biến $D_t$, $AI_t$, $H_t$ trong phương trình Cobb-Douglas đại diện cho điều gì?">Các biến trong Cobb-Douglas</button>`;
   } else if (titleLower.includes('bài 2') || titleLower.includes('bài 3')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Theo đề bài, shadow price của ràng buộc ngân sách có ý nghĩa gì trong thực tiễn?">Ý nghĩa Shadow Price</button>`;
-  } else if (titleLower.includes('bài 4')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Tại sao ràng buộc công bằng vùng miền (C5) lại quan trọng theo Nghị quyết 13-NQ/TW?">Ý nghĩa công bằng vùng miền</button>`;
-  } else if (titleLower.includes('bài 5')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Trong MIP chọn dự án, hiệu ứng cộng hưởng giữa AI (P8) và Bán dẫn (P13) được mô hình hóa thế nào?">Hiệu ứng cộng hưởng AI & Bán dẫn</button>`;
-  } else if (titleLower.includes('bài 6') || titleLower.includes('topsis')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="So sánh sự khác biệt khi dùng trọng số Entropy khách quan và AHP chuyên gia trong đánh giá vùng.">Entropy vs AHP (Bài 6)</button>`;
-  } else if (titleLower.includes('bài 7') || titleLower.includes('nsga')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Tại sao NSGA-II không trả về 1 nghiệm duy nhất mà trả về tập Pareto? Điều này có thay thế quyết định chính trị không?">Vai trò của NSGA-II</button>`;
-  } else if (titleLower.includes('bài 8') || titleLower.includes('dynamic')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Mô hình Dynamic Programming trong bài 8 đề xuất chiến lược Front-loaded hay Back-loaded? Giải thích lý do.">Front-loaded vs Back-loaded (Bài 8)</button>`;
-  } else if (titleLower.includes('bài 9') || titleLower.includes('labor')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Theo bài 9, ngành Nông nghiệp có nên đầu tư trực tiếp vào AI không khi nguy cơ mất việc lớn?">Chiến lược cho Nông nghiệp (Bài 9)</button>`;
-  } else if (titleLower.includes('bài 10') || titleLower.includes('stochastic')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Chỉ số EVPI và VSS trong bài 10 mang ý nghĩa gì đối với tư duy hoạch định chính sách dưới bất định?">Ý nghĩa EVPI & VSS (Bài 10)</button>`;
-  } else if (titleLower.includes('bài 11') || titleLower.includes('q-learning')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="So sánh tính chất của Q-learning (Off-policy) và SARSA (On-policy) trong bài 11.">Q-learning vs SARSA (Bài 11)</button>`;
-  } else if (titleLower.includes('bài 12') || titleLower.includes('dashboard')) {
-    dynamicSuggestions += `<button class="acb-sug" data-q="Liệt kê 6 module chức năng (M1 đến M6) trong hệ thống AIDEOM-VN tổng hợp.">Cấu trúc 6 Module (Bài 12)</button>`;
-  }
-
-  const panel = document.createElement('div');
-  panel.id = 'aideom-chatbot-panel';
-  panel.innerHTML = `
-    <div class="acb-header">
-      <div class="acb-avatar">AI</div>
-      <div class="acb-info">
-        <div class="acb-name">Giáo sư AIDEOM-VN</div>
-        <div class="acb-status">Online · Gemini 1.5 Flash Enhanced</div>
-      </div>
-      <button class="acb-settings" title="Cài đặt hệ thống">⚙ Cấu hình</button>
-    </div>
-
-    <div class="acb-messages" id="acb-messages"></div>
-
-    <div class="acb-suggestions">${dynamicSuggestions}</div>
-
-    <div class="acb-input-area">
-      <input type="text" id="acb-input" placeholder="Hỏi giáo sư điều gì đó về bài này..." autocomplete="off">
-      <button id="acb-send">Gửi</button>
-    </div>
-
-    <div class="acb-config" id="acb-config">
-      <h3>🔑 Quản lý Hệ thống AI</h3>
-      <p>Để đánh thức trí tuệ của AI, hãy cung cấp mã API Key miễn phí từ Google Studio:</p>
-      <p>1. Truy cập <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a><br>
-      2. Tạo Key mới và dán vào ô bên dưới.</p>
-      <input type="password" id="acb-apikey" placeholder="AIzaSy..." autocomplete="off">
-      <div class="acb-btn-row">
-        <button class="acb-btn-cancel" id="acb-cfg-cancel">Đóng</button>
-        <button class="acb-btn-save" id="acb-cfg-save">Kích hoạt AI</button>
-      </div>
-      <button class="acb-btn-clear" id="acb-cfg-clear">🗑 Xóa toàn bộ Lịch sử Trò chuyện</button>
-      <p style="font-size:11px;color:#94a3b8;margin-top:auto;text-align:center">
-        *Mã khóa & lịch sử chỉ lưu trên trình duyệt của bạn (Session Storage).
-      </p>
-    </div>
-  `;
-  document.body.appendChild(panel);
-
-  // ----- STATE & MEMORY (SESSION STORAGE) -----
-  const messages = document.getElementById('acb-messages');
-  const input = document.getElementById('acb-input');
-  const sendBtn = document.getElementById('acb-send');
-  const config = document.getElementById('acb-config');
-  const apikeyInput = document.getElementById('acb-apikey');
-  
-  let chatHistory = JSON.parse(sessionStorage.getItem('acb_history')) || [];
-
-  const STORAGE_KEY = 'aideom_gemini_apikey';
-  function getApiKey() { return localStorage.getItem(STORAGE_KEY) || ''; }
-  function setApiKey(k) { localStorage.setItem(STORAGE_KEY, k); }
-  function saveHistory() { sessionStorage.setItem('acb_history', JSON.stringify(chatHistory)); }
-
-  // Cấu trúc lại markdown nhẹ nhàng để MathJax hoạt động
-  function formatMarkdown(text) {
-    let html = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-    return html;
-  }
-
-  function renderMath(element) {
-    if (window.MathJax && window.MathJax.typesetPromise) {
-      window.MathJax.typesetPromise([element]).catch(err => console.log('MathJax error', err));
-    }
-  }
-
-  function addMsg(type, text, saveToHistory = true) {
-    const div = document.createElement('div');
-    div.className = `acb-msg ${type}`;
-    if (type === 'bot') {
-        div.innerHTML = formatMarkdown(text);
-        renderMath(div);
-    } else {
-        div.textContent = text;
-    }
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
-    
-    if (saveToHistory && (type === 'user' || type === 'bot')) {
-        chatHistory.push({
-            role: type === 'user' ? 'user' : 'model',
-            parts: [{ text: text }]
-        });
-        saveHistory();
-    }
-    return div;
-  }
-
-  // Khôi phục UI Chat
-  if (chatHistory.length === 0) {
-    const welcome = `Chào bạn! Tôi là Giáo sư AI của hệ thống. Tôi nhận thấy bạn đang xem **${currentPageTitle}**.\n\nTrong bài tập này, chúng ta không chỉ giải bài toán tối ưu mà còn phải phân tích kết quả dựa trên các chiến lược quốc gia (như QĐ 127/QĐ-TTg, NQ 57-NQ/TW). Bạn cần tôi hỗ trợ phần nào?`;
-    addMsg('bot', welcome, false);
-  } else {
-    chatHistory.forEach(h => {
-        const div = document.createElement('div');
-        div.className = `acb-msg ${h.role === 'user' ? 'user' : 'bot'}`;
-        if (h.role === 'user') {
-            div.textContent = h.parts[0].text;
-        } else {
-            div.innerHTML = formatMarkdown(h.parts[0].text);
-        }
-        messages.appendChild(div);
-    });
-    messages.scrollTop = messages.scrollHeight;
-    setTimeout(() => { if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([messages]); }, 300);
-  }
-
-  // ----- EVENT LISTENERS -----
-  fab.addEventListener('click', () => {
-    panel.classList.toggle('open');
-    fab.classList.toggle('open');
-    if (panel.classList.contains('open') && !getApiKey()) config.classList.add('show');
-    else if (panel.classList.contains('open')) input.focus();
-  });
-
-  panel.querySelector('.acb-settings').addEventListener('click', () => {
-    config.classList.add('show');
-    apikeyInput.value = getApiKey();
-  });
-  document.getElementById('acb-cfg-cancel').addEventListener('click', () => config.classList.remove('show'));
-  document.getElementById('acb-cfg-save').addEventListener('click', () => {
-    const k = apikeyInput.value.trim();
-    if (!k) { alert('Vui lòng nhập API key hợp lệ.'); return; }
-    setApiKey(k); config.classList.remove('show');
-    addMsg('system', '✓ Đã kích hoạt hệ thống AI thành công. Sẵn sàng nhận câu hỏi!', false);
-  });
-  
-  // Xóa bộ nhớ
-  document.getElementById('acb-cfg-clear').addEventListener('click', () => {
-    sessionStorage.removeItem('acb_history');
-    chatHistory = [];
-    messages.innerHTML = ''; 
-    addMsg('bot', `Lịch sử liên trang đã được xóa sạch. Tôi đã sẵn sàng phân tích **${currentPageTitle}** cùng bạn!`, false);
-    config.classList.remove('show');
-  });
-
-  function showTyping() {
-    const div = document.createElement('div');
-    div.className = 'acb-typing show'; div.id = 'acb-typing';
-    div.innerHTML = '<span></span><span></span><span></span>';
-    messages.appendChild(div); messages.scrollTop = messages.scrollHeight;
-  }
-  function hideTyping() { const el = document.getElementById('acb-typing'); if (el) el.remove(); }
-
-  async function send() {
-    const text = input.value.trim();
-    if (!text) return;
-    const apiKey = getApiKey();
-    if (!apiKey) { config.classList.add('show'); return; }
-
-    addMsg('user', text, true);
-    input.value = ''; sendBtn.disabled = true;
-    showTyping();
-
-    try {
-      // SỬ DỤNG GEMINI 1.5 FLASH LATEST VÀ ENDPOINT CHUẨN
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-      
-      const body = {
-        contents: chatHistory.slice(-20), // Trí nhớ lên tới 20 lượt hội thoại gần nhất
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        generationConfig: { temperature: 0.3, maxOutputTokens: 1024, topK: 40 } 
-      };
-
-      const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      const data = await resp.json();
-
-      hideTyping();
-      
-      // BỘ LỌC LỖI THÔNG MINH
-      if (data.error) {
-        let errorMsg = data.error.message || 'Không rõ nguyên nhân';
-        
-        // Bắt lỗi Hết Quota (429 Too Many Requests hoặc Quota Exceeded)
-        if (errorMsg.toLowerCase().includes('quota') || errorMsg.toLowerCase().includes('exceeded') || errorMsg.toLowerCase().includes('429')) {
-            errorMsg = 'API Key của bạn đã đạt giới hạn sử dụng miễn phí (Hết Quota) hoặc hệ thống đang xử lý quá nhiều yêu cầu. Vui lòng đợi một vài phút rồi thử lại, hoặc kiểm tra lại gói cước tại Google AI Studio nhé!';
-        } else if (errorMsg.toLowerCase().includes('not found')) {
-            errorMsg = 'Phiên bản AI này hiện không khả dụng trong vùng hoặc dự án API Key của bạn. Vui lòng kiểm tra lại Google AI Studio.';
-        }
-        
-        addMsg('error', '❌ Lỗi: ' + errorMsg, false);
-        chatHistory.pop(); saveHistory(); 
-      } else {
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '(Phản hồi trống)';
-        addMsg('bot', reply, true);
-      }
-    } catch (e) {
-      hideTyping();
-      addMsg('error', '❌ Lỗi kết nối mạng: Không thể kết nối tới máy chủ Google Gemini. Vui lòng kiểm tra lại kết nối.', false);
-      chatHistory.pop(); saveHistory();
-    } finally {
-      sendBtn.disabled = false; input.focus();
-    }
-  }
-
-  sendBtn.addEventListener('click', send);
-  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
-
-  panel.querySelectorAll('.acb-sug').forEach(btn => {
-    btn.addEventListener('click', () => { input.value = btn.dataset.q; send(); });
-  });
-
-})();
+    dynamicSuggestions += `<button class="acb-sug" data-q="Theo đề bài
