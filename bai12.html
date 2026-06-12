@@ -85,7 +85,7 @@ td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; color: #334155; font-
       <h1>Bài 12. AIDEOM-VN Dashboard — Tích hợp 6 module</h1>
       <p class="subtitle">
         Đồ án tổng kết: tích hợp 11 mô hình từ Bài 1-11 thành 1 Master Dashboard hỗ trợ hoạch định chiến lược quốc gia.
-        4 tabs chính: <strong>Tổng quan (M1-M2)</strong>, <strong>Phân bổ (M3)</strong>, <strong>5 Kịch bản (M6)</strong>, <strong>Cảnh báo (M4-M5)</strong>.
+        4 tabs chính: <strong>Tổng quan (M1-M2)</strong>, <strong>Phân bổ (M3)</strong>, <strong>5 Kịch bản (M6)</strong>, <strong>Cảnh báo rủi ro (M4-M5)</strong>.
       </p>
     </div>
 
@@ -177,7 +177,7 @@ td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; color: #334155; font-
         </table></div>
 
         <h4 style="margin-top:32px">Tăng trưởng GDP theo từng kịch bản</h4>
-        <div class="chart-container" style="height:320px"><canvas id="chartScenarios"></canvas></div>
+        <div class="chart-container" style="height:280px"><canvas id="chartScenarios"></canvas></div>
       </div>
     </div>
 
@@ -196,6 +196,21 @@ td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; color: #334155; font-
           <div class="at">✓ Cân bằng Phát thải NetZero</div>
           <div class="ad">Quỹ đạo hiện tại đáp ứng mục tiêu giảm phát thải của COP26 đến năm 2030 trong kịch bản S5 (Cân bằng).</div>
         </div>
+      </div>
+
+      <div class="card">
+        <h2>Tóm tắt thiết kế hệ thống AIDEOM-VN</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Module</th><th>Tên</th><th>Đầu vào</th><th>Đầu ra</th><th>Kỹ thuật</th></tr></thead>
+          <tbody>
+            <tr><td><span class="module-icon-cell">M1</span></td><td>Dự báo kinh tế</td><td>Macro 2020-2025</td><td>GDP, TFP 2030</td><td>Cobb-Douglas (Bài 1)</td></tr>
+            <tr><td><span class="module-icon-cell">M2</span></td><td>Sẵn sàng số</td><td>Sectors, Regions</td><td>Digital + AI Index</td><td>TOPSIS (Bài 6)</td></tr>
+            <tr><td><span class="module-icon-cell">M3</span></td><td>Tối ưu phân bổ</td><td>Budget, β-matrix</td><td>Phân bổ ngành-vùng</td><td>LP (Bài 4) + Dynamic (Bài 8)</td></tr>
+            <tr><td><span class="module-icon-cell">M4</span></td><td>Lao động</td><td>x_AI, x_H</td><td>NetJob từng ngành</td><td>LP (Bài 9)</td></tr>
+            <tr><td><span class="module-icon-cell">M5</span></td><td>Rủi ro</td><td>Risk params</td><td>Cyber, Env, Dependency</td><td>NSGA-II (Bài 7) + SP (Bài 10)</td></tr>
+            <tr><td><span class="module-icon-cell">M6</span></td><td>Dashboard</td><td>Outputs M1-M5</td><td>Trực quan kịch bản</td><td>Streamlit + Plotly</td></tr>
+          </tbody>
+        </table></div>
       </div>
     </div>
   </main>
