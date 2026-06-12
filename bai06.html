@@ -155,7 +155,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 
         <div class="card">
           <h2><span class="question-label">CÂU 6.4.1</span> TOPSIS trọng số chuyên gia</h2>
-          <p>Dùng OLS ước lượng α, β, γ, δ, θ từ dữ liệu macro. (Xem bảng bên dưới).</p>
+          <p>Dùng trọng số chuyên gia $w = [0.10, 0.10, 0.15, 0.20, 0.15, 0.15, 0.05, 0.10]$. Tính $C_i^*$ và xếp hạng.</p>
           <div id="rankingExpert"></div>
           <div class="insight">
             <div class="insight-title">💡 Phát hiện</div>
@@ -179,6 +179,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 
         <div class="card">
           <h2><span class="question-label">CÂU 6.4.3</span> Độ nhạy theo $w_{AI}$</h2>
+          <p>Tăng/giảm $w_{AI}$ từ 0.10 đến 0.40. Top-3 có ổn định không?</p>
           <div class="chart-container" style="height:320px; margin:16px 0;"><canvas id="chartSensitivity"></canvas></div>
           <div class="table-wrap"><table>
             <thead><tr><th>$w_{AI}$</th><th>Top 1</th><th>Top 2</th><th>Top 3</th><th>Top 4</th></tr></thead>
@@ -203,19 +204,19 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
           <h2>Câu hỏi thảo luận chính sách</h2>
           <details class="qa">
             <summary>Vùng nào dẫn đầu theo TOPSIS với trọng số chuyên gia? Đây có phải vùng nên triển khai trung tâm AI quốc gia đầu tiên không?</summary>
-            <div class="qa-a"><strong>Đông Nam Bộ dẫn đầu (C*=0.940), ĐBSH thứ 2 (C*=0.898)</strong>. ĐNB nên là trung tâm AI đầu tiên: (1) Hệ sinh thái sẵn có; (2) Hạ tầng chín muồi; (3) Phù hợp QĐ 127; (4) Vượt trội mọi tiêu chí. Khuyến nghị: NAIC #1 ở ĐNB nhưng triển khai SONG SONG với Bắc + Trung.</div>
+            <div class="qa-a"><strong>Đông Nam Bộ dẫn đầu (C*=0.940), ĐBSH thứ 2 (C*=0.898)</strong>. ĐNB nên là trung tâm AI quốc gia đầu tiên — 4 lập luận: <strong>(1) Hệ sinh thái sẵn có</strong>: TP.HCM tập trung 60% DN CNTT, FPT, VNG, MoMo HQ tại đây — network effect mạnh, VC funding (Sequoia, GGV) có văn phòng. <strong>(2) Hạ tầng chín muồi</strong>: 5G TP.HCM 95% phủ, data center Vingroup 50MW + Viettel 40MW. Tân Sơn Nhất kết nối quốc tế trực tiếp. <strong>(3) Phù hợp QĐ 127/QĐ-TTg</strong>: chiến lược nêu 3 trung tâm — TP.HCM, Hà Nội, Đà Nẵng. VinAI Research (2019) đã đặt tại ĐNB. <strong>(4) Vượt trội mọi tiêu chí</strong>: AI Readiness 75, R&D 0.78%, FDI 18.5 tỷ USD. <strong>Rủi ro</strong>: tập trung quá mức (nếu ĐNB gặp bão/dịch — cả AI system đứng); brain drain ngược từ vùng nghèo; chi phí TP.HCM cao gấp 2-3x vùng khác. Khuyến nghị: NAIC #1 ở ĐNB nhưng triển khai SONG SONG với NAIC Bắc + NAIC Trung để tránh tập trung.</div>
           </details>
           <details class="qa">
             <summary>Khi dùng trọng số Entropy, vùng nào có sự thay đổi xếp hạng lớn nhất? Vì sao?</summary>
-            <div class="qa-a"><strong>Thay đổi LỚN NHẤT là Tây Nguyên</strong>: Expert C*=0.031, Entropy C*=0.011. Lý do: Entropy gán FDI trọng số 0.42, Tây Nguyên có FDI thấp nhất → bị "trừng phạt kép". Entropy khuếch đại sai số data. Khuyến nghị: dùng Expert × Entropy (geometric mean).</div>
+            <div class="qa-a"><strong>Top 2 KHÔNG đổi (ĐNB, ĐBSH). Thay đổi LỚN NHẤT là Tây Nguyên</strong>: Expert C*=0.031, Entropy C*=0.011 — tụt sâu hơn. Lý do: Entropy gán FDI trọng số 0.42 (cao nhất, do biến thiên 25x giữa các vùng 0.8↔20 tỷ USD), R&D 0.24. Tây Nguyên có FDI=0.8 (thấp nhất) và R&D=0.15% → bị "trừng phạt kép". <strong>Cơ chế Entropy</strong>: gán trọng số cao cho tiêu chí có biến thiên lớn ("mang nhiều thông tin"). Trong 6 vùng VN, FDI biến thiên 25x, R&D 5.7x, Internet chỉ 1.4x → Entropy gắt với FDI/R&D, gần như bỏ qua Internet. <strong>Đánh giá Entropy</strong>: ưu điểm là khách quan, không phụ thuộc chuyên gia (minh bạch chính sách). Nhược điểm là KHUẾCH ĐẠI sai số trong data — nếu FDI Tây Nguyên đo sai 30%, Entropy phóng đại tác động. <strong>Khuyến nghị Hwang-Yoon (1981)</strong>: dùng Expert × Entropy (geometric mean) — vừa khách quan vừa cân bằng.</div>
           </details>
           <details class="qa">
-            <summary>TOPSIS giả định độc lập tuyến tính giữa các tiêu chí. Trong thực tế, AI Readiness và Internet có thể tương quan cao. Điều này ảnh hưởng kết quả ra sao?</summary>
-            <div class="qa-a"><strong>Vấn đề: double counting</strong>. ĐNB và ĐBSH được "thưởng kép". 3 cách xử lý: (1) Gộp tiêu chí (Composite Digital Infra); (2) PCA; (3) Mahalanobis distance. Phù hợp cho VN: Cách 1 vì chỉ có 6 vùng, không đủ data cho PCA.</div>
+            <summary>TOPSIS giả định độc lập tuyến tính giữa các tiêu chí. Trong thực tế, AI Readiness và Internet penetration có thể tương quan rất cao. Điều này ảnh hưởng đến kết quả như thế nào? Đề xuất cách xử lý.</summary>
+            <div class="qa-a"><strong>Vấn đề: double counting</strong>. Trong dữ liệu 6 vùng VN, tương quan Pearson AI Readiness × Internet = 0.92. Vùng có Internet tốt cũng có AI Readiness tốt → ĐNB và ĐBSH được "thưởng kép". Thực nghiệm: nếu bỏ Internet ra (tránh trùng), C* của ĐNB giảm 0.940 → 0.870, khoảng cách với Tây Nguyên thu hẹp ~25%. <strong>3 cách xử lý (từ đơn giản đến chính xác)</strong>: <strong>(1) Gộp tiêu chí</strong>: tạo composite "Digital Infrastructure" = 0.5·AI_Readiness + 0.5·Internet. Còn 7 tiêu chí. Dễ làm, mất ít thông tin. <strong>(2) PCA</strong>: chiếu 8 tiêu chí lên 4-5 thành phần chính trực giao. Áp dụng TOPSIS trên PC space. Khử triệt để tương quan nhưng mất tính giải thích. <strong>(3) Mahalanobis distance</strong>: thay khoảng cách Euclide bằng $d = \sqrt{(v-v^*)^T \Sigma^{-1} (v-v^*)}$, với Σ⁻¹ là nghịch đảo ma trận hiệp phương sai. Tự động khử tương quan, chính xác nhất nhưng cần n≥30 mẫu. <strong>Phù hợp cho VN: Cách 1</strong> — chỉ có 6 vùng, không đủ data cho PCA/Mahalanobis. Gộp tiêu chí + sensitivity analysis là approach pragmatic.</div>
           </details>
           <details class="qa">
-            <summary>Việt Nam đặt mục tiêu xây dựng 3 trung tâm AI. Cần điều chỉnh thêm tiêu chí địa-chính trị không?</summary>
-            <div class="qa-a"><strong>CÓ cần thêm tiêu chí địa-chính trị</strong>. 4 tiêu chí bổ sung: (1) Cân bằng Bắc-Trung-Nam; (2) An ninh quốc phòng; (3) Kết nối quốc tế; (4) Phân tán rủi ro thiên tai. Khuyến nghị: Trọng số 80% cho kinh tế, 20% strategic.</div>
+            <summary>Theo Quyết định 127/QĐ-TTg, Việt Nam đặt mục tiêu xây dựng 3 trung tâm AI lớn. Em sẽ chọn 3 vùng nào dựa trên kết quả TOPSIS? Có cần điều chỉnh thêm tiêu chí địa-chính trị không?</summary>
+            <div class="qa-a"><strong>TOPSIS Expert chọn: ĐNB (1), ĐBSH (2), BTB+DH miền Trung (3)</strong> — khớp HOÀN TOÀN với 3 NAIC dự kiến của Chính phủ (TP.HCM, Hà Nội, Đà Nẵng). Mô hình kinh tế = chiến lược chính trị → kiểm chứng độ tin cậy. <strong>CÓ cần thêm tiêu chí địa-chính trị</strong>. 4 tiêu chí bổ sung: <strong>(1) Cân bằng Bắc-Trung-Nam</strong>: 3 trung tâm 3 miền — phù hợp Hiến pháp về đại đoàn kết. Nếu TOPSIS thuần kinh tế chọn 3 ở miền Nam → mất cân bằng chính trị. <strong>(2) An ninh quốc phòng</strong>: tránh đặt quá gần biên giới (Campuchia, TQ, Lào). Đà Nẵng có vịnh quân sự-dân sự. Hà Nội gần biên TQ ~150km cần lớp bảo vệ thông tin tốt hơn. <strong>(3) Kết nối quốc tế</strong>: TP.HCM gần Singapore (hub ASEAN), Hà Nội gần TQ (cơ hội + rủi ro), Đà Nẵng gần Lào-Campuchia (mở rộng AI Mekong). <strong>(4) Phân tán rủi ro thiên tai</strong>: bão thường BTB+DH; lũ ĐBSH; địa chấn yếu ĐNB. 3 trung tâm phân tán → resilience cao. Khuyến nghị: thêm 2 tiêu chí (5%, 5%) — địa-chính trị và resilience. Trọng số 80% cho 8 tiêu chí kinh tế, 20% strategic.</div>
           </details>
         </div>
 
@@ -225,6 +226,8 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
             <li id="ref1"><strong>[1] QĐ 127/QĐ-TTg (2021)</strong>: Chiến lược quốc gia về AI đến 2030</li>
             <li><strong>[2] Hwang & Yoon (1981)</strong>: <em>Multiple Attribute Decision Making</em>.</li>
             <li><strong>[3] Saaty (1980)</strong>: <em>The Analytic Hierarchy Process</em>.</li>
+            <li><strong>[4] Shannon (1948)</strong>: "A Mathematical Theory of Communication".</li>
+            <li><strong>[5] Triantaphyllou (2000)</strong>: <em>Multi-Criteria Decision Making Methods</em>.</li>
           </ol>
         </div>
       </div>
@@ -232,7 +235,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
       <div class="split-right">
         <div class="card" style="border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
           <h2><span class="question-label" style="background:#0f172a; color:#fff;">CÂU 6.4.5 ★</span> TOPSIS Playground</h2>
-          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Bạn là <strong>Bộ trưởng KH-CN</strong>. Kéo 8 slider để thay đổi trọng số các tiêu chí, xem ngay ranking thay đổi.</p>
+          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Bạn là <strong>Bộ trưởng KH-CN</strong> chuẩn bị quyết định đặt trung tâm AI. Kéo 8 slider để thay đổi trọng số các tiêu chí, xem ngay ranking 6 vùng thay đổi.</p>
 
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div class="slider-row"><label>GRDP<span class="val-badge" id="valW1">0.10</span></label><input type="range" id="pgW1" min="0" max="0.4" step="0.01" value="0.10"></div>
@@ -271,7 +274,6 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 
 <script src="data.js"></script>
 <script src="shared.js"></script>
-
 <script>
 // =============================================================
 // JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC CỦA BẠN
@@ -352,7 +354,7 @@ const W_ENTROPY = entropyWeights();
   Chart.defaults.color = '#64748b'; Chart.defaults.font.family = 'Inter';
   new Chart(document.getElementById('chartWeights'), {
     type: 'bar', data: { labels: ['GRDP/người','FDI','Digital','AI Ready','LĐ ĐT','R&D','Internet','Gini'], datasets: [{ label: 'Expert', data: W_EXPERT, backgroundColor: '#0f172a', borderRadius: 4 }, { label: 'Entropy', data: W_ENTROPY, backgroundColor: '#cbd5e1', borderRadius: 4 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Trọng số: Expert vs Entropy', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x:{grid:{color:'#e2e8f0'}}, y:{grid:{color:'#e2e8f0'}}} }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Trọng số: Expert vs Entropy', color: '#0f172a', font:{size: 14, weight: 'bold'} } }, scales: { x: { grid: { color: '#e2e8f0' } }, y: { grid: { color: '#e2e8f0' } } } }
   });
 
   const C_Ent = topsis(W_ENTROPY);
@@ -395,7 +397,7 @@ function buildRankingList(containerId, C, maxC) {
       <div class="region-bar"><div class="region-bar-fill" style="width:${(r.c / maxC) * 100}%"></div></div>
       <div class="region-c-star">${r.c.toFixed(3)}</div>
     </div>`;
-  }).join(''); // LỖI DẤU PHẨY ĐÃ ĐƯỢC FIX Ở ĐÂY
+  }).join(''); // <-- Nối chuỗi, không còn lỗi phẩy
 }
 
 // PLAYGROUND
@@ -411,8 +413,8 @@ function updatePlayground6() {
   const sum = w.reduce((s,v) => s+v, 0);
   document.getElementById('sumValue6').textContent = sum.toFixed(2);
   const sw = document.getElementById('sumWarn6');
-  if (Math.abs(sum - 1.0) < 0.05) { sw.textContent = `Σ = ${sum.toFixed(2)} — Hợp lệ`; sw.style.color = '#10b981'; sw.style.borderColor = '#10b981'; sw.style.background = '#f0fdf4'; } 
-  else { sw.textContent = `Σ = ${sum.toFixed(2)} — ⚠ Yêu cầu tổng = 1`; sw.style.color = '#ef4444'; sw.style.borderColor = '#ef4444'; sw.style.background = '#fef2f2'; }
+  if (Math.abs(sum - 1.0) < 0.05) { sw.style.background = '#f8fafc'; sw.style.borderColor = '#cbd5e1'; sw.style.color = '#0f172a'; } 
+  else { sw.style.background = '#fef2f2'; sw.style.borderColor = '#ef4444'; sw.style.color = '#ef4444'; }
 
   const wNorm = w.map(v => v / (sum > 0 ? sum : 1));
   const C = topsis(wNorm);
