@@ -118,7 +118,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
       <div class="split-left">
         <div class="card context-card">
           <h4>Bối cảnh chính sách</h4>
-          <p>Bộ KH-CN<span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span> xem xét 15 dự án ứng cử cho Chương trình CĐS quốc gia 2026-2030. Mỗi dự án có chi phí, NPV và ràng buộc đặc thù. Sinh viên cần xây dựng MIP để chọn tập tối ưu thỏa mãn ngân sách tổng 80.000 tỷ và 40.000 tỷ năm 1-2.</p>
+          <p>Bộ KH-CN<span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span> xem xét 15 dự án ứng cử cho Chương trình CĐS quốc gia 2026-2030. Mỗi dự án có chi phí, NPV (Net Present Value) và ràng buộc đặc thù. Sinh viên cần xây dựng MIP để chọn tập tối ưu thỏa mãn ngân sách tổng 80.000 tỷ và 40.000 tỷ năm 1-2.</p>
         </div>
 
         <div class="card">
@@ -149,6 +149,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
         <div class="card">
           <h2><span class="question-label">CÂU 5.4.1</span> Giải MIP bằng PuLP + CBC</h2>
           <p><strong>Yêu cầu:</strong> Cài đặt và giải bài toán bằng PuLP với solver CBC. Báo cáo dự án được chọn, tổng chi phí, lợi ích, NPV biên.</p>
+          <h4>9 dự án được chọn (Z* = 115.400 tỷ VND)</h4>
           <div class="table-wrap"><table>
             <thead><tr><th>ID</th><th>Tên dự án</th><th>Lĩnh vực</th><th class="num">Chi phí</th><th class="num">NPV</th><th class="num">ROI</th></tr></thead>
             <tbody id="tableSelected"></tbody>
@@ -167,12 +168,14 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 
         <div class="card">
           <h2><span class="question-label">CÂU 5.4.2</span> Nới ngân sách lên 100.000 tỷ</h2>
+          <p><strong>Yêu cầu:</strong> Phân tích trường hợp nới ngân sách lên 100.000 tỷ. Tập dự án thay đổi thế nào?</p>
           <div class="stats-grid">
             <div class="stat-card"><div class="stat-label">Z* gốc (80k)</div><div class="stat-value counting" data-target="115400">0</div><div class="stat-unit">tỷ NPV</div></div>
             <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">Z* mới (100k)</div><div class="stat-value counting" data-target="142500">0</div><div class="stat-unit">tỷ NPV</div></div>
             <div class="stat-card"><div class="stat-label">Tăng thêm</div><div class="stat-value counting" data-target="27100">0</div><div class="stat-unit">tỷ NPV</div></div>
             <div class="stat-card"><div class="stat-label">NPV biên</div><div class="stat-value counting" data-target="1.36" data-decimals="2">0</div><div class="stat-unit">x / đồng thêm</div></div>
           </div>
+          <div class="chart-container" style="height:300px;margin-top:16px"><canvas id="chartScenarios"></canvas></div>
           <div class="insight">
             <div class="insight-title">💡 Phát hiện</div>
             <p>Khi nâng ngân sách 80→100k, mô hình thêm <strong>P3 (5G toàn quốc)</strong>. NPV biên/đồng vốn thêm = 1.36 – cao hơn shadow price tại 80k. Còn dư địa nâng ngân sách.</p>
@@ -181,6 +184,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 
         <div class="card">
           <h2><span class="question-label">CÂU 5.4.3</span> Bắt buộc cả P1 và P2 (redundancy)</h2>
+          <p><strong>Yêu cầu:</strong> Giả sử Quốc hội yêu cầu phải có cả P1 và P2. Bài toán có còn khả thi? Z* thay đổi ra sao?</p>
           <div class="stats-grid">
             <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">Khả thi?</div><div class="stat-value" style="font-size:24px">✓ CÓ</div><div class="stat-unit">bỏ ràng buộc C3</div></div>
             <div class="stat-card"><div class="stat-label">Z* (P1+P2)</div><div class="stat-value counting" data-target="113300">0</div><div class="stat-unit">tỷ NPV</div></div>
@@ -194,6 +198,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 
         <div class="card">
           <h2><span class="question-label">CÂU 5.4.4</span> Mở rộng: rủi ro tiến độ $p_i$</h2>
+          <p><strong>Yêu cầu:</strong> Thêm rủi ro: mỗi dự án có xác suất hoàn thành đúng tiến độ $p_i$. Tối đa hóa lợi ích kỳ vọng $E[Z]$.</p>
           <div class="math">$$\max E[Z] = \sum_{i=1}^{15} p_i \cdot B_i \cdot y_i$$</div>
           <div class="table-wrap"><table>
             <thead><tr><th>Lĩnh vực</th><th class="num">$p_i$</th><th>Lý do</th></tr></thead>
@@ -204,7 +209,6 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
               <tr><td><strong>Còn lại</strong></td><td class="num">0.80</td><td>Trung bình</td></tr>
             </tbody>
           </table></div>
-          <div class="chart-container" style="height:260px; margin:16px 0;"><canvas id="chartScenarios"></canvas></div>
           <div class="insight">
             <div class="insight-title">💡 Thay đổi tập chọn</div>
             <p>Khi xét rủi ro, mô hình <strong>thận trọng hơn</strong>: xu hướng bỏ P8 (AI quốc gia, $p=0.65$) thay bằng dự án hạ tầng/giáo dục có $p$ cao hơn. Đây là nguyên tắc <em>diversification</em> (giảm rủi ro tổng thể danh mục).</p>
@@ -215,15 +219,15 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
           <h2>Câu hỏi thảo luận chính sách</h2>
           <details class="qa">
             <summary>Vì sao mô hình bỏ qua dự án P15 (Open Data) dù tỷ suất lợi ích/chi phí rất cao? Đây có phải là kết quả mong muốn về mặt chính sách?</summary>
-            <div class="qa-a"><strong>Thực tế: mô hình BAN ĐẦU CÓ thể bỏ P15 nhưng nghiệm tối ưu CUỐI thường CHỌN P15</strong> (NPV=3.800, cost=1.500, ROI=2.53x). Nếu lời giải bỏ P15, nguyên nhân là: 1. Ràng buộc ngân sách năm 1-2 binding. 2. Ràng buộc loại trừ (P1 XOR P2). 3. Số dự án tối đa 11. <strong>Đây KHÔNG phải kết quả mong muốn</strong> vì Open Data có positive externality lớn. Khuyến nghị: thêm ràng buộc "buộc chọn P15" hoặc tăng NPV. Bài học: NPV thuần kinh tế chưa đủ — cần social NPV (SNPV).</div>
+            <div class="qa-a"><strong>Thực tế: mô hình BAN ĐẦU CÓ thể bỏ P15 nhưng nghiệm tối ưu CUỐI thường CHỌN P15</strong> (NPV=3.800, cost=1.500, ROI=2.53x — cao nhất trong 15 dự án). Nếu lời giải bỏ P15, nguyên nhân là:<br><br><strong>1. Ràng buộc ngân sách năm 1-2 binding</strong>: P15 yêu cầu 1.200 tỷ trong năm 1-2 (80% chi phí). Nếu các dự án lớn (P1 12k, P8 15k, P13 20k) đã chiếm hết năm 1-2 → không còn chỗ cho P15.<br><br><strong>2. Ràng buộc loại trừ (P1 XOR P2)</strong>: chọn P1 thay P2 → chi phí cao hơn → "cướp" chỗ của P15.<br><br><strong>3. Số dự án tối đa 11</strong>: nếu 11 dự án lớn đã "dùng hết slot", P15 nhỏ bị loại.<br><br><strong>Đây có phải kết quả MONG MUỐN không? KHÔNG</strong>. Vì:<br>• <strong>Open Data là "đường ray" cho cả các dự án khác</strong>: dữ liệu mở giúp khu vực tư nhân làm startup, tăng cạnh tranh, tạo việc làm. Tác động lan tỏa lớn nhưng KHÓ ĐO NPV trực tiếp.<br>• <strong>NPV chỉ đo lợi ích trực tiếp, KHÔNG đo externality</strong>. Open Data có positive externality cao (theo OECD Open Data Maturity Index — Hàn Quốc tăng 0.5pp GDP nhờ Open Data).<br>• <strong>QĐ 942/QĐ-TTg (2021) chiến lược dữ liệu QG</strong> đặt Open Data là ưu tiên hàng đầu.<br><br><strong>Khuyến nghị fix mô hình</strong>: thêm ràng buộc "buộc chọn P15" (P15 = 1) hoặc tăng NPV của P15 lên 5.500 tỷ để phản ánh externality. Bài học: <em>NPV thuần kinh tế chưa đủ — cần social NPV (SNPV)</em>.</div>
           </details>
           <details class="qa">
             <summary>Ràng buộc "bắt buộc P14 (an ninh mạng)" có làm giảm Z* không? Việc bắt buộc này có hợp lý không?</summary>
-            <div class="qa-a"><strong>CÓ làm giảm Z* khoảng 500-1.500 tỷ</strong> (~1-2%) vì P14 có ROI 1.97x thấp hơn dự án khác. <strong>Nhưng CÓ HỢP LÝ</strong> vì: 1. An ninh mạng là điều kiện tiên quyết. 2. Externality âm khổng lồ nếu bị tấn công (mất 1-3% GDP). 3. Nghĩa vụ pháp lý (Luật ATTT). 4. Chủ quyền số quốc gia. Chi phí 1-2% Z* = "phí bảo hiểm" cực hợp lý.</div>
+            <div class="qa-a"><strong>CÓ làm giảm Z* khoảng 500-1.500 tỷ</strong> (~1-2%). Lý do: P14 có ROI 1.97x — thấp hơn nhiều dự án khác (P15 2.53x, P10 1.92x, P12 1.91x). Bắt buộc P14 "đẩy" dự án ROI tốt hơn ra.<br><br><strong>Việc bắt buộc CÓ HỢP LÝ — vì 4 lý do</strong>:<br><br><strong>1. An ninh mạng là điều kiện tiên quyết (precondition)</strong>: không có P14, các dự án P1 (TT dữ liệu), P8 (AI), P11 (Nông nghiệp số) đều rủi ro bị tấn công, phá hủy giá trị. Vụ tấn công VNDirect 03/2024 mất 30.000 tỷ giá trị thị trường + niềm tin nhà đầu tư.<br><br><strong>2. Externality âm khổng lồ nếu không có</strong>: tấn công mạng vào ngân hàng hoặc lưới điện có thể gây thiệt hại GDP 1-3% (theo IBM Cost of Data Breach Report 2024 — Vietnam: 4.45M USD/incident).<br><br><strong>3. Phù hợp Luật ATTT mạng 2018, Luật Bảo vệ DLCN 2024</strong>: an ninh mạng là <em>nghĩa vụ pháp lý</em>, không phải lựa chọn kinh tế.<br><br><strong>4. Chủ quyền số quốc gia</strong>: NQ 57-NQ/TW Mục III.5 đề cập "chủ quyền dữ liệu" — an ninh mạng là cốt lõi. Mất chủ quyền dữ liệu = mất chủ quyền chính trị.<br><br><strong>Phản biện</strong>: P14 chỉ 3.800 tỷ — quy mô có thể quá nhỏ cho an ninh mạng quốc gia. Singapore cybersecurity budget 700M SGD/năm (~13.000 tỷ VND), VN nên tăng P14 lên ~10.000 tỷ. Chi phí 1-2% Z* = "phí bảo hiểm" cực hợp lý cho rủi ro mất 1-3% GDP.</div>
           </details>
           <details class="qa">
-            <summary>Làm thế nào để mô hình hóa hiệu ứng cộng hưởng (AI + Bán dẫn)?</summary>
-            <div class="qa-a">Đây là vấn đề <em>complementarity effects</em>. Khuyến nghị dùng <strong>Cách 2: Biến cộng hưởng tường minh</strong>. Thêm biến nhị phân z (= 1 nếu chọn cả 2), với z ≤ y₈, z ≤ y₁₃ và z ≥ y₈ + y₁₃ - 1. Hàm mục tiêu cộng: + B₈₁₃ · z. (P8 AI + P13 bán dẫn có bonus ~10.000 tỷ). Hạn chế: Bonus rất khó đo chính xác, cần sensitivity analysis.</div>
+            <summary>Mô hình giả định các dự án độc lập về lợi ích, nhưng trên thực tế P8 (AI quốc gia) và P13 (bán dẫn) có lợi ích cộng hưởng. Làm thế nào để mô hình hóa hiệu ứng cộng hưởng này?</summary>
+            <div class="qa-a">Đây là vấn đề kinh điển trong MIP — <em>complementarity / interaction effects</em>. 3 cách mô hình hóa:<br><br><strong>Cách 1: Bonus term (đơn giản nhất)</strong><br>Thêm vào hàm mục tiêu: <code>+ B<sub>813</sub> · y₈ · y₁₃</code><br>Trong đó B₈₁₃ = ~10.000 tỷ là bonus NPV khi chọn cả 2. P8 AI + P13 bán dẫn cộng hưởng vì AI cần chip chuyên dụng (NPU, TPU) — không có bán dẫn nội thì AI phụ thuộc TQ/Mỹ.<br>Vấn đề: bài toán không còn tuyến tính (có y₈·y₁₃) → cần MILP với <em>McCormick relaxation</em>: z₈₁₃ = y₈·y₁₃, với 4 ràng buộc tuyến tính.<br><br><strong>Cách 2: Biến cộng hưởng tường minh</strong><br>Thêm biến nhị phân z (= 1 nếu chọn cả 2), với:<br>• z ≤ y₈, z ≤ y₁₃ (z chỉ được = 1 nếu cả 2 = 1)<br>• z ≥ y₈ + y₁₃ - 1 (z = 1 khi cả 2 = 1)<br>Hàm mục tiêu cộng: + B₈₁₃ · z<br><br><strong>Cách 3: Mô hình mạng phức tạp hơn</strong><br>Dùng <em>graph-based formulation</em>: tạo đồ thị 15 nút (dự án) + cạnh trọng số là cộng hưởng. Bài toán trở thành <em>maximum-weight clique selection</em> với ràng buộc ngân sách. Phương pháp này phù hợp khi có nhiều cặp cộng hưởng (ví dụ P8-P13, P8-P12, P11-P15).<br><br><strong>Khuyến nghị cho VN</strong>: dùng Cách 2 (clean, dễ debug). Các cặp cộng hưởng quan trọng:<br>• P8 (AI QG) ↔ P13 (bán dẫn): hardware-software synergy, bonus ~10.000 tỷ<br>• P8 (AI) ↔ P12 (đào tạo 50k KS): talent-tech bottleneck, bonus ~8.000 tỷ<br>• P11 (Nông nghiệp số) ↔ P15 (Open Data): data-application synergy, bonus ~3.000 tỷ<br><br><strong>Hạn chế</strong>: Bonus rất khó đo (ai biết được cộng hưởng đúng = 10.000 tỷ?). Cần expert elicitation (Delphi) + sensitivity analysis.</div>
           </details>
         </div>
 
@@ -231,8 +235,10 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
           <h4 style="margin-bottom:12px">📚 Tài liệu tham khảo</h4>
           <ol>
             <li id="ref1"><strong>[1] Bộ KH-CN (2025)</strong>: Đề xuất Chương trình Chuyển đổi số quốc gia 2026-2030.</li>
-            <li><strong>[2] Markowitz (1952)</strong>: "Portfolio Selection". <em>Journal of Finance</em>.</li>
-            <li><strong>[3] Wolsey (1998)</strong>: <em>Integer Programming</em>.</li>
+            <li><strong>[2] Markowitz (1952)</strong>: "Portfolio Selection". <em>Journal of Finance</em>, 7(1), 77-91.</li>
+            <li><strong>[3] Wolsey (1998)</strong>: <em>Integer Programming</em>. Wiley-Interscience.</li>
+            <li><strong>[4] Nemhauser & Wolsey (1988)</strong>: <em>Integer and Combinatorial Optimization</em>. Wiley.</li>
+            <li><strong>[5] Forrest et al. (2024)</strong>: <em>COIN-OR CBC Solver User Manual</em>. CBC v2.10.</li>
           </ol>
         </div>
       </div>
@@ -272,7 +278,7 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
 <script>
 // =============================================================
 // JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC CỦA BẠN
-// CHỈ THAY ĐỔI MÀU SẮC ĐỒ THỊ CHART.JS VÀ RENDER GIAO DIỆN
+// CHỈ ĐỔI MÀU CHART.JS SANG CHARCOAL MONOCHROME THEME
 // =============================================================
 
 function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
@@ -295,8 +301,7 @@ document.querySelectorAll('.stat-value.counting[data-target], .meter-value.count
   setTimeout(() => animateNumber(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals||0), el.dataset.suffix||''), i * 80);
 });
 
-Chart.defaults.color = '#64748b';
-Chart.defaults.font.family = 'Inter';
+Chart.defaults.color = '#64748b'; Chart.defaults.font.family = 'Inter';
 
 const PROJECTS = [
   { id: 'P1',  name: 'TT dữ liệu QG Hòa Lạc',      sector: 'Hạ tầng',        icon: '🏢', cost: 12000, npv: 21500, y12: 8500  },
@@ -316,7 +321,6 @@ const PROJECTS = [
   { id: 'P15', name: 'Open Data + dữ liệu mở',     sector: 'Dữ liệu',        icon: '📊', cost: 1500,  npv: 3800,  y12: 1200  }
 ];
 
-// Monochrome / Professional Sector Colors
 const SECTOR_COLORS = {
   'Hạ tầng': '#0f172a', 'Chính phủ số': '#334155', 'Y tế số': '#475569', 'Giáo dục': '#64748b',
   'AI': '#94a3b8', 'Tài chính số': '#cbd5e1', 'Logistics': '#0f172a', 'Nông nghiệp': '#334155',
@@ -340,13 +344,13 @@ const data = {
   `;
 
   const selected = PROJECTS.filter(p => b.selected.includes(p.id));
-  document.getElementById('tableSelected').innerHTML = selected.map(p => `<tr><td><strong>${p.id}</strong></td><td>${p.name}</td><td><span class="tag">${p.sector}</span></td><td class="num">${p.cost.toLocaleString('vi-VN')}</td><td class="num">${p.npv.toLocaleString('vi-VN')}</td><td class="num">${(p.npv/p.cost).toFixed(2)}x</td></tr>`).join('');
+  document.getElementById('tableSelected').innerHTML = selected.map(p => `<tr><td><strong>${p.id}</strong></td><td>${p.name}</td><td><span class="tag" style="background:${SECTOR_COLORS[p.sector] || '#94a3b8'}33;color:${SECTOR_COLORS[p.sector] || '#94a3b8'}">${p.sector}</span></td><td class="num">${p.cost.toLocaleString('vi-VN')}</td><td class="num">${p.npv.toLocaleString('vi-VN')}</td><td class="num">${(p.npv/p.cost).toFixed(2)}x</td></tr>`).join('');
 
   const sectors = {};
   selected.forEach(p => { sectors[p.sector] = (sectors[p.sector] || 0) + p.npv; });
   new Chart(document.getElementById('chartSector'), {
-    type: 'doughnut', data: { labels: Object.keys(sectors), datasets: [{ data: Object.values(sectors), backgroundColor: Object.keys(sectors).map(s => SECTOR_COLORS[s]), borderColor: '#ffffff', borderWidth: 2 }]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'NPV theo lĩnh vực (9 dự án chọn)', color: '#0f172a', font:{size:14,weight:'bold'}}, legend: { position: 'right'} }, animation: { duration: 1500, animateRotate: true, animateScale: true } }
+    type: 'doughnut', data: { labels: Object.keys(sectors), datasets: [{ data: Object.values(sectors), backgroundColor: Object.keys(sectors).map(s => SECTOR_COLORS[s] || '#94a3b8'), borderColor: '#ffffff', borderWidth: 2 }]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'NPV theo lĩnh vực (9 dự án chọn)', color: '#0f172a', font:{size:14,weight:'bold'}}, legend: { position: 'right', labels: { color: '#64748b' }} }, animation: { duration: 1500, animateRotate: true, animateScale: true } }
   });
 
   new Chart(document.getElementById('chartScenarios'), {
@@ -436,6 +440,5 @@ function resetBuilder() {
 ['pgBudget','pgMinP','pgMaxP'].forEach(id => { document.getElementById(id).addEventListener('input', updateBuilder); });
 buildPgProjects(); setTimeout(updateBuilder, 800);
 </script>
-<script src="chatbot.js"></script>
 </body>
 </html>
