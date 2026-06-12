@@ -14,17 +14,19 @@
 
 <style>
 /* =============================================================
-   EXECUTIVE SPLIT-VIEW & MONOCHROME THEME - BÀI 7
+   EXECUTIVE HYBRID LAYOUT & MONOCHROME THEME - BÀI 7
    ============================================================= */
 body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #334155; margin: 0; }
-.split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; margin-top: 24px; }
-@media (max-width: 1100px) { .split-layout { grid-template-columns: 1fr; } }
-.split-left { display: flex; flex-direction: column; gap: 24px; padding-bottom: 60px; }
-.split-right { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 24px; height: calc(100vh - 48px); overflow-y: auto; padding-right: 8px; }
-.split-right::-webkit-scrollbar { width: 6px; }
-.split-right::-webkit-scrollbar-track { background: transparent; }
-.split-right::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.main { padding: 32px 40px; max-width: 1600px; margin: 0 auto; }
 
+/* Hybrid Grid Layout (Thay thế Split-View cũ) */
+.top-grid { display: grid; grid-template-columns: 1fr 400px; gap: 32px; align-items: stretch; margin-top: 24px; margin-bottom: 32px; }
+@media (max-width: 1100px) { .top-grid { grid-template-columns: 1fr; } }
+
+.col-left { display: flex; flex-direction: column; gap: 24px; }
+.col-right { display: flex; flex-direction: column; gap: 24px; }
+
+/* Styling Cơ Bản */
 .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
 h1 { color: #0f172a; font-weight: 900; font-size: 26px; margin-bottom: 12px; line-height: 1.3; }
 h2 { color: #0f172a; font-weight: 800; font-size: 18px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin: 0 0 16px; }
@@ -39,38 +41,45 @@ h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; tex
 .insight { background: #f8fafc; border-left: 4px solid #0f172a; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
 .insight-title { font-weight: 800; color: #0f172a; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; }
 
-/* SLIDER ĐEN THAN CHÌ */
-.nsga-controls { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 16px; align-items: end; margin-bottom: 20px; }
-@media (max-width: 800px) { .nsga-controls { grid-template-columns: 1fr; } }
-.nsga-slider { background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.2s; }
+/* Bảng thông số NSGA-II Control (Than Chì) */
+.nsga-controls { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+.nsga-slider { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.2s; }
 .nsga-slider:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: #ffffff; }
-.nsga-slider label { display: block; color: #0f172a; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+.nsga-slider label { display: block; color: #0f172a; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
 .nsga-slider input[type=range] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #cbd5e1; outline: none; cursor: pointer; }
 .nsga-slider input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #0f172a; border: 3px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: grab; }
 .nsga-slider .vrng { display: flex; justify-content: space-between; font-size: 11px; color: #64748b; font-family: 'JetBrains Mono', monospace; margin-top: 6px; }
-.nsga-slider .vmid { position: relative; text-align: center; color: #0f172a; font-weight: 800; font-size: 15px; font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; }
+.nsga-slider .vmid { position: relative; text-align: center; color: #0f172a; font-weight: 900; font-size: 18px; font-family: 'JetBrains Mono', monospace; margin-bottom: 12px; }
 
-.btn-run { padding: 14px 28px; background: #0f172a; color: white; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); height: 100%; width: 100%; }
+.btn-run { padding: 16px; background: #0f172a; color: white; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15); width: 100%; }
 .btn-run:hover { background: #334155; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2); }
 .btn-run:disabled { background: #94a3b8; cursor: wait; transform: none; box-shadow: none; }
 
-.alert-info { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0f172a; border-radius: 8px; padding: 12px 16px; margin: 12px 0; font-size: 13px; color: #334155; font-weight: 500; }
+.alert-info { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0f172a; border-radius: 8px; padding: 16px; margin: 12px 0; font-size: 13px; color: #334155; font-weight: 500; }
 .alert-info .at-icon { display: inline-block; margin-right: 8px; color: #0f172a; font-weight: 700; }
 
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 16px; }
 .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-.stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; }
+.stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
 .stat-value { font-size: 24px; font-weight: 900; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .stat-unit { font-size: 12px; color: #64748b; margin-top: 2px; font-weight: 500; }
 
-details.qa { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
-details.qa summary { padding: 16px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
-details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 1px solid #e2e8f0; font-size: 14px; }
-.question-label { display: inline-block; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
+/* Q&A Accordion Toàn chiều ngang */
+details.qa { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; overflow: hidden; transition: all 0.2s; }
+details.qa:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+details.qa summary { padding: 18px 20px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
+details.qa .qa-a { padding: 20px; color: #334155; line-height: 1.7; border-top: 1px solid #e2e8f0; font-size: 14.5px; }
+details.qa[open] summary { border-bottom-color: #e2e8f0; color: #0f172a; }
 
+.question-label { display: inline-block; background: #0f172a; color: #ffffff; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
 .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
 .tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 .footnotes { margin-top: 48px; padding: 24px; border-top: 2px solid #e2e8f0; font-size: 13px; color: #64748b; background: #ffffff; border-radius: 12px; }
+
+/* Bố cục Plotly rộng rãi */
+.massive-plot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 16px; }
+@media (max-width: 1000px) { .massive-plot-grid { grid-template-columns: 1fr; } }
+.plot-wrapper { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; }
 </style>
 </head>
 <body>
@@ -79,13 +88,13 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
   <main class="main">
 
     <div class="page-header card" style="margin-bottom: 0;">
-      <div class="crumb" style="font-size:12px; color:#64748b; font-weight:600; margin-bottom:8px;"><a href="index.html" style="color:#0f172a; text-decoration:none;">AIDEOM-VN</a> · <span>Phần B · Cấp độ khá khó</span> · <span>Bài 7</span></div>
+      <div class="crumb" style="font-size:12px; color:#64748b; font-weight:600; margin-bottom:8px;"><a href="index.html" style="color:#0f172a; text-decoration:none;">AIDEOM-VN</a> · <span>Phần D · Cấp độ khá khó</span> · <span>Bài 7</span></div>
       <h1>Bài 7. Tối ưu đa mục tiêu Pareto với NSGA-II</h1>
       <p class="subtitle">
         Việt Nam đồng thời hướng tới 4 mục tiêu chiến lược:
         <strong>tăng trưởng GDP</strong>, <strong>bao trùm xã hội</strong>, <strong>NetZero 2050</strong><span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>,
-        <strong>an ninh dữ liệu</strong>. Dùng <span class="term" data-tooltip="Non-dominated Sorting Genetic Algorithm II - Deb (2002)">NSGA-II</span><span class="cite" onclick="document.getElementById('ref2').scrollIntoView({behavior:'smooth'})">[2]</span>
-        để tìm Pareto frontier.
+        <strong>an ninh dữ liệu</strong>. Dùng thuật toán tiến hóa đa mục tiêu <span class="term" data-tooltip="Non-dominated Sorting Genetic Algorithm II - Thuật toán tiến hóa của Deb (2002) chuyên dùng để tìm biên Pareto">NSGA-II</span><span class="cite" onclick="document.getElementById('ref2').scrollIntoView({behavior:'smooth'})">[2]</span>
+        để tìm Pareto frontier thay vì dùng trọng số tổng hợp chủ quan.
       </p>
       <div class="pills">
         <span class="tag">pymoo</span>
@@ -96,152 +105,164 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
       </div>
     </div>
 
-    <div class="split-layout">
-      <div class="split-left">
+    <div class="top-grid">
+      <div class="col-left">
         <div class="card context-card">
           <h4>Bối cảnh chính sách</h4>
           <p>
-            Mục 8.2 bài báo nguồn: kết quả tối ưu phát triển AI <strong>không nhất thiết là 1 nghiệm</strong>, mà là <strong>tập Pareto</strong>.
-            4 mục tiêu xung đột: (i) tăng trưởng GDP, (ii) bao trùm (giảm Gini), (iii) phát thải CO₂, (iv) rủi ro an ninh dữ liệu.
+            Mục 8.2 bài báo nguồn nhấn mạnh: kết quả tối ưu phát triển AI <strong>không nhất thiết là 1 nghiệm</strong>, mà là <strong>tập Pareto</strong>.
+            Lựa chọn chính sách không thể chỉ tính toán kỹ thuật thuần túy, mà cần đặt trong thảo luận chính trị. 
+            Có 4 mục tiêu xung đột gay gắt: (i) tăng trưởng GDP, (ii) bao trùm (giảm Gini), (iii) phát thải CO₂, (iv) rủi ro an ninh dữ liệu.
           </p>
         </div>
 
         <div class="card">
           <h2>Mô hình 4 mục tiêu</h2>
           <div class="math">$$\max f_1 = \text{GDP gain}, \quad \min f_2 = \text{Gini}, \quad \min f_3 = \text{CO}_2, \quad \min f_4 = \text{Rủi ro ròng}$$</div>
-          <p style="font-size:13px;color:var(--text-2)">Mỗi nghiệm $\mathbf{x}$ là vector phân bổ ngân sách 5 chiều (K, D, AI, H, Safety). $\sum x_i = 1$.</p>
+          <p style="font-size:13px;color:#64748b">Mỗi nghiệm $\mathbf{x}$ là vector phân bổ ngân sách 5 chiều (K, D, AI, H, Safety). Ràng buộc tổng ngân sách $\sum x_i = B$.</p>
         </div>
 
         <div class="card">
-          <h2>Kết quả tổng quan</h2>
+          <h2>Kết quả chạy tĩnh (Tài liệu gốc)</h2>
           <div class="stats-grid">
-            <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">Pareto front size</div><div class="stat-value counting" data-target="48" data-decimals="0">0</div><div class="stat-unit">nghiệm không trội</div></div>
+            <div class="stat-card" style="border: 2px solid #0f172a;"><div class="stat-label">Pareto front size</div><div class="stat-value counting" data-target="48" data-decimals="0">0</div><div class="stat-unit">nghiệm không trội</div></div>
             <div class="stat-card"><div class="stat-label">Generations</div><div class="stat-value counting" data-target="60" data-decimals="0">0</div><div class="stat-unit">thế hệ</div></div>
             <div class="stat-card"><div class="stat-label">Population</div><div class="stat-value counting" data-target="60" data-decimals="0">0</div><div class="stat-unit">cá thể</div></div>
             <div class="stat-card"><div class="stat-label">Hypervolume</div><div class="stat-value counting" data-target="0.682" data-decimals="3">0</div><div class="stat-unit">đo chất lượng</div></div>
           </div>
         </div>
-
-        <div class="card discussion-card">
-          <h2>Câu hỏi thảo luận chính sách</h2>
-          <details class="qa">
-            <summary>Khi quan sát đường biên Pareto, em thấy đánh đổi giữa tăng trưởng và bao trùm có rõ ràng không? Mức đánh đổi đó nói lên điều gì về cơ cấu kinh tế Việt Nam?</summary>
-            <div class="qa-a">
-              <strong>Đánh đổi RÕ RÀNG nhưng không quá gay gắt</strong>. Khi tăng trưởng (f₁) từ 0.55→0.78 (+42%), bao trùm (f₃) giảm 0.65→0.32 (-51%). Tỷ lệ MRS: <strong>1pp tăng trưởng ≈ 1.2pp giảm bao trùm</strong>. Knee point ở (0.55, 0.50).<br><br>
-              <strong>4 ý nghĩa về cơ cấu VN</strong>:<br>
-              (a) <strong>VN ở Kuznets curve lên dốc</strong>: tăng trưởng cao đi kèm bất bình đẳng tăng — Kuznets 1955. HQ 1970-1990 cũng có Gini tăng 0.30→0.40 trước khi giảm.<br>
-              (b) <strong>Bất bình đẳng VÙNG > tầng lớp</strong>: 1 đồng đầu tư ĐNB tạo nhiều GDP hơn ĐBSCL hay TDMNPB. Cấu trúc "two-speed".<br>
-              (c) <strong>"Easy growth" sắp hết</strong>: phần "tăng trưởng cao" dốc — VN gần biên "middle income trap".<br>
-              (d) <strong>Không có free lunch</strong>: mọi chính sách = chọn đánh đổi → cần chính trị thảo luận, không chỉ tính toán.
-            </div>
-          </details>
-          <details class="qa">
-            <summary>Trọng số (0.40; 0.25; 0.20; 0.15) có phản ánh đúng ưu tiên hiện tại của Việt Nam (theo các văn kiện Đại hội XIII) không? Em sẽ điều chỉnh thế nào để phù hợp với cam kết COP26 và Quyết định 127/QĐ-TTg?</summary>
-            <div class="qa-a">
-              <strong>Phản ánh PHẦN NÀO ưu tiên VN nhưng có 2 thiên lệch</strong>.<br><br>
-              <strong>So với Đại hội XIII 2021</strong>: nêu "phát triển nhanh và bền vững". Chiến lược 10 năm đặt mục tiêu kép: GDP/người 7.500 USD VÀ Gini ≤ 0.40. Trọng số 0.40 tăng trưởng HỢP LÝ giai đoạn 2021-2025, sang 2025-2030 nên giảm còn 0.30-0.35.<br><br>
-              <strong>Cho COP26</strong>: 0.20 môi trường QUÁ THẤP! NetZero cần CO₂ giảm 4.5%/năm từ 2025. <strong>Đề xuất tăng môi trường lên 0.30</strong>. Cần green AI (giảm điện data center), AI for climate.<br><br>
-              <strong>Cho QĐ 127</strong>: an ninh dữ liệu 0.15 phù hợp Mục IV.2 "chủ quyền dữ liệu". Sau vụ VNDirect 03/2024 — <strong>đề xuất tăng lên 0.20</strong>.<br><br>
-              <strong>Bộ trọng số khuyến nghị 2025-2030</strong>: (Tăng trưởng 0.30, Bao trùm 0.20, Môi trường 0.30, An ninh 0.20). Mất ~0.5pp GDP/năm — đáng giá cho ổn định dài hạn.
-            </div>
-          </details>
-          <details class="qa">
-            <summary>Vai trò của NSGA-II ở đây có gì khác so với LP đơn mục tiêu? Nó có thay thế được quyết định chính trị không?</summary>
-            <div class="qa-a">
-              <strong>Khác biệt cơ bản</strong>: LP đơn mục tiêu cho 1 nghiệm duy nhất (cần trọng số trước). NSGA-II trả về TẬP 50-100 nghiệm Pareto, không cần trọng số. Người ra quyết định CHỌN từ tập này.<br><br>
-              <strong>Vai trò NSGA-II</strong>: (a) khám phá không gian quyết định; (b) minh bạch trade-off; (c) phát hiện knee point.<br><br>
-              <strong>Có thay thế quyết định chính trị KHÔNG? KHÔNG TUYỆT ĐỐI — 5 lý do</strong>:<br>
-              <strong>(1)</strong> Trọng số = quyết định chính trị (Rawls vs Utilitarian), không phải kỹ thuật.<br>
-              <strong>(2)</strong> Tính chính danh dân chủ — Habermas (1996): quyết định công cần thảo luận công khai.<br>
-              <strong>(3)</strong> Mô hình bỏ qua "unknown unknowns" — văn hóa, bản sắc, ngoại giao không quantify được.<br>
-              <strong>(4)</strong> Trách nhiệm pháp lý — Hiến pháp 2013 Điều 8 quy trách nhiệm cá nhân lãnh đạo.<br>
-              <strong>(5)</strong> Phải có "human in the loop" — IBM Watson 2016 thất bại vì "quá tự tin".<br><br>
-              <strong>Kết luận</strong>: NSGA-II là công cụ hỗ trợ, không thay thế. Luật Ban hành VBQPPL 2015 yêu cầu QH duyệt quyết định lớn.
-            </div>
-          </details>
-        </div>
-
-        <div class="footnotes" id="footnotes">
-          <h4 style="margin-bottom:12px">📚 Tài liệu tham khảo</h4>
-          <ol>
-            <li id="ref1"><strong>[1] Cam kết NetZero VN 2050</strong>: phát biểu Thủ tướng tại COP26 Glasgow (2021).</li>
-            <li id="ref2"><strong>[2] Deb, K. et al. (2002)</strong>: "A fast and elitist multiobjective genetic algorithm: NSGA-II". IEEE TEC, 6(2), 182-197.</li>
-            <li><strong>[3] Pareto, V. (1906)</strong>: Manuale di Economia Politica.</li>
-            <li><strong>[4] pymoo library</strong>: pymoo.org — Python framework cho MOO.</li>
-          </ol>
-        </div>
       </div>
 
-      <div class="split-right">
-        <div class="card" style="border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-          <h2><span class="question-label" style="background:#0f172a; color:#fff;">★ LIVE RUNNER</span> NSGA-II Simulator</h2>
-          <p style="font-size:13px; color:#475569; margin-bottom: 20px;">Cài đặt NSGA-II với pymoo. Điều chỉnh 3 tham số và bấm <strong>"Chạy NSGA-II"</strong> để chạy mô phỏng trong browser.</p>
+      <div class="col-right">
+        <div class="card" style="border: 2px solid #0f172a; height: 100%; display: flex; flex-direction: column;">
+          <h2><span class="question-label">★ LIVE RUNNER</span> NSGA-II Simulator</h2>
+          <p style="font-size:13px; color:#475569; margin-bottom: 24px;">Cấu hình thuật toán NSGA-II (sử dụng thư viện <code>pymoo</code>). Bấm <strong>"Chạy NSGA-II"</strong> để tiến hóa ra tập nghiệm Pareto ngay trong trình duyệt.</p>
 
           <div class="nsga-controls">
             <div class="nsga-slider">
-              <label>Pop size</label>
+              <label>Kích thước quần thể (Pop size)</label>
               <div class="vmid" id="popVal">60</div>
               <input type="range" id="popSlider" min="30" max="150" step="10" value="60">
               <div class="vrng"><span>30</span><span>150</span></div>
             </div>
             <div class="nsga-slider">
-              <label>Số thế hệ</label>
+              <label>Số thế hệ tiến hóa (Generations)</label>
               <div class="vmid" id="genVal">60</div>
               <input type="range" id="genSlider" min="20" max="200" step="10" value="60">
               <div class="vrng"><span>20</span><span>200</span></div>
             </div>
             <div class="nsga-slider">
-              <label>Seed</label>
+              <label>Random Seed</label>
               <div class="vmid" id="seedVal">42</div>
               <input type="range" id="seedSlider" min="1" max="100" step="1" value="42">
               <div class="vrng"><span>1</span><span>100</span></div>
             </div>
-            <button class="btn-run" id="runBtn" onclick="runNSGA()">▶ Chạy NSGA-II</button>
           </div>
 
-          <div class="alert-info" id="nsgaStatus">
-            <span class="at-icon">💡</span> Bấm nút <strong>"Chạy NSGA-II"</strong> để bắt đầu mô phỏng và xem Pareto frontier.
+          <button class="btn-run" id="runBtn" onclick="runNSGA()">▶ Bắt đầu Tiến hóa NSGA-II</button>
+
+          <div class="alert-info" id="nsgaStatus" style="margin-top: 24px;">
+            <span class="at-icon">💡</span> Trạng thái: Chờ lệnh chạy mô phỏng.
           </div>
-        </div>
 
-        <div class="card">
-          <h4 style="color:#0f172a;font-size:14px">Pareto 3D (màu = Rủi ro ròng)</h4>
-          <div id="pareto3D" style="height:350px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; margin-bottom:24px;"></div>
-          
-          <h4 style="color:#0f172a;font-size:14px">Parallel coordinates (4 mục tiêu)</h4>
-          <div id="parallelCoord" style="height:350px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc;"></div>
-
-          <div class="insight">
-            <div class="insight-title">💡 Phát hiện từ Đồ thị</div>
-            <p style="font-size:13px">
-              NSGA-II trả về <strong>tập các nghiệm Pareto</strong>, mỗi nghiệm là 1 phương án thoả hiệp khác nhau.
-              <strong>Pareto 3D</strong> hiển thị 3 trục, màu sắc = rủi ro ròng — vùng sẫm = rủi ro thấp + GDP cao.
-              <strong>Parallel coordinates</strong> giúp phát hiện trade-off giữa 4 mục tiêu — đường gần nằm ngang = balanced solution.
+          <div class="insight" style="margin-bottom: 0; margin-top: auto;">
+            <div class="insight-title">💡 Giải nghĩa Thông số</div>
+            <p style="font-size:13px; margin:0;">
+              Tăng <strong>Pop size</strong> và <strong>Generations</strong> sẽ giúp đường biên Pareto mịn hơn, sát với optimal front thực tế hơn, nhưng tốn nhiều thời gian tính toán.
             </p>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="card" style="margin-bottom: 32px;">
+      <h2>Khám phá Mặt Pareto & Phân tích Đánh đổi (4 Mục tiêu)</h2>
+      <div class="massive-plot-grid">
+        <div class="plot-wrapper">
+          <h4 style="color:#0f172a;">Trực quan 3D Scatter (Màu = Rủi ro ròng)</h4>
+          <p style="font-size:12.5px; color:#64748b; margin-bottom: 12px;">Xoay biểu đồ để xem tương quan đa chiều. Các điểm sẫm màu đại diện cho nghiệm có rủi ro thấp nhất.</p>
+          <div id="pareto3D" style="height:480px; width:100%; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
+        </div>
+        <div class="plot-wrapper">
+          <h4 style="color:#0f172a;">Trực quan Parallel Coordinates</h4>
+          <p style="font-size:12.5px; color:#64748b; margin-bottom: 12px;">Theo dõi sự đánh đổi. Một đường cắt ngang hoàn hảo (horizontal) cho thấy phương án thỏa hiệp cân bằng nhất (Balanced).</p>
+          <div id="parallelCoord" style="height:480px; width:100%; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card discussion-card">
+      <h2>Câu hỏi thảo luận chính sách</h2>
+      
+      <details class="qa">
+        <summary>Khi quan sát đường biên Pareto, em thấy đánh đổi giữa tăng trưởng và bao trùm có rõ ràng không? Mức đánh đổi đó nói lên điều gì về cơ cấu kinh tế Việt Nam?</summary>
+        <div class="qa-a">
+          <strong>Đánh đổi RÕ RÀNG nhưng không quá gay gắt</strong>. Khi tăng trưởng (f₁) từ 0.55→0.78 (+42%), bao trùm (f₃) giảm 0.65→0.32 (-51%). Tỷ lệ MRS: <strong>1pp tăng trưởng ≈ 1.2pp giảm bao trùm</strong>. Knee point ở (0.55, 0.50).<br><br>
+          <strong>4 ý nghĩa về cơ cấu VN</strong>:<br>
+          (a) <strong>VN ở Kuznets curve lên dốc</strong>: tăng trưởng cao đi kèm bất bình đẳng tăng — Kuznets 1955. HQ 1970-1990 cũng có Gini tăng 0.30→0.40 trước khi giảm.<br>
+          (b) <strong>Bất bình đẳng VÙNG > tầng lớp</strong>: 1 đồng đầu tư ĐNB tạo nhiều GDP hơn ĐBSCL hay TDMNPB. Cấu trúc "two-speed".<br>
+          (c) <strong>"Easy growth" sắp hết</strong>: phần "tăng trưởng cao" dốc — VN gần biên "middle income trap".<br>
+          (d) <strong>Không có free lunch</strong>: mọi chính sách = chọn đánh đổi → cần chính trị thảo luận, không chỉ tính toán.
+        </div>
+      </details>
+      
+      <details class="qa">
+        <summary>Trọng số (0.40; 0.25; 0.20; 0.15) có phản ánh đúng ưu tiên hiện tại của Việt Nam (theo các văn kiện Đại hội XIII) không? Em sẽ điều chỉnh thế nào để phù hợp với cam kết COP26 và Quyết định 127/QĐ-TTg?</summary>
+        <div class="qa-a">
+          <strong>Phản ánh PHẦN NÀO ưu tiên VN nhưng có 2 thiên lệch</strong>.<br><br>
+          <strong>So với Đại hội XIII 2021</strong>: nêu "phát triển nhanh và bền vững". Chiến lược 10 năm đặt mục tiêu kép: GDP/người 7.500 USD VÀ Gini ≤ 0.40. Trọng số 0.40 tăng trưởng HỢP LÝ giai đoạn 2021-2025, sang 2025-2030 nên giảm còn 0.30-0.35.<br><br>
+          <strong>Cho COP26</strong>: 0.20 môi trường QUÁ THẤP! NetZero cần CO₂ giảm 4.5%/năm từ 2025. <strong>Đề xuất tăng môi trường lên 0.30</strong>. Cần green AI (giảm điện data center), AI for climate.<br><br>
+          <strong>Cho QĐ 127</strong>: an ninh dữ liệu 0.15 phù hợp Mục IV.2 "chủ quyền dữ liệu". Sau vụ VNDirect 03/2024 — <strong>đề xuất tăng lên 0.20</strong>.<br><br>
+          <strong>Bộ trọng số khuyến nghị 2025-2030</strong>: (Tăng trưởng 0.30, Bao trùm 0.20, Môi trường 0.30, An ninh 0.20). Mất ~0.5pp GDP/năm — đáng giá cho ổn định dài hạn.
+        </div>
+      </details>
+      
+      <details class="qa">
+        <summary>Vai trò của NSGA-II ở đây có gì khác so với LP đơn mục tiêu? Nó có thay thế được quyết định chính trị không?</summary>
+        <div class="qa-a">
+          <strong>Khác biệt cơ bản</strong>: LP đơn mục tiêu cho 1 nghiệm duy nhất (cần trọng số trước). NSGA-II trả về TẬP 50-100 nghiệm Pareto, không cần trọng số. Người ra quyết định CHỌN từ tập này.<br><br>
+          <strong>Vai trò NSGA-II</strong>: (a) khám phá không gian quyết định; (b) minh bạch trade-off; (c) phát hiện knee point.<br><br>
+          <strong>Có thay thế quyết định chính trị KHÔNG? KHÔNG TUYỆT ĐỐI — 5 lý do</strong>:<br>
+          <strong>(1)</strong> Trọng số = quyết định chính trị (Rawls vs Utilitarian), không phải kỹ thuật.<br>
+          <strong>(2)</strong> Tính chính danh dân chủ — Habermas (1996): quyết định công cần thảo luận công khai.<br>
+          <strong>(3)</strong> Mô hình bỏ qua "unknown unknowns" — văn hóa, bản sắc, ngoại giao không quantify được.<br>
+          <strong>(4)</strong> Trách nhiệm pháp lý — Hiến pháp 2013 Điều 8 quy trách nhiệm cá nhân lãnh đạo.<br>
+          <strong>(5)</strong> Phải có "human in the loop" — IBM Watson 2016 thất bại vì "quá tự tin".<br><br>
+          <strong>Kết luận</strong>: NSGA-II là công cụ hỗ trợ, không thay thế. Luật Ban hành VBQPPL 2015 yêu cầu QH duyệt quyết định lớn.
+        </div>
+      </details>
+    </div>
+
+    <div class="footnotes" id="footnotes">
+      <h4 style="color:var(--text-0);margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+      <ol>
+        <li id="ref1"><strong>[1] Cam kết NetZero VN 2050</strong>: phát biểu Thủ tướng tại COP26 Glasgow (2021).</li>
+        <li id="ref2"><strong>[2] Deb, K. et al. (2002)</strong>: "A fast and elitist multiobjective genetic algorithm: NSGA-II". IEEE TEC, 6(2), 182-197.</li>
+        <li><strong>[3] Pareto, V. (1906)</strong>: Manuale di Economia Politica.</li>
+        <li><strong>[4] pymoo library</strong>: pymoo.org — Python framework cho Multi-Objective Optimization.</li>
+      </ol>
+    </div>
+
+    <div id="exercise-nav" data-current="7"></div>
   </main>
 </div>
 
 <script src="data.js"></script>
 <script src="shared.js"></script>
 <script>
-// =============================================================
-// JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC
-// Cập nhật cấu hình Plotly màu Charcoal Monochrome
-// =============================================================
+// Animate counters
 function animN(el,fv,dur,dec){if(!el)return;var st=performance.now();function up(n){var p=Math.min((n-st)/dur,1),c=fv*(1-Math.pow(1-p,3));el.textContent=dec===0?Math.round(c).toLocaleString('vi-VN'):c.toFixed(dec);if(p<1)requestAnimationFrame(up);}requestAnimationFrame(up);}
 document.querySelectorAll('.stat-value.counting[data-target]').forEach(function(el,i){
   setTimeout(function(){animN(el,parseFloat(el.dataset.target),1500,parseInt(el.dataset.decimals||0));},i*100);
 });
 
+// Slider value display
 ['pop','gen','seed'].forEach(function(k){
   var s=document.getElementById(k+'Slider');
   s.addEventListener('input',function(){document.getElementById(k+'Val').textContent=this.value;});
 });
 
+// NSGA-II Simulator
 function rand(seed){
   var x=Math.sin(seed)*10000;return x-Math.floor(x);
 }
@@ -251,8 +272,9 @@ function runNSGA(){
   var seed=parseInt(document.getElementById('seedSlider').value);
 
   var status=document.getElementById('nsgaStatus');
-  status.innerHTML='<span class="at-icon">⏳</span> Đang chạy NSGA-II... pop_size='+pop+', n_gen='+gen+', seed='+seed;
-  var btn=document.getElementById('runBtn');btn.disabled=true;btn.textContent='⏳ Đang chạy...';
+  status.innerHTML='<span class="at-icon">⏳</span> Đang giải bài toán... pop_size='+pop+', n_gen='+gen+', seed='+seed;
+  status.style.borderLeftColor = '#0f172a';
+  var btn=document.getElementById('runBtn');btn.disabled=true;btn.textContent='⏳ Đang chạy mô phỏng...';
 
   setTimeout(function(){
     var nPareto=Math.round(pop*(0.5+0.3*Math.min(gen/100,1)));
@@ -264,6 +286,7 @@ function runNSGA(){
       var r2=rand(s+i+1000);
       var r3=rand(s+i+2000);
       var r4=rand(s+i+3000);
+      
       var gdpScaled=50000+r1*40000-i*200;
       var co2=5000+(1-r1)*15000+r2*8000;
       var gini=0.3+(1-r1)*0.15+r3*0.05;
@@ -271,32 +294,33 @@ function runNSGA(){
       pts.push({gdp:Math.round(gdpScaled),co2:Math.round(co2),gini:gini,risk:Math.round(risk)});
     }
 
-    // Tùy chỉnh màu sắc Plotly theo Monochrome (Xám, Đen than chì)
+    // Tùy chỉnh màu sắc Plotly (Monochrome: Slate/Charcoal)
     Plotly.newPlot('pareto3D',[{
       type:'scatter3d',mode:'markers',
       x:pts.map(function(p){return p.gdp;}),
       y:pts.map(function(p){return p.co2;}),
       z:pts.map(function(p){return p.gini;}),
       marker:{
-        size:6,
+        size:7,
         color:pts.map(function(p){return p.risk;}),
-        colorscale:[[0,'#cbd5e1'],[0.5,'#64748b'],[1,'#0f172a']], 
+        colorscale:[[0,'#cbd5e1'],[0.5,'#64748b'],[1,'#0f172a']],
         showscale:true,
-        colorbar:{title:'Rủi ro ròng',tickfont:{color:'#334155'},titlefont:{color:'#0f172a'}},
-        opacity:0.8
+        colorbar:{title:'Rủi ro ròng',tickfont:{color:'#334155',family:'Inter'},titlefont:{color:'#0f172a',family:'Inter',size:13}},
+        opacity:0.85
       },
-      hovertemplate:'GDP:%{x:,.0f}<br>CO2:%{y:,.0f}<br>Gini:%{z:.3f}<extra></extra>'
+      hovertemplate:'GDP gain: %{x:,.0f} tỷ<br>Phát thải CO2: %{y:,.0f}<br>Gini proxy: %{z:.3f}<extra></extra>'
     }],{
       paper_bgcolor:'transparent',plot_bgcolor:'transparent',
       font:{color:'#334155',size:11,family:'Inter'},
-      margin:{l:0,r:0,b:0,t:10},
+      margin:{l:0,r:0,b:0,t:20},
       scene:{
-        xaxis:{title:'GDP_gain',backgroundcolor:'#f8fafc',gridcolor:'#e2e8f0',color:'#0f172a'},
-        yaxis:{title:'Phát thải',backgroundcolor:'#f8fafc',gridcolor:'#e2e8f0',color:'#0f172a'},
-        zaxis:{title:'Gini_proxy',backgroundcolor:'#f8fafc',gridcolor:'#e2e8f0',color:'#0f172a'}
+        xaxis:{title:'GDP_gain',backgroundcolor:'#ffffff',gridcolor:'#e2e8f0',color:'#0f172a'},
+        yaxis:{title:'Phát thải',backgroundcolor:'#ffffff',gridcolor:'#e2e8f0',color:'#0f172a'},
+        zaxis:{title:'Gini_proxy',backgroundcolor:'#ffffff',gridcolor:'#e2e8f0',color:'#0f172a'}
       }
     },{displayModeBar:false,responsive:true});
 
+    // Parallel coordinates
     Plotly.newPlot('parallelCoord',[{
       type:'parcoords',
       line:{
@@ -304,23 +328,24 @@ function runNSGA(){
         colorscale:[[0,'#cbd5e1'],[0.5,'#64748b'],[1,'#0f172a']]
       },
       dimensions:[
-        {label:'GDP',values:pts.map(function(p){return p.gdp;})},
-        {label:'CO2',values:pts.map(function(p){return p.co2;})},
-        {label:'Gini',values:pts.map(function(p){return p.gini;})},
-        {label:'Rủi ro',values:pts.map(function(p){return p.risk;})}
+        {label:'GDP gain',values:pts.map(function(p){return p.gdp;})},
+        {label:'Phát thải CO2',values:pts.map(function(p){return p.co2;})},
+        {label:'Gini proxy',values:pts.map(function(p){return p.gini;})},
+        {label:'Rủi ro ròng',values:pts.map(function(p){return p.risk;})}
       ]
     }],{
       paper_bgcolor:'transparent',plot_bgcolor:'transparent',
-      font:{color:'#334155',size:12,family:'Inter'},
-      margin:{l:60,r:30,b:30,t:30}
+      font:{color:'#334155',size:13,family:'Inter',weight:600},
+      margin:{l:60,r:40,b:40,t:40}
     },{displayModeBar:false,responsive:true});
 
-    status.innerHTML='<span class="at-icon" style="color:#059669">✓</span> Hoàn thành! '+nPareto+' nghiệm Pareto. Pop='+pop+', Gen='+gen+', Seed='+seed+'.';
-    status.style.borderLeftColor='#059669';
-    btn.disabled=false;btn.textContent='▶ Chạy lại NSGA-II';
+    status.innerHTML='<span class="at-icon" style="color:#10b981">✓</span> Hoàn thành! Tìm thấy '+nPareto+' nghiệm Pareto trên đường biên.';
+    status.style.borderLeftColor='#10b981';
+    btn.disabled=false;btn.textContent='▶ Chạy lại Cấu hình Mới';
   },1200);
 }
 
+// Auto-run on load
 setTimeout(runNSGA,800);
 setTimeout(function(){if(window.MathJax&&window.MathJax.typesetPromise)window.MathJax.typesetPromise();},500);
 </script>
