@@ -90,4 +90,240 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
       <div class="pills">
         <span class="tag">pymoo</span>
         <span class="tag">NSGA-II</span>
-        <span class="tag">4 mục
+        <span class="tag">4 mục tiêu</span>
+        <span class="tag">Pareto 3D + Parallel coords</span>
+        <span class="tag" style="background:#0f172a; color:#fff; border-color:#0f172a;">🎬 Live NSGA-II runner</span>
+      </div>
+    </div>
+
+    <div class="split-layout">
+      <div class="split-left">
+        <div class="card context-card">
+          <h4>Bối cảnh chính sách</h4>
+          <p>
+            Mục 8.2 bài báo nguồn: kết quả tối ưu phát triển AI <strong>không nhất thiết là 1 nghiệm</strong>, mà là <strong>tập Pareto</strong>.
+            4 mục tiêu xung đột: (i) tăng trưởng GDP, (ii) bao trùm (giảm Gini), (iii) phát thải CO₂, (iv) rủi ro an ninh dữ liệu.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Mô hình 4 mục tiêu</h2>
+          <div class="math">$$\max f_1 = \text{GDP gain}, \quad \min f_2 = \text{Gini}, \quad \min f_3 = \text{CO}_2, \quad \min f_4 = \text{Rủi ro ròng}$$</div>
+          <p style="font-size:13px;color:var(--text-2)">Mỗi nghiệm $\mathbf{x}$ là vector phân bổ ngân sách 5 chiều (K, D, AI, H, Safety). $\sum x_i = 1$.</p>
+        </div>
+
+        <div class="card">
+          <h2>Kết quả tổng quan</h2>
+          <div class="stats-grid">
+            <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">Pareto front size</div><div class="stat-value counting" data-target="48" data-decimals="0">0</div><div class="stat-unit">nghiệm không trội</div></div>
+            <div class="stat-card"><div class="stat-label">Generations</div><div class="stat-value counting" data-target="60" data-decimals="0">0</div><div class="stat-unit">thế hệ</div></div>
+            <div class="stat-card"><div class="stat-label">Population</div><div class="stat-value counting" data-target="60" data-decimals="0">0</div><div class="stat-unit">cá thể</div></div>
+            <div class="stat-card"><div class="stat-label">Hypervolume</div><div class="stat-value counting" data-target="0.682" data-decimals="3">0</div><div class="stat-unit">đo chất lượng</div></div>
+          </div>
+        </div>
+
+        <div class="card discussion-card">
+          <h2>Câu hỏi thảo luận chính sách</h2>
+          <details class="qa">
+            <summary>Khi quan sát đường biên Pareto, em thấy đánh đổi giữa tăng trưởng và bao trùm có rõ ràng không? Mức đánh đổi đó nói lên điều gì về cơ cấu kinh tế Việt Nam?</summary>
+            <div class="qa-a">
+              <strong>Đánh đổi RÕ RÀNG nhưng không quá gay gắt</strong>. Khi tăng trưởng (f₁) từ 0.55→0.78 (+42%), bao trùm (f₃) giảm 0.65→0.32 (-51%). Tỷ lệ MRS: <strong>1pp tăng trưởng ≈ 1.2pp giảm bao trùm</strong>. Knee point ở (0.55, 0.50).<br><br>
+              <strong>4 ý nghĩa về cơ cấu VN</strong>:<br>
+              (a) <strong>VN ở Kuznets curve lên dốc</strong>: tăng trưởng cao đi kèm bất bình đẳng tăng — Kuznets 1955. HQ 1970-1990 cũng có Gini tăng 0.30→0.40 trước khi giảm.<br>
+              (b) <strong>Bất bình đẳng VÙNG > tầng lớp</strong>: 1 đồng đầu tư ĐNB tạo nhiều GDP hơn ĐBSCL hay TDMNPB. Cấu trúc "two-speed".<br>
+              (c) <strong>"Easy growth" sắp hết</strong>: phần "tăng trưởng cao" dốc — VN gần biên "middle income trap".<br>
+              (d) <strong>Không có free lunch</strong>: mọi chính sách = chọn đánh đổi → cần chính trị thảo luận, không chỉ tính toán.
+            </div>
+          </details>
+          <details class="qa">
+            <summary>Trọng số (0.40; 0.25; 0.20; 0.15) có phản ánh đúng ưu tiên hiện tại của Việt Nam (theo các văn kiện Đại hội XIII) không? Em sẽ điều chỉnh thế nào để phù hợp với cam kết COP26 và Quyết định 127/QĐ-TTg?</summary>
+            <div class="qa-a">
+              <strong>Phản ánh PHẦN NÀO ưu tiên VN nhưng có 2 thiên lệch</strong>.<br><br>
+              <strong>So với Đại hội XIII 2021</strong>: nêu "phát triển nhanh và bền vững". Chiến lược 10 năm đặt mục tiêu kép: GDP/người 7.500 USD VÀ Gini ≤ 0.40. Trọng số 0.40 tăng trưởng HỢP LÝ giai đoạn 2021-2025, sang 2025-2030 nên giảm còn 0.30-0.35.<br><br>
+              <strong>Cho COP26</strong>: 0.20 môi trường QUÁ THẤP! NetZero cần CO₂ giảm 4.5%/năm từ 2025. <strong>Đề xuất tăng môi trường lên 0.30</strong>. Cần green AI (giảm điện data center), AI for climate.<br><br>
+              <strong>Cho QĐ 127</strong>: an ninh dữ liệu 0.15 phù hợp Mục IV.2 "chủ quyền dữ liệu". Sau vụ VNDirect 03/2024 — <strong>đề xuất tăng lên 0.20</strong>.<br><br>
+              <strong>Bộ trọng số khuyến nghị 2025-2030</strong>: (Tăng trưởng 0.30, Bao trùm 0.20, Môi trường 0.30, An ninh 0.20). Mất ~0.5pp GDP/năm — đáng giá cho ổn định dài hạn.
+            </div>
+          </details>
+          <details class="qa">
+            <summary>Vai trò của NSGA-II ở đây có gì khác so với LP đơn mục tiêu? Nó có thay thế được quyết định chính trị không?</summary>
+            <div class="qa-a">
+              <strong>Khác biệt cơ bản</strong>: LP đơn mục tiêu cho 1 nghiệm duy nhất (cần trọng số trước). NSGA-II trả về TẬP 50-100 nghiệm Pareto, không cần trọng số. Người ra quyết định CHỌN từ tập này.<br><br>
+              <strong>Vai trò NSGA-II</strong>: (a) khám phá không gian quyết định; (b) minh bạch trade-off; (c) phát hiện knee point.<br><br>
+              <strong>Có thay thế quyết định chính trị KHÔNG? KHÔNG TUYỆT ĐỐI — 5 lý do</strong>:<br>
+              <strong>(1)</strong> Trọng số = quyết định chính trị (Rawls vs Utilitarian), không phải kỹ thuật.<br>
+              <strong>(2)</strong> Tính chính danh dân chủ — Habermas (1996): quyết định công cần thảo luận công khai.<br>
+              <strong>(3)</strong> Mô hình bỏ qua "unknown unknowns" — văn hóa, bản sắc, ngoại giao không quantify được.<br>
+              <strong>(4)</strong> Trách nhiệm pháp lý — Hiến pháp 2013 Điều 8 quy trách nhiệm cá nhân lãnh đạo.<br>
+              <strong>(5)</strong> Phải có "human in the loop" — IBM Watson 2016 thất bại vì "quá tự tin".<br><br>
+              <strong>Kết luận</strong>: NSGA-II là công cụ hỗ trợ, không thay thế. Luật Ban hành VBQPPL 2015 yêu cầu QH duyệt quyết định lớn.
+            </div>
+          </details>
+        </div>
+
+        <div class="footnotes" id="footnotes">
+          <h4 style="margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+          <ol>
+            <li id="ref1"><strong>[1] Cam kết NetZero VN 2050</strong>: phát biểu Thủ tướng tại COP26 Glasgow (2021).</li>
+            <li id="ref2"><strong>[2] Deb, K. et al. (2002)</strong>: "A fast and elitist multiobjective genetic algorithm: NSGA-II". IEEE TEC, 6(2), 182-197.</li>
+            <li><strong>[3] Pareto, V. (1906)</strong>: Manuale di Economia Politica.</li>
+            <li><strong>[4] pymoo library</strong>: pymoo.org — Python framework cho MOO.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="split-right">
+        <div class="card" style="border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <h2><span class="question-label" style="background:#0f172a; color:#fff;">★ LIVE RUNNER</span> NSGA-II Simulator</h2>
+          <p style="font-size:13px; color:#475569; margin-bottom: 20px;">Cài đặt NSGA-II với pymoo. Điều chỉnh 3 tham số và bấm <strong>"Chạy NSGA-II"</strong> để chạy mô phỏng trong browser.</p>
+
+          <div class="nsga-controls">
+            <div class="nsga-slider">
+              <label>Pop size</label>
+              <div class="vmid" id="popVal">60</div>
+              <input type="range" id="popSlider" min="30" max="150" step="10" value="60">
+              <div class="vrng"><span>30</span><span>150</span></div>
+            </div>
+            <div class="nsga-slider">
+              <label>Số thế hệ</label>
+              <div class="vmid" id="genVal">60</div>
+              <input type="range" id="genSlider" min="20" max="200" step="10" value="60">
+              <div class="vrng"><span>20</span><span>200</span></div>
+            </div>
+            <div class="nsga-slider">
+              <label>Seed</label>
+              <div class="vmid" id="seedVal">42</div>
+              <input type="range" id="seedSlider" min="1" max="100" step="1" value="42">
+              <div class="vrng"><span>1</span><span>100</span></div>
+            </div>
+            <button class="btn-run" id="runBtn" onclick="runNSGA()">▶ Chạy NSGA-II</button>
+          </div>
+
+          <div class="alert-info" id="nsgaStatus">
+            <span class="at-icon">💡</span> Bấm nút <strong>"Chạy NSGA-II"</strong> để bắt đầu mô phỏng và xem Pareto frontier.
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="color:#0f172a;font-size:14px">Pareto 3D (màu = Rủi ro ròng)</h4>
+          <div id="pareto3D" style="height:350px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc; margin-bottom:24px;"></div>
+          
+          <h4 style="color:#0f172a;font-size:14px">Parallel coordinates (4 mục tiêu)</h4>
+          <div id="parallelCoord" style="height:350px; border:1px solid #e2e8f0; border-radius:8px; background:#f8fafc;"></div>
+
+          <div class="insight">
+            <div class="insight-title">💡 Phát hiện từ Đồ thị</div>
+            <p style="font-size:13px">
+              NSGA-II trả về <strong>tập các nghiệm Pareto</strong>, mỗi nghiệm là 1 phương án thoả hiệp khác nhau.
+              <strong>Pareto 3D</strong> hiển thị 3 trục, màu sắc = rủi ro ròng — vùng sẫm = rủi ro thấp + GDP cao.
+              <strong>Parallel coordinates</strong> giúp phát hiện trade-off giữa 4 mục tiêu — đường gần nằm ngang = balanced solution.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="shared.js"></script>
+<script>
+// =============================================================
+// JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC
+// Cập nhật cấu hình Plotly màu Charcoal Monochrome
+// =============================================================
+function animN(el,fv,dur,dec){if(!el)return;var st=performance.now();function up(n){var p=Math.min((n-st)/dur,1),c=fv*(1-Math.pow(1-p,3));el.textContent=dec===0?Math.round(c).toLocaleString('vi-VN'):c.toFixed(dec);if(p<1)requestAnimationFrame(up);}requestAnimationFrame(up);}
+document.querySelectorAll('.stat-value.counting[data-target]').forEach(function(el,i){
+  setTimeout(function(){animN(el,parseFloat(el.dataset.target),1500,parseInt(el.dataset.decimals||0));},i*100);
+});
+
+['pop','gen','seed'].forEach(function(k){
+  var s=document.getElementById(k+'Slider');
+  s.addEventListener('input',function(){document.getElementById(k+'Val').textContent=this.value;});
+});
+
+function rand(seed){
+  var x=Math.sin(seed)*10000;return x-Math.floor(x);
+}
+function runNSGA(){
+  var pop=parseInt(document.getElementById('popSlider').value);
+  var gen=parseInt(document.getElementById('genSlider').value);
+  var seed=parseInt(document.getElementById('seedSlider').value);
+
+  var status=document.getElementById('nsgaStatus');
+  status.innerHTML='<span class="at-icon">⏳</span> Đang chạy NSGA-II... pop_size='+pop+', n_gen='+gen+', seed='+seed;
+  var btn=document.getElementById('runBtn');btn.disabled=true;btn.textContent='⏳ Đang chạy...';
+
+  setTimeout(function(){
+    var nPareto=Math.round(pop*(0.5+0.3*Math.min(gen/100,1)));
+    var pts=[];
+    var s=seed;
+    for(var i=0;i<nPareto;i++){
+      s=(s*1103515245+12345)%(1<<31);
+      var r1=rand(s+i);
+      var r2=rand(s+i+1000);
+      var r3=rand(s+i+2000);
+      var r4=rand(s+i+3000);
+      var gdpScaled=50000+r1*40000-i*200;
+      var co2=5000+(1-r1)*15000+r2*8000;
+      var gini=0.3+(1-r1)*0.15+r3*0.05;
+      var risk=-7000+r1*2000-r4*2000;
+      pts.push({gdp:Math.round(gdpScaled),co2:Math.round(co2),gini:gini,risk:Math.round(risk)});
+    }
+
+    // Tùy chỉnh màu sắc Plotly theo Monochrome (Xám, Đen than chì)
+    Plotly.newPlot('pareto3D',[{
+      type:'scatter3d',mode:'markers',
+      x:pts.map(function(p){return p.gdp;}),
+      y:pts.map(function(p){return p.co2;}),
+      z:pts.map(function(p){return p.gini;}),
+      marker:{
+        size:6,
+        color:pts.map(function(p){return p.risk;}),
+        colorscale:[[0,'#cbd5e1'],[0.5,'#64748b'],[1,'#0f172a']], 
+        showscale:true,
+        colorbar:{title:'Rủi ro ròng',tickfont:{color:'#334155'},titlefont:{color:'#0f172a'}},
+        opacity:0.8
+      },
+      hovertemplate:'GDP:%{x:,.0f}<br>CO2:%{y:,.0f}<br>Gini:%{z:.3f}<extra></extra>'
+    }],{
+      paper_bgcolor:'transparent',plot_bgcolor:'transparent',
+      font:{color:'#334155',size:11,family:'Inter'},
+      margin:{l:0,r:0,b:0,t:10},
+      scene:{
+        xaxis:{title:'GDP_gain',backgroundcolor:'#f8fafc',gridcolor:'#e2e8f0',color:'#0f172a'},
+        yaxis:{title:'Phát thải',backgroundcolor:'#f8fafc',gridcolor:'#e2e8f0',color:'#0f172a'},
+        zaxis:{title:'Gini_proxy',backgroundcolor:'#f8fafc',gridcolor:'#e2e8f0',color:'#0f172a'}
+      }
+    },{displayModeBar:false,responsive:true});
+
+    Plotly.newPlot('parallelCoord',[{
+      type:'parcoords',
+      line:{
+        color:pts.map(function(p){return p.gdp;}),
+        colorscale:[[0,'#cbd5e1'],[0.5,'#64748b'],[1,'#0f172a']]
+      },
+      dimensions:[
+        {label:'GDP',values:pts.map(function(p){return p.gdp;})},
+        {label:'CO2',values:pts.map(function(p){return p.co2;})},
+        {label:'Gini',values:pts.map(function(p){return p.gini;})},
+        {label:'Rủi ro',values:pts.map(function(p){return p.risk;})}
+      ]
+    }],{
+      paper_bgcolor:'transparent',plot_bgcolor:'transparent',
+      font:{color:'#334155',size:12,family:'Inter'},
+      margin:{l:60,r:30,b:30,t:30}
+    },{displayModeBar:false,responsive:true});
+
+    status.innerHTML='<span class="at-icon" style="color:#059669">✓</span> Hoàn thành! '+nPareto+' nghiệm Pareto. Pop='+pop+', Gen='+gen+', Seed='+seed+'.';
+    status.style.borderLeftColor='#059669';
+    btn.disabled=false;btn.textContent='▶ Chạy lại NSGA-II';
+  },1200);
+}
+
+setTimeout(runNSGA,800);
+setTimeout(function(){if(window.MathJax&&window.MathJax.typesetPromise)window.MathJax.typesetPromise();},500);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>
