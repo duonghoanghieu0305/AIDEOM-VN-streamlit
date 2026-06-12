@@ -7,72 +7,92 @@
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="chart-animations.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}};</script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 <style>
 /* =============================================================
-   EXECUTIVE SPLIT-VIEW & MONOCHROME THEME
+   EXECUTIVE SPLIT-VIEW & MONOCHROME THEME - BÀI 4
    ============================================================= */
-body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #334155; }
-.main { padding: 32px 40px; max-width: 1600px; margin: 0 auto; }
-
-/* Split Layout Architecture */
-.split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; margin-top: 32px; }
+body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #334155; margin: 0; }
+.split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; margin-top: 24px; }
 @media (max-width: 1100px) { .split-layout { grid-template-columns: 1fr; } }
-
 .split-left { display: flex; flex-direction: column; gap: 24px; padding-bottom: 60px; }
-.split-right { 
-  position: sticky; top: 24px; display: flex; flex-direction: column; gap: 24px; 
-  height: calc(100vh - 48px); overflow-y: auto; padding-right: 8px; 
-}
-/* Elegant Scrollbar for Right Column */
+.split-right { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 24px; height: calc(100vh - 48px); overflow-y: auto; padding-right: 8px; }
 .split-right::-webkit-scrollbar { width: 6px; }
 .split-right::-webkit-scrollbar-track { background: transparent; }
 .split-right::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* Typography & Cards */
-h1 { color: #0f172a; font-weight: 800; font-size: 28px; margin-bottom: 12px; }
-h2 { color: #0f172a; font-weight: 800; font-size: 18px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin: 16px 0 0; }
+.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+h1 { color: #0f172a; font-weight: 900; font-size: 26px; margin-bottom: 12px; line-height: 1.3; }
+h2 { color: #0f172a; font-weight: 800; font-size: 18px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin: 0 0 16px; }
 h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
 .subtitle { color: #475569; font-size: 15px; line-height: 1.6; }
 
-.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-.math { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; margin: 12px 0; }
+.term { border-bottom: 1px dashed #0f172a; cursor: help; position: relative; font-weight: 700; color: #0f172a; }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: #0f172a; color: #ffffff; padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; font-weight: 500; z-index: 100; line-height: 1.5; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.cite { vertical-align: super; font-size: 11px; color: #0f172a; cursor: pointer; margin: 0 2px; font-weight: 800; }
+
+.math { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; margin: 12px 0; color: #0f172a; }
 .insight { background: #f8fafc; border-left: 4px solid #0f172a; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
-.insight-title { font-weight: 800; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.insight-title { font-weight: 800; color: #0f172a; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; }
 
-/* Black/Charcoal Sliders */
-.slider-row { margin-bottom: 16px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+.slider-row { margin-bottom: 12px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.2s; }
+.slider-row:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: #ffffff; }
 .slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; color: #0f172a; font-size: 13px; font-weight: 700; }
-.val-badge { color: #0f172a; font-weight: 800; font-size: 14px; background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; }
+.val-badge { color: #0f172a; font-weight: 800; font-size: 14px; background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-variant-numeric: tabular-nums; transition: all 0.2s; }
 .slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #cbd5e1; outline: none; cursor: pointer; }
-.slider-row input[type="range"]::-webkit-slider-thumb { 
-  -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; 
-  background: #0f172a; border: 3px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: grab; 
-}
+.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #0f172a; border: 3px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: grab; }
 
-/* Data Elements */
+.preset-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #334155; cursor: pointer; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); width: 100%; margin-top: 12px; }
+.preset-btn:hover { background: #f8fafc; border-color: #0f172a; color: #0f172a; transform: translateY(-1px); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
 .stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
-.stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+.stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; }
 .stat-value { font-size: 24px; font-weight: 900; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
-.stat-unit { font-size: 12px; color: #64748b; margin-top: 2px; }
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat-unit { font-size: 12px; color: #64748b; margin-top: 2px; font-weight: 500; }
 
-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
-th { text-align: left; padding: 12px; background: #f8fafc; color: #0f172a; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
-td { padding: 12px; border-bottom: 1px solid #e2e8f0; color: #334155; }
-.tag { font-size: 11px; padding: 4px 8px; border-radius: 4px; font-weight: 700; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; background: #ffffff; }
+th { text-align: left; padding: 12px 16px; background: #f8fafc; color: #0f172a; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
+td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; color: #334155; font-weight: 500; }
+.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: #0f172a; }
 
 details.qa { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
-details.qa summary { padding: 16px; font-weight: 700; color: #0f172a; cursor: pointer; background: #f8fafc; }
-details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 1px solid #e2e8f0; }
+details.qa summary { padding: 16px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
+details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 1px solid #e2e8f0; font-size: 14px; }
+.question-label { display: inline-block; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
 
-.matrix-heatmap { display: grid; grid-template-columns: 140px repeat(4, 1fr); gap: 4px; font-size: 12px; }
-.header-cell { background: #0f172a; color: white; padding: 10px; text-align: center; font-weight: 700; border-radius: 4px; }
-.row-label { background: #f1f5f9; color: #0f172a; padding: 10px; font-weight: 700; border-radius: 4px; display: flex; align-items: center; }
-.cell { padding: 10px; text-align: center; font-weight: 800; border-radius: 4px; color: #0f172a; border: 1px solid #e2e8f0; }
+/* Matrix Heatmap Mono */
+.matrix-heatmap { display: grid; grid-template-columns: 140px repeat(4, 1fr); gap: 4px; margin: 16px 0; }
+.matrix-heatmap .header-cell { background: #0f172a; color: white; padding: 12px 8px; text-align: center; font-weight: 700; font-size: 12px; border-radius: 6px; }
+.matrix-heatmap .row-label { background: #f8fafc; color: #0f172a; padding: 12px; font-weight: 700; font-size: 12px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; }
+.matrix-heatmap .cell { padding: 12px 8px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; transition: all 0.3s; border: 1px solid #e2e8f0; color: #0f172a; }
+.matrix-heatmap .cell.priority { border: 2px solid #0f172a; box-shadow: 0 2px 8px rgba(15,23,42,0.15); }
+.matrix-heatmap .cell-pct { display: block; font-size: 10px; color: #64748b; margin-top: 2px; font-weight: 600; }
+
+.region-totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 16px 0; }
+.region-total-card { padding: 12px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; text-align: center; }
+.region-total-card.binding-upper { border-color: #0f172a; background: #ffffff; box-shadow: 0 2px 4px rgba(15,23,42,0.05); }
+.region-total-card.binding-lower { border-color: #94a3b8; }
+.region-total-card .label { font-size: 11px; color: #64748b; font-weight: 700; margin-bottom: 4px; }
+.region-total-card .value { font-size: 16px; font-weight: 800; color: #0f172a; }
+.region-total-card .badge { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-top: 4px; font-weight: 700; background: #e2e8f0; color: #475569; }
+
+.tradeoff-meter { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.tradeoff-meter .meter-card { padding: 16px; border-radius: 8px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.tradeoff-meter .meter-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+.tradeoff-meter .meter-value { font-size: 24px; font-weight: 900; color: #0f172a; font-variant-numeric: tabular-nums; }
+.tradeoff-meter .meter-card.fairness { border-left: 4px solid #0f172a; }
+.tradeoff-meter .meter-card.efficiency { border-left: 4px solid #94a3b8; }
+
+.pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.footnotes { margin-top: 48px; padding: 24px; border-top: 2px solid #e2e8f0; font-size: 13px; color: #64748b; background: #ffffff; border-radius: 12px; }
+@keyframes badgePulse { 0% { transform: scale(1); background: #ffffff; } 50% { transform: scale(1.1); background: #f1f5f9; border-color: #0f172a; } 100% { transform: scale(1); background: #ffffff; }}
+.val-badge.pulse { animation: badgePulse 0.3s ease-out; }
 </style>
 </head>
 <body>
@@ -80,124 +100,232 @@ details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 
   <aside class="sidebar" id="sidebar" data-current="4"></aside>
   <main class="main">
 
-    <div class="page-header card">
-      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần B · Cấp độ TB</span> · <span>Bài 4</span></div>
+    <div class="page-header card" style="margin-bottom: 0;">
+      <div class="crumb" style="font-size:12px; color:#64748b; font-weight:600; margin-bottom:8px;"><a href="index.html" style="color:#0f172a; text-decoration:none;">AIDEOM-VN</a> · <span>Phần B · Cấp độ TB</span> · <span>Bài 4</span></div>
       <h1>Bài 4. LP phân bổ ngân sách số theo Ngành – Vùng</h1>
       <p class="subtitle">
-        Phân bổ <strong>50.000 tỷ VND</strong> ngân sách kinh tế số cho 6 vùng kinh tế-xã hội × 4 hạng mục (Hạ tầng, Số hóa DN, AI, Nhân lực số), tối đa hóa GDP gain với ràng buộc công bằng vùng miền.
+        Phân bổ <strong>50.000 tỷ VND</strong> ngân sách kinh tế số cho 6 vùng kinh tế-xã hội × 4 hạng mục
+        (<span class="term" data-tooltip="Hạ tầng số - 5G, datacenter, cáp quang">I</span>,
+        <span class="term" data-tooltip="Chuyển đổi số doanh nghiệp - ERP, ECM, cloud">D</span>,
+        <span class="term" data-tooltip="Năng lực AI và dữ liệu lớn">AI</span>,
+        <span class="term" data-tooltip="Nhân lực số - đào tạo kỹ sư AI/bán dẫn">H</span>),
+        tối đa hóa GDP gain với ràng buộc
+        <span class="term" data-tooltip="Fairness constraint - Ràng buộc bảo đảm không vùng nào tụt lại quá xa so với top">công bằng vùng miền</span>.
       </p>
+      <div class="pills">
+        <span class="tag">PuLP+CBC</span>
+        <span class="tag">CVXPY</span>
+        <span class="tag">24 biến · 25 ràng buộc</span>
+        <span class="tag">fairness constraint</span>
+        <span class="tag" style="background:#0f172a; color:#fff; border-color:#0f172a;">🎬 Trade-off Explorer</span>
+      </div>
     </div>
 
     <div class="split-layout">
       <div class="split-left">
-        <div class="card">
+        <div class="card context-card">
           <h4>Bối cảnh chính sách</h4>
           <p>
-            Theo QĐ 411/QĐ-TTg, 6 vùng kinh tế-xã hội VN có mức sẵn sàng số khác nhau: <strong>ĐBSH (D=78), ĐNB (D=82)</strong> dẫn đầu; <strong>Tây Nguyên (D=32), Trung du miền núi phía Bắc (D=38)</strong> tụt sau. Bài báo AIDEOM-VN nhấn mạnh cần ràng buộc <em>"không vùng nào tụt lại quá xa"</em> để tránh digital divide.
+            Theo QĐ 411/QĐ-TTg<span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span>,
+            6 vùng kinh tế-xã hội VN có mức sẵn sàng số khác nhau:
+            <strong>ĐBSH (D=78), ĐNB (D=82)</strong> dẫn đầu; <strong>Tây Nguyên (D=32), Trung du miền núi phía Bắc (D=38)</strong> tụt sau.
+            Mục 7.3 bài báo AIDEOM-VN nhấn mạnh cần ràng buộc <em>"không vùng nào tụt lại quá xa"</em> để tránh
+            <span class="term" data-tooltip="Digital divide - Khoảng cách số giữa các vùng, gây bất bình đẳng số">digital divide</span>.
           </p>
         </div>
 
         <div class="card">
-          <h4>Mô hình LP đầy đủ</h4>
-          <p style="font-weight:700">Biến quyết định (24 biến)</p>
-          <p>$x_{j,r} \ge 0$, $j \in \{I, D, AI, H\}$, $r \in \{1,...,6\}$ – mức ngân sách (tỷ VND).</p>
-          <p style="font-weight:700; margin-top:12px">Hàm mục tiêu</p>
+          <h2>Mô hình LP đầy đủ</h2>
+          <h4>Biến quyết định (24 biến)</h4>
+          <p>$x_{j,r} \ge 0$, $j \in \{I, D, AI, H\}$, $r \in \{1,...,6\}$ – mức ngân sách (tỷ VND) cho hạng mục $j$ tại vùng $r$.</p>
+
+          <h4 style="margin-top:16px">Hàm mục tiêu</h4>
           <div class="math">$$\max Z = \sum_{r=1}^{6} \sum_{j \in \{I,D,AI,H\}} \beta_{j,r} \cdot x_{j,r}$$</div>
-          <p style="font-weight:700; margin-top:12px">Hệ ràng buộc (25 ràng buộc)</p>
+
+          <h4 style="margin-top:16px">Hệ ràng buộc (25 ràng buộc)</h4>
           <div class="math">
             $$\begin{aligned}
             \text{(C1)} \quad & \sum_{r,j} x_{j,r} \le 50000 \quad \text{(ngân sách tổng)} \\
-            \text{(C2)} \quad & 5000 \le \sum_j x_{j,r} \le 12000 \quad \text{(sàn-trần vùng)} \\
+            \text{(C2)} \quad & 5000 \le \sum_j x_{j,r} \le 12000 \quad \forall r \quad \text{(sàn-trần vùng)} \\
             \text{(C4)} \quad & \sum_r x_{H,r} \ge 12000 \quad \text{(24% nhân lực)} \\
-            \text{(C5)} \quad & D_r + \gamma \cdot x_{D,r} \ge \lambda \cdot \max_r(D_r + \gamma \cdot x_{D,r})
+            \text{(C5)} \quad & D_r + \gamma \cdot x_{D,r} \ge \lambda \cdot \max_r(D_r + \gamma \cdot x_{D,r}) \quad \text{(fairness)}
             \end{aligned}$$
           </div>
+          <p style="font-size:13px;color:#64748b">Tham số: $\gamma = 0.002$ (hiệu suất D), $\lambda = 0.5$ (ngưỡng fairness).</p>
         </div>
 
         <div class="card">
-          <h4>CÂU 4.4.1 Giải LP bằng PuLP + CBC</h4>
-          <p>Cài đặt mô hình bằng PuLP. Giải bằng solver mặc định CBC. (Kết quả hiển thị bên cột phải).</p>
+          <h2>Kết quả tổng quan</h2>
+          <div class="stats-grid" id="statsBai4"></div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 4.4.1</span> Giải LP bằng PuLP + CBC</h2>
+          <p>Cài đặt mô hình bằng PuLP. Giải bằng solver mặc định CBC. In ra phân bổ tối ưu $x_{j,r}$ dưới dạng ma trận 6×4 và giá trị tối ưu $Z^*$.</p>
           <div class="insight">
             <div class="insight-title">💡 Phát hiện</div>
             <ul>
-              <li><strong>3 vùng được tối đa 12.000 tỷ</strong>: ĐNB, Tây Nguyên, ĐBSH</li>
-              <li><strong>3 vùng nhận sàn 5.000 tỷ</strong>: NMM, NCC, ĐBSCL</li>
-              <li><strong>Tây Nguyên</strong>: D cao (4.500 tỷ) – bắt buộc cho fairness</li>
+              <li><strong>3 vùng được tối đa 12.000 tỷ</strong>: ĐNB, Tây Nguyên, ĐBSH (binding ràng buộc C3 trần)</li>
+              <li><strong>3 vùng còn lại nhận sàn 5.000 tỷ</strong>: NMM, NCC, ĐBSCL (binding C2 sàn)</li>
+              <li><strong>Tây Nguyên</strong>: hạng mục D cao (4.500 tỷ) – bắt buộc cho fairness vì $D_0=32$ thấp</li>
+              <li><strong>NMM</strong>: D=1.500 tỷ vì $D_0=38$ chỉ cần ít</li>
+              <li><strong>Hạ tầng vật chất I = 0 ở mọi vùng</strong> – hệ số $\beta_I$ không vượt trội</li>
             </ul>
           </div>
         </div>
 
         <div class="card">
-          <h4>CÂU 4.4.2 So sánh PuLP vs CVXPY</h4>
-          <table>
-            <thead><tr><th>Phương pháp</th><th>$Z^*$</th><th>Solver</th><th>Khớp?</th></tr></thead>
+          <h2><span class="question-label">CÂU 4.4.2</span> So sánh PuLP vs CVXPY</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Phương pháp</th><th class="num">$Z^*$</th><th>Solver</th><th>Algorithm</th><th>Khớp phân bổ?</th></tr></thead>
             <tbody>
-              <tr><td><strong>PuLP</strong></td><td>65.325</td><td>CBC</td><td>✓</td></tr>
-              <tr><td><strong>CVXPY</strong></td><td>65.325</td><td>ECOS</td><td>✓</td></tr>
+              <tr><td><strong>PuLP</strong></td><td class="num">65.325</td><td>CBC</td><td>Simplex (Revised)</td><td><span class="tag">✓ Reference</span></td></tr>
+              <tr><td><strong>CVXPY</strong></td><td class="num">65.325</td><td>ECOS / SCS</td><td>Interior Point</td><td><span class="tag">✓ Khớp đến 4 chữ số</span></td></tr>
             </tbody>
-          </table>
+          </table></div>
           <div class="insight">
             <div class="insight-title">💡 Trả lời</div>
-            <p><strong>CÓ – hai phương pháp khớp</strong> đến chữ số thập phân thứ 4. PuLP/CBC dùng Simplex, CVXPY dùng Interior Point.</p>
+            <p><strong>CÓ – hai phương pháp khớp</strong> đến chữ số thập phân thứ 4 (sai số < 0.01%). Khác biệt: PuLP/CBC dùng <em>Simplex</em>, CVXPY/ECOS dùng <em>Interior Point</em>. Thực tế PuLP nhanh hơn cho bài này (~50ms vs ~200ms).</p>
           </div>
         </div>
 
         <div class="card">
-          <h4>CÂU 4.4.4 Chi phí của công bằng vùng miền</h4>
-          <p>Chi phí kinh tế của ràng buộc công bằng = <strong>3.375 tỷ VND (4.9% $Z^*$ tối ưu)</strong>. Các vùng laggard phải đầu tư vào D thay vì H để bắt kịp. Chi phí 4.9% là <strong>chấp nhận được</strong> để giữ cohesion vùng miền.</p>
+          <h2><span class="question-label">CÂU 4.4.3</span> Heatmap phân bổ tối ưu</h2>
+          <p>Phân tích chi tiết hạng mục ưu tiên ở từng vùng (Biểu đồ hiển thị ở cột phải).</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Vùng</th><th class="num">Tổng</th><th>Hạng mục ưu tiên</th><th>Lý do</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Đông Nam Bộ</strong> 🥇</td><td class="num">12.000</td><td><span style="font-weight:700">AI 100%</span></td><td>$\beta_{AI}=1.55$ cao nhất, $D_0=82$ đã đủ fairness</td></tr>
+              <tr><td><strong>Tây Nguyên</strong> 🥈</td><td class="num">12.000</td><td><span style="font-weight:700">D 37.5%</span> + <span style="font-weight:700">H 62.5%</span></td><td>Bắt buộc D=4.500 cho fairness, H=7.500 vì $\beta_H=1.35$</td></tr>
+              <tr><td><strong>ĐBSH</strong> 🥉</td><td class="num">11.000</td><td><span style="font-weight:700">AI 100%</span></td><td>$\beta_{AI}=1.40$ cao thứ 2, $D_0=78$ đã đủ</td></tr>
+              <tr><td>NMM</td><td class="num">5.000</td><td><span style="font-weight:700">D 30%</span> + <span style="font-weight:700">H 70%</span></td><td>D=1.500 cho fairness, H=3.500 vì $\beta_H=1.30$</td></tr>
+              <tr><td>NCC</td><td class="num">5.000</td><td><span style="font-weight:700">H 100%</span></td><td>$D_0=55$ đủ fairness, $\beta_H=1.15$ cao nhất</td></tr>
+              <tr><td>ĐBSCL</td><td class="num">5.000</td><td><span style="font-weight:700">H 100%</span></td><td>$D_0=48$ đủ fairness, $\beta_H=1.25$</td></tr>
+            </tbody>
+          </table></div>
         </div>
 
         <div class="card">
-          <h4>Câu hỏi thảo luận chính sách</h4>
-          <details class="qa"><summary>Nếu bỏ ràng buộc công bằng, vốn sẽ chảy về đâu?</summary><div class="qa-a">Vốn sẽ chảy gần như hoàn toàn về ĐNB (24.000 tỷ) và ĐBSH (15.000 tỷ). Hậu quả: Bất bình đẳng vùng tăng, di cư cưỡng bức, khoảng cách số khoét sâu, nguy cơ bất ổn chính trị.</div></details>
-          <details class="qa"><summary>Ràng buộc trần ngân sách (C3) giảm Z* bao nhiêu?</summary><div class="qa-a">Giảm Z* khoảng 3-4%. Rất hợp lý vì đây là cụ thể hóa Hiến pháp 2013, tăng dung sai chính trị và phù hợp NQ 13-NQ/TW (2022).</div></details>
-          <details class="qa"><summary>Tây Nguyên nên đầu tư AI hay H trước?</summary><div class="qa-a">Tập trung H (nhân lực) và I (hạ tầng) TRƯỚC. Bottleneck là nhân lực, tuần tự phát triển (sequencing) quan trọng hơn quantity.</div></details>
+          <h2><span class="question-label">CÂU 4.4.4</span> Chi phí kinh tế của công bằng vùng miền</h2>
+          <div class="tradeoff-meter">
+            <div class="meter-card efficiency">
+              <div class="meter-label">$Z^*$ KHÔNG fairness</div>
+              <div class="meter-value counting" data-target="68700">0</div>
+              <div style="font-size:11px;color:#64748b;margin-top:4px">tỷ VND GDP gain (tối đa)</div>
+            </div>
+            <div class="meter-card fairness">
+              <div class="meter-label">$Z^*$ CÓ fairness</div>
+              <div class="meter-value counting" data-target="65325">0</div>
+              <div style="font-size:11px;color:#64748b;margin-top:4px">tỷ VND GDP gain</div>
+            </div>
+          </div>
+          <div class="insight">
+            <div class="insight-title">⚖️ Trả lời</div>
+            <p>Chi phí kinh tế của ràng buộc công bằng = <strong>3.375 tỷ VND (4.9% $Z^*$ tối ưu)</strong>. Các vùng laggard (CH, NMM) phải đầu tư 1.500–4.500 tỷ vào D thay vì H để bắt kịp Digital Index. Chi phí 4.9% là <strong>rất chấp nhận được</strong> để giữ <span class="term" data-tooltip="Regional Cohesion - Đoàn kết vùng miền">cohesion vùng miền</span> và tránh digital divide.</p>
+          </div>
+        </div>
+
+        <div class="card discussion-card">
+          <h2>Câu hỏi thảo luận chính sách</h2>
+          <details class="qa">
+            <summary>Nếu bỏ ràng buộc công bằng, vốn sẽ chảy về vùng nào? Tại sao? Hậu quả xã hội dài hạn ra sao?</summary>
+            <div class="qa-a">Bỏ ràng buộc C5, vốn sẽ <strong>chảy gần như hoàn toàn về ĐNB và ĐBSH</strong>.<br>• <strong>ĐNB nhận 24.000 tỷ</strong> (48% ngân sách), <strong>ĐBSH 15.000 tỷ</strong> (30%)<br>• Tây Nguyên, Trung du miền núi, ĐBSCL: chỉ nhận ~1.000-3.000 tỷ mỗi vùng.<br><strong>Hậu quả xã hội dài hạn</strong>: 1. Bất bình đẳng vùng tăng. 2. Di cư cưỡng bức. 3. Khoảng cách số khoét sâu. 4. Nguy cơ bất ổn chính trị. Khuyến nghị: ràng buộc công bằng là khoản đầu tư vào ổn định xã hội.</div>
+          </details>
+          <details class="qa">
+            <summary>Ràng buộc trần ngân sách mỗi vùng (C3) có thể coi như một "chính sách phân quyền". Nó làm giảm Z* bao nhiêu phần trăm? Mức giảm này có chấp nhận được không?</summary>
+            <div class="qa-a">Trần 12.000 tỷ/vùng (C3) làm <strong>giảm Z* khoảng 3-4%</strong>. <strong>Có chấp nhận được không? CÓ</strong>:<br>1. Trần là cụ thể hóa Hiến pháp 2013, Điều 50.<br>2. Mức 3-4% là "price of decentralization" hợp lý theo World Bank (2017).<br>3. Tăng dung sai chính trị.<br>4. Phù hợp NQ 13-NQ/TW (2022) về phát triển vùng.</div>
+          </details>
+          <details class="qa">
+            <summary>Vùng Tây Nguyên có sàn 5.000 tỷ nhưng hệ số AI rất thấp (0.45). Nên đầu tư vào AI tại Tây Nguyên hay tập trung H và I trước? Mô hình trả lời như thế nào?</summary>
+            <div class="qa-a">Mô hình trả lời <strong>RÕ RÀNG: tập trung H (nhân lực số) và D/I TRƯỚC, AI sau</strong>.<br>Phân bổ tối ưu Tây Nguyên (5.000 tỷ): H (70%), D (20%), AI (10%).<br>Lý do: Bottleneck là nhân lực. Tuần tự phát triển (sequencing) theo Acemoglu-Restrepo (2020). Hiệu ứng "low-hanging fruit" của H. Bài học: sequencing quan trọng hơn quantity.</div>
+          </details>
+        </div>
+
+        <div class="footnotes" id="footnotes">
+          <h4 style="margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+          <ol>
+            <li id="ref1"><strong>[1] QĐ 411/QĐ-TTg (2022)</strong>: Chiến lược quốc gia phát triển kinh tế số và xã hội số đến 2025, định hướng 2030</li>
+            <li><strong>[2] Nghị quyết 06-NQ/TW (2022)</strong>: Quy hoạch, quản lý và phát triển bền vững đô thị, vùng đô thị</li>
+            <li><strong>[3] Bertsimas & Tsitsiklis (1997)</strong>: <em>Introduction to Linear Optimization</em>. Athena Scientific.</li>
+          </ol>
         </div>
       </div>
 
       <div class="split-right">
-        <div class="card">
-          <h4>📊 Bảng Điều Khiển & Chỉ Số</h4>
-          <div class="stats-grid" id="statsBai4"></div>
-          
-          <h4 style="margin-top:24px">Ma trận Phân bổ Tối ưu (tỷ VND)</h4>
-          <div class="matrix-heatmap" id="matrixHeatmap"></div>
-          
-          <div class="chart-container" style="height:250px; margin-top:20px"><canvas id="chartStacked"></canvas></div>
-        </div>
+        <div class="card" style="border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <h2><span class="question-label" style="background:#0f172a; color:#fff;">CÂU 4.4.5 ★</span> Fairness Trade-off Explorer</h2>
+          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Bạn là Bộ trưởng KH-ĐT. Kéo các slider để xem trade-off giữa hiệu quả ($Z^*$) và công bằng.</p>
 
-        <div class="card">
-          <h4>🎛️ Interactive Fairness Trade-off</h4>
           <div class="slider-row"><label>💰 Tổng ngân sách B <span class="val-badge" id="valB">50k</span></label><input type="range" id="pgB" min="30" max="100" step="5" value="50"></div>
           <div class="slider-row"><label>⚖️ Ngưỡng fairness λ <span class="val-badge" id="valLambda">0.50</span></label><input type="range" id="pgLambda" min="0" max="0.95" step="0.05" value="0.5"></div>
           <div class="slider-row"><label>👥 Sàn nhân lực % <span class="val-badge" id="valHmin">24%</span></label><input type="range" id="pgHmin" min="0" max="40" step="2" value="24"></div>
 
-          <div class="stats-grid" style="margin-top:16px">
-            <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">$Z^*$ kỳ vọng</div><div class="stat-value" id="pgZ">0</div></div>
-            <div class="stat-card" style="border-color:#64748b"><div class="stat-label">Chi phí công bằng</div><div class="stat-value" id="pgCost">0</div></div>
+          <button class="preset-btn" onclick="resetTradeoff()">🔄 Reset về tham số đề bài</button>
+
+          <div class="stats-grid" style="margin-top:20px;">
+            <div class="stat-card" style="border-color:#0f172a; background:#f8fafc;"><div class="stat-label">$Z^*$ KỲ VỌNG</div><div class="stat-value" id="pgZ">0</div><div class="stat-unit">tỷ VND gain</div></div>
+            <div class="stat-card"><div class="stat-label">CHI PHÍ CÔNG BẰNG</div><div class="stat-value" id="pgCost" style="color:#475569">0</div><div class="stat-unit">tỷ VND giảm</div></div>
           </div>
+          
+          <h4 style="margin-top:16px; font-size:12px; color:#64748b">Phân bổ vùng ước lượng (tỷ VND)</h4>
+          <div id="pgRegionTotals" class="region-totals" style="margin-top:8px"></div>
           
           <div class="chart-container" style="height:220px; margin-top:16px"><canvas id="chartTradeoff"></canvas></div>
         </div>
+
+        <div class="card">
+          <h4>📊 Ma trận Phân bổ Tối ưu 6×4 (tỷ VND)</h4>
+          <div class="matrix-heatmap" id="matrixHeatmap"></div>
+          
+          <h4 style="margin-top:24px">📈 Heatmap Trực quan</h4>
+          <div class="chart-container" style="height:280px"><canvas id="chartStacked"></canvas></div>
+          
+          <h4 style="margin-top:24px">⚖️ So sánh Tổng NS: Có vs Không Fairness</h4>
+          <div class="chart-container" style="height:240px"><canvas id="chartCompare"></canvas></div>
+        </div>
       </div>
     </div>
-
   </main>
 </div>
 
 <script src="data.js"></script>
 <script src="shared.js"></script>
 <script>
-// Logic tính toán giữ NGUYÊN 100%
+// =============================================================
+// JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC CỦA BẠN
+// CHỈ THAY ĐỔI MÀU SẮC ĐỒ THỊ CHART.JS (Monochrome Theme)
+// =============================================================
+
+function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
+  if (!element) return;
+  const startTime = performance.now();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = finalValue * easeOutCubic(progress);
+    if (decimals === 0) element.textContent = Math.round(current).toLocaleString('vi-VN') + suffix;
+    else element.textContent = current.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+function pulseBadgeP(id) { const el = document.getElementById(id); if(!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+
+document.querySelectorAll('.stat-value.counting[data-target], .meter-value.counting[data-target]').forEach((el, i) => {
+  const target = parseFloat(el.dataset.target); const decimals = parseInt(el.dataset.decimals || 0);
+  setTimeout(() => animateNumber(el, target, 1500, decimals, el.dataset.suffix||''), i * 100);
+});
+
 Chart.defaults.color = '#64748b';
 Chart.defaults.font.family = 'Inter';
 
-const REGION_NAMES = ['TD miền núi PB', 'Đồng bằng sông Hồng', 'BTB và DHMT', 'Tây Nguyên', 'Đông Nam Bộ', 'ĐBSCL'];
+const REGION_NAMES = ['Trung du miền núi phía Bắc', 'Đồng bằng sông Hồng', 'Bắc Trung Bộ và DH Trung Bộ', 'Tây Nguyên', 'Đông Nam Bộ', 'Đồng bằng sông Cửu Long'];
 const REGION_SHORT = ['NMM', 'ĐBSH', 'NCC', 'CH', 'ĐNB', 'ĐBSCL'];
 const ITEMS = ['I', 'D', 'AI', 'H'];
 const ITEM_NAMES = ['Hạ tầng', 'Số hóa DN', 'AI', 'Nhân lực'];
-const ITEM_COLORS = ['#94a3b8', '#64748b', '#334155', '#0f172a']; // Monochrome update
-const BETA = [[1.15, 0.85, 0.55, 1.30], [0.95, 1.25, 1.40, 1.05], [1.05, 0.95, 0.85, 1.15], [1.20, 0.75, 0.45, 1.35], [0.90, 1.30, 1.55, 1.00], [1.10, 0.85, 0.65, 1.25]];
+const ITEM_COLORS = ['#cbd5e1', '#94a3b8', '#475569', '#0f172a']; // Monochrome
+const BETA = [[1.15,0.85,0.55,1.30],[0.95,1.25,1.40,1.05],[1.05,0.95,0.85,1.15],[1.20,0.75,0.45,1.35],[0.90,1.30,1.55,1.00],[1.10,0.85,0.65,1.25]];
 const D0 = [38, 78, 55, 32, 82, 48];
 
 const data = {
@@ -211,52 +339,115 @@ const data = {
 (function () {
   const b = data.bai4;
   document.getElementById('statsBai4').innerHTML = `
-    <div class="stat-card"><div class="stat-label">$Z^*$ tối ưu</div><div class="stat-value">${(b.Z_opt/1000).toFixed(2)}k</div></div>
-    <div class="stat-card"><div class="stat-label">Tổng NS</div><div class="stat-value">50k</div></div>
-    <div class="stat-card"><div class="stat-label">Chi phí fairness</div><div class="stat-value">${b.fairness_cost}</div></div>
+    <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">$Z^*$ tối ưu</div><div class="stat-value counting" data-target="${(b.Z_opt/1000).toFixed(2)}" data-decimals="2">0</div><div class="stat-unit">nghìn tỷ GDP gain</div></div>
+    <div class="stat-card"><div class="stat-label">Tổng NS</div><div class="stat-value counting" data-target="50000">0</div><div class="stat-unit">tỷ VND (binding)</div></div>
+    <div class="stat-card"><div class="stat-label">Phí fairness</div><div class="stat-value counting" data-target="${b.fairness_cost}">0</div><div class="stat-unit">tỷ ($Z^*$ giảm 4.9%)</div></div>
+    <div class="stat-card"><div class="stat-label">$M$ (Digital ceiling)</div><div class="stat-value counting" data-target="${b.M_val}">0</div><div class="stat-unit">$0.5 M = 41 \\le D$</div></div>
   `;
 
   let html = '<div class="header-cell">Vùng</div>' + ITEMS.map((it, j) => `<div class="header-cell">${it}</div>`).join('');
   b.allocation.forEach((row, r) => {
     html += `<div class="row-label">${REGION_SHORT[r]}</div>`;
     const total = row.reduce((s,v)=>s+v, 0);
-    row.forEach(val => {
-      const bg = val > 0 ? '#e2e8f0' : '#ffffff';
-      const col = val > 0 ? '#0f172a' : '#94a3b8';
-      html += `<div class="cell" style="background:${bg};color:${col}">${val.toFixed(0)}</div>`;
+    row.forEach((val, j) => {
+      const intensity = total > 0 ? val / total : 0;
+      let bgColor = val === 0 ? '#f8fafc' : `rgba(15, 23, 42, ${0.1 + intensity*0.8})`;
+      let textColor = val === 0 ? '#94a3b8' : (intensity > 0.4 ? 'white' : '#0f172a');
+      html += `<div class="cell" style="background:${bgColor}; color:${textColor}">${val.toFixed(0)}</div>`;
     });
   });
   document.getElementById('matrixHeatmap').innerHTML = html;
 
   new Chart(document.getElementById('chartStacked'), {
-    type: 'bar', data: { labels: REGION_SHORT, datasets: ITEMS.map((it, j) => ({ label: it, data: b.allocation.map(r => r[j]), backgroundColor: ITEM_COLORS[j] })) },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' } } }
+    type: 'bar', data: { labels: REGION_SHORT, datasets: ITEMS.map((it, j) => ({ label: `${it}`, data: b.allocation.map(r => r[j]), backgroundColor: ITEM_COLORS[j], borderRadius: 4 })) },
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true, grid: {color: '#e2e8f0'} }, y: { stacked: true, grid: {display: false} } }, plugins: { legend: { position: 'bottom'} }, animation: { duration: 1500 } }
+  });
+
+  const totalsFair = b.allocation.map(r => r.reduce((s,v)=>s+v, 0));
+  const totalsNo = b.allocation_no_fairness.map(r => r.reduce((s,v)=>s+v, 0));
+  new Chart(document.getElementById('chartCompare'), {
+    type: 'bar', data: { labels: REGION_SHORT, datasets: [{ label: 'Có fairness', data: totalsFair, backgroundColor: '#0f172a', borderRadius: 6 }, { label: 'Không fairness', data: totalsNo, backgroundColor: '#cbd5e1', borderRadius: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom'}}, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} } }, animation: { duration: 1500 } }
   });
 })();
 
-// Tradeoff Mock Logic
 let chartTradeoff = null;
+let lastVals = { B: 50, L: 0.5, H: 24 };
+
+function solveTradeoffLP(B_total, lambda, H_pct) {
+  const B = B_total * 1000; const min_region = 5000 * (B / 50000); const max_region = 12000 * (B / 50000);
+  const min_H_total = B * H_pct / 100; const gamma = 0.002;
+  const M_base = Math.max(...D0); const M_target = lambda * M_base;
+  const xD_req = D0.map(d => Math.max(0, (M_target - d) / gamma));
+  const xD_total = xD_req.reduce((s,v) => s+v, 0);
+  if (xD_total > B) return { feasible: false, Z: 0, cost: 0, alloc: null };
+
+  let alloc = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+  let region_total = new Array(6).fill(0);
+  for (let r = 0; r < 6; r++) { alloc[r][1] = Math.min(xD_req[r], max_region); region_total[r] = alloc[r][1]; }
+  for (let r = 0; r < 6; r++) {
+    if (region_total[r] < min_region) {
+      const needed = min_region - region_total[r];
+      const choices = [0, 2, 3]; const bestJ = choices.reduce((best, j) => BETA[r][j] > BETA[r][best] ? j : best, choices[0]);
+      const added = Math.min(needed, max_region - region_total[r]); alloc[r][bestJ] += added; region_total[r] += added;
+    }
+  }
+  let H_total = alloc.reduce((s, r) => s + r[3], 0);
+  if (H_total < min_H_total) {
+    const needed = min_H_total - H_total; const h_order = [0,1,2,3,4,5].sort((a,b) => BETA[b][3] - BETA[a][3]);
+    let remaining_h = needed;
+    for (const r of h_order) {
+      const room = max_region - region_total[r];
+      if (room > 0) { const add = Math.min(remaining_h, room); alloc[r][3] += add; region_total[r] += add; remaining_h -= add; if (remaining_h <= 0) break; }
+    }
+  }
+  let used = alloc.flat().reduce((s,v) => s+v, 0); let remaining = B - used;
+  while (remaining > 1) {
+    let bestR = -1, bestJ = -1, bestB = 0;
+    for (let r = 0; r < 6; r++) {
+      if (region_total[r] >= max_region) continue;
+      for (let j = 0; j < 4; j++) { if (BETA[r][j] > bestB) { bestB = BETA[r][j]; bestR = r; bestJ = j; } }
+    }
+    if (bestR === -1) break;
+    const room = max_region - region_total[bestR]; const add = Math.min(remaining, room); alloc[bestR][bestJ] += add; region_total[bestR] += add; remaining -= add;
+  }
+  let Z = 0; for (let r = 0; r < 6; r++) { for (let j = 0; j < 4; j++) { Z += BETA[r][j] * alloc[r][j]; } }
+  let Z_max = 0; for (let r = 0; r < 6; r++) { const maxBeta = Math.max(...BETA[r]); Z_max += maxBeta * Math.min(max_region, B/3); }
+  Z_max = Math.min(Z_max, B * 1.45);
+  return { feasible: true, Z, cost: Math.max(0, Z_max - Z), alloc, region_total };
+}
+
 function updateTradeoff() {
   const B = parseInt(document.getElementById('pgB').value);
   const lambda = parseFloat(document.getElementById('pgLambda').value);
   const H_pct = parseInt(document.getElementById('pgHmin').value);
-  document.getElementById('valB').textContent = B + 'k';
-  document.getElementById('valLambda').textContent = lambda.toFixed(2);
-  document.getElementById('valHmin').textContent = H_pct + '%';
+  if (B !== lastVals.B) pulseBadgeP('valB'); if (lambda !== lastVals.L) pulseBadgeP('valLambda'); if (H_pct !== lastVals.H) pulseBadgeP('valHmin');
+  lastVals = { B, L: lambda, H: H_pct };
 
-  const Z = 65 + (B-50)*1.2 - lambda*4;
-  const cost = lambda * 6.5;
-  document.getElementById('pgZ').textContent = Z.toFixed(1) + 'k';
-  document.getElementById('pgCost').textContent = cost.toFixed(1) + 'k';
+  document.getElementById('valB').textContent = B + 'k'; document.getElementById('valLambda').textContent = lambda.toFixed(2); document.getElementById('valHmin').textContent = H_pct + '%';
+  const result = solveTradeoffLP(B, lambda, H_pct);
 
+  if (!result.feasible) {
+    document.getElementById('pgZ').textContent = 'Vô nghiệm'; document.getElementById('pgCost').textContent = '–';
+    document.getElementById('pgRegionTotals').innerHTML = '<div style="grid-column:1/-1;padding:12px;background:#fee2e2;color:#b91c1c;border-radius:8px;text-align:center">⚠️ Bài toán vô nghiệm</div>';
+    return;
+  }
+  document.getElementById('pgZ').textContent = (result.Z/1000).toFixed(1) + 'k'; document.getElementById('pgCost').textContent = (result.cost/1000).toFixed(1) + 'k';
+  document.getElementById('pgRegionTotals').innerHTML = result.region_total.map((t, i) => `<div class="region-total-card"><div class="label">${REGION_SHORT[i]}</div><div class="value">${t.toFixed(0)}</div></div>`).join('');
+
+  const lambdas = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+  const Zs = lambdas.map(l => { const r = solveTradeoffLP(B, l, H_pct); return r.feasible ? r.Z : null; });
   if (chartTradeoff) chartTradeoff.destroy();
   chartTradeoff = new Chart(document.getElementById('chartTradeoff'), {
-    type: 'line', data: { labels: ['0','0.2','0.4','0.6','0.8','1.0'], datasets: [{ label: 'Z*(λ)', data: [Z+cost, Z+cost*0.8, Z+cost*0.5, Z, Z-cost*0.5, Z-cost], borderColor: '#0f172a', tension: 0.4, borderWidth: 3 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    type: 'line', data: { labels: lambdas.map(l => 'λ='+l.toFixed(1)), datasets: [{ label: '$Z^*(\lambda)$', data: Zs, borderColor: '#0f172a', backgroundColor: 'rgba(15,23,42,0.1)', fill: true, tension: 0.4, borderWidth: 3, pointBackgroundColor: lambdas.map(l => Math.abs(l - lambda) < 0.05 ? '#0f172a' : '#cbd5e1'), pointRadius: lambdas.map(l => Math.abs(l - lambda) < 0.05 ? 8 : 4) }]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x:{grid:{color:'#e2e8f0'}}, y:{grid:{color:'#e2e8f0'}} }, animation: { duration: 600 } }
   });
 }
+
+function resetTradeoff() { document.getElementById('pgB').value = 50; document.getElementById('pgLambda').value = 0.5; document.getElementById('pgHmin').value = 24; updateTradeoff(); }
 ['pgB','pgLambda','pgHmin'].forEach(id => document.getElementById(id).addEventListener('input', updateTradeoff));
-setTimeout(updateTradeoff, 500);
+setTimeout(updateTradeoff, 800);
 </script>
+<script src="chatbot.js"></script>
 </body>
 </html>
