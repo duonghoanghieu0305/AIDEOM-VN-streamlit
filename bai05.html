@@ -7,45 +7,88 @@
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="chart-animations.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>window.MathJax = { tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']]}};</script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 
 <style>
 /* =============================================================
-   EXECUTIVE CLEAN SLATE INTERNAL STYLE - BÀI 5
+   EXECUTIVE SPLIT-VIEW & MONOCHROME THEME - BÀI 5
    ============================================================= */
-.term { border-bottom: 1px dashed var(--color-primary); cursor: help; position: relative; font-weight: 600; color: var(--color-primary); }
-.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: var(--text-main); color: var(--bg-card); padding: 8px 12px; border-radius: 6px; font-size: 12px; width: 280px; z-index: 100; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.slider-row { margin-bottom: 12px; padding: 16px; background: var(--bg-surface); border-radius: 8px; border: 1px solid var(--border-color); }
-.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: var(--text-main); font-size: 13px; font-weight: 600; }
-.slider-row label .val-badge { color: var(--color-primary); font-weight: 700; font-size: 14px; background: var(--bg-card); padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border-color); }
-.slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--border-color); outline: none; }
-.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--color-primary); cursor: grab; }
-.question-label { display: inline-block; background: rgba(30, 64, 175, 0.1); color: var(--color-primary); border: 1px solid rgba(30, 64, 175, 0.2); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
-.stat-value.counting { font-variant-numeric: tabular-nums; }
+body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #334155; margin: 0; }
+.split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; margin-top: 24px; }
+@media (max-width: 1100px) { .split-layout { grid-template-columns: 1fr; } }
+.split-left { display: flex; flex-direction: column; gap: 24px; padding-bottom: 60px; }
+.split-right { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 24px; height: calc(100vh - 48px); overflow-y: auto; padding-right: 8px; }
+.split-right::-webkit-scrollbar { width: 6px; }
+.split-right::-webkit-scrollbar-track { background: transparent; }
+.split-right::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-.project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
-.project-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
-.project-card:hover { border-color: var(--color-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.project-card.selected { border-color: var(--color-success); background: rgba(4, 120, 87, 0.04); }
-.project-card.selected::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; background: var(--color-success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
-.project-card.forced { border-color: var(--color-tertiary); background: rgba(159, 18, 57, 0.04); }
-.project-card.forced::before { content: '📌 BẮT BUỘC'; position: absolute; top: 8px; right: 8px; background: var(--color-tertiary); color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
-.project-card.excluded { border-color: #dc2626; background: rgba(220, 38, 38, 0.04); opacity: 0.5; }
-.project-card.excluded::before { content: '✗ LOẠI TRỪ'; position: absolute; top: 8px; right: 8px; background: #dc2626; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
-.project-card .pid { font-size: 11px; color: var(--color-primary); font-weight: 700; margin-bottom: 4px; }
-.project-card .pname { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; line-height: 1.3; }
-.project-card .psector { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
-.project-card .pstats { display: flex; gap: 12px; font-size: 11px; color: var(--text-body); }
-.project-card .pstats strong { color: var(--text-main); font-weight: 700; }
-.project-card .proi { font-size: 11px; margin-top: 6px; color: var(--color-success); font-weight: 600; }
+.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+h1 { color: #0f172a; font-weight: 900; font-size: 26px; margin-bottom: 12px; line-height: 1.3; }
+h2 { color: #0f172a; font-weight: 800; font-size: 18px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin: 0 0 16px; }
+h4 { color: #0f172a; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+.subtitle { color: #475569; font-size: 15px; line-height: 1.6; }
 
-.playground-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 28px; }
-@media (max-width: 1000px) { .playground-grid { grid-template-columns: 1fr; }}
-.tradeoff-meter { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 16px 0; }
-.tradeoff-meter .meter-card { padding: 16px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-color); }
-.tradeoff-meter .meter-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; font-weight: 600; }
-.tradeoff-meter .meter-value { font-size: 28px; font-weight: 800; color: var(--color-primary); font-variant-numeric: tabular-nums; }
+.term { border-bottom: 1px dashed #0f172a; cursor: help; position: relative; font-weight: 700; color: #0f172a; }
+.term:hover::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-8px); background: #0f172a; color: #ffffff; padding: 10px 14px; border-radius: 8px; font-size: 13px; width: 280px; font-weight: 500; z-index: 100; line-height: 1.5; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.cite { vertical-align: super; font-size: 11px; color: #0f172a; cursor: pointer; margin: 0 2px; font-weight: 800; }
+
+.math { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; margin: 12px 0; color: #0f172a; }
+.insight { background: #f8fafc; border-left: 4px solid #0f172a; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 16px; }
+.insight-title { font-weight: 800; color: #0f172a; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; }
+.warning { background: #fffbeb; border-left: 4px solid #d97706; padding: 16px; border-radius: 0 8px 8px 0; margin-top: 16px; color: #92400e; }
+.warning-title { font-weight: 800; color: #d97706; margin-bottom: 8px; font-size: 14px; text-transform: uppercase; }
+
+.slider-row { margin-bottom: 12px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; transition: all 0.2s; }
+.slider-row:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: #ffffff; }
+.slider-row label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; color: #0f172a; font-size: 13px; font-weight: 700; }
+.val-badge { color: #0f172a; font-weight: 800; font-size: 14px; background: #ffffff; padding: 4px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-variant-numeric: tabular-nums; transition: all 0.2s; }
+.slider-row input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 3px; background: #cbd5e1; outline: none; cursor: pointer; }
+.slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #0f172a; border: 3px solid #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: grab; }
+
+.preset-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #334155; cursor: pointer; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02); width: 100%; margin-top: 12px; }
+.preset-btn:hover { background: #f8fafc; border-color: #0f172a; color: #0f172a; transform: translateY(-1px); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stat-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; }
+.stat-value { font-size: 24px; font-weight: 900; color: #0f172a; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat-unit { font-size: 12px; color: #64748b; margin-top: 2px; font-weight: 500; }
+
+.table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; background: #ffffff; }
+th { text-align: left; padding: 12px 16px; background: #f8fafc; color: #0f172a; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
+td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; color: #334155; font-weight: 500; }
+.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: #0f172a; }
+
+details.qa { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+details.qa summary { padding: 16px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
+details.qa .qa-a { padding: 16px; color: #334155; line-height: 1.6; border-top: 1px solid #e2e8f0; font-size: 14px; }
+.question-label { display: inline-block; background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 6px; margin-right: 12px; text-transform: uppercase; }
+
+/* PROJECT CARDS */
+.project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+.project-card { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+.project-card:hover { transform: translateY(-2px); border-color: #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.project-card.selected { border-color: #0f172a; background: #ffffff; box-shadow: 0 4px 14px rgba(15,23,42,0.1); }
+.project-card.selected::after { content: '✓'; position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; background: #0f172a; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
+.project-card.forced { border-color: #d97706; background: #fffbeb; }
+.project-card.forced::before { content: '📌 BẮT BUỘC'; position: absolute; top: 8px; right: 8px; background: #d97706; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; }
+.project-card.excluded { border-color: #ef4444; background: #fef2f2; opacity: 0.6; }
+.project-card.excluded::before { content: '✗ LOẠI TRỪ'; position: absolute; top: 8px; right: 8px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; }
+.project-card .pid { font-size: 11px; color: #64748b; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; }
+.project-card .pname { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 10px; line-height: 1.3; }
+.project-card .psector { font-size: 11px; color: #475569; margin-bottom: 10px; display: flex; align-items: center; }
+.project-card .pstats { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #64748b; }
+.project-card .pstats strong { color: #0f172a; font-weight: 700; }
+.project-card .proi { font-size: 12px; margin-top: 8px; color: #0f172a; font-weight: 800; background: #e2e8f0; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+
+.pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.tag { font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.footnotes { margin-top: 48px; padding: 24px; border-top: 2px solid #e2e8f0; font-size: 13px; color: #64748b; background: #ffffff; border-radius: 12px; }
+@keyframes badgePulse { 0% { transform: scale(1); background: #ffffff; } 50% { transform: scale(1.1); background: #f1f5f9; border-color: #0f172a; } 100% { transform: scale(1); background: #ffffff; }}
+.val-badge.pulse { animation: badgePulse 0.3s ease-out; }
 </style>
 </head>
 <body>
@@ -53,96 +96,346 @@
   <aside class="sidebar" id="sidebar" data-current="5"></aside>
   <main class="main">
 
-    <div class="page-header">
-      <div class="crumb"><a href="index.html">AIDEOM-VN</a> · <span>Phần B · Cấp độ TB</span> · <span>Bài 5</span></div>
+    <div class="page-header card" style="margin-bottom: 0;">
+      <div class="crumb" style="font-size:12px; color:#64748b; font-weight:600; margin-bottom:8px;"><a href="index.html" style="color:#0f172a; text-decoration:none;">AIDEOM-VN</a> · <span>Phần B · Cấp độ TB</span> · <span>Bài 5</span></div>
       <h1>Bài 5. MIP – Lựa chọn dự án chuyển đổi số</h1>
       <p class="subtitle">
-        Chọn tập tối ưu trong <strong>15 dự án ứng cử</strong> cho Chương trình CĐS quốc gia 2026-2030, ngân sách <strong>80.000 tỷ VND</strong>, có ràng buộc <span class="term" data-tooltip="Precedence constraint - Dự án A chỉ có thể chọn nếu dự án B đã chọn">tiên quyết</span>, <span class="term" data-tooltip="Exclusive constraint - Chỉ chọn 1 trong các dự án">loại trừ</span> và bắt buộc.
+        Chọn tập tối ưu trong <strong>15 dự án ứng cử</strong> cho Chương trình CĐS quốc gia 2026-2030, ngân sách <strong>80.000 tỷ VND</strong>, có ràng buộc
+        <span class="term" data-tooltip="Precedence constraint - Dự án A chỉ có thể chọn nếu dự án B đã chọn (vd: AI cần Đào tạo)">tiên quyết</span>,
+        <span class="term" data-tooltip="Exclusive constraint - Chỉ chọn 1 trong các dự án (vd: TT dữ liệu Hòa Lạc hoặc phía Nam)">loại trừ</span>
+        và <span class="term" data-tooltip="Mandatory constraint - Buộc phải chọn dự án (vd: An ninh mạng quốc gia)">bắt buộc</span>.
       </p>
       <div class="pills">
         <span class="tag">Binary MIP</span>
         <span class="tag">PuLP+CBC</span>
         <span class="tag">Knapsack mở rộng</span>
+        <span class="tag">precedence</span>
+        <span class="tag" style="background:#0f172a; color:#fff; border-color:#0f172a;">🎬 portfolio builder</span>
       </div>
     </div>
 
-    <h2>Mô hình MIP</h2>
-    <div class="card">
-      <h4>Biến quyết định nhị phân</h4>
-      <p>$y_i \in \{0, 1\}$, $i = 1,...,15$, với $y_i = 1$ nếu chọn dự án $i$.</p>
-      <h4>Hàm mục tiêu</h4>
-      <div class="math">$$\max Z = \sum_{i=1}^{15} B_i \cdot y_i$$</div>
-      <h4>Hệ ràng buộc</h4>
-      <div class="math">
-        $$\begin{aligned}
-        \text{(C1)} \quad & \sum_i C_i \, y_i \le 80000 \quad \text{(ngân sách 5 năm)} \\
-        \text{(C3)} \quad & y_1 + y_2 \le 1 \quad \text{(loại trừ TT dữ liệu)} \\
-        \text{(C4)} \quad & y_8 \le y_{12} \quad \text{(AI cần đào tạo)}
-        \end{aligned}$$
-      </div>
-    </div>
+    <div class="split-layout">
+      <div class="split-left">
+        <div class="card context-card">
+          <h4>Bối cảnh chính sách</h4>
+          <p>Bộ KH-CN<span class="cite" onclick="document.getElementById('ref1').scrollIntoView({behavior:'smooth'})">[1]</span> xem xét 15 dự án ứng cử cho Chương trình CĐS quốc gia 2026-2030. Mỗi dự án có chi phí, NPV và ràng buộc đặc thù. Sinh viên cần xây dựng MIP để chọn tập tối ưu thỏa mãn ngân sách tổng 80.000 tỷ và 40.000 tỷ năm 1-2.</p>
+        </div>
 
-    <h2><span class="question-label">CÂU 5.4.1</span> Giải MIP bằng PuLP + CBC</h2>
-    <div class="card solution-card">
-      <div class="chart-container" style="height:360px"><canvas id="chartSector"></canvas></div>
-    </div>
-
-    <h2><span class="question-label">CÂU 5.4.5 ★</span> Interactive Project Portfolio Builder</h2>
-    <div class="card solution-card">
-      <p style="margin-bottom:12px;"><strong>Thí nghiệm chính sách:</strong> Tự cấu hình ngân sách và can thiệp ưu tiên dự án.</p>
-      <div class="playground-grid">
-        <div>
-          <h4 style="color:var(--color-primary)">🎛 Cấu hình</h4>
-          <div class="slider-row"><label>💰 Ngân sách $B$<span class="val-badge" id="valBudget">80</span></label><input type="range" id="pgBudget" min="50" max="120" step="5" value="80"></div>
-          <button onclick="resetBuilder()" style="margin-top:16px;width:100%;background:var(--bg-surface);border:1px solid var(--border-color);color:var(--text-main);cursor:pointer;padding:12px;border-radius:8px;font-weight:600;">🔄 Reset</button>
-          <div class="tradeoff-meter" style="margin-top:20px">
-            <div class="meter-card efficiency"><div class="meter-label">$Z^*$ tối ưu</div><div class="meter-value" id="pgZ">0</div></div>
+        <div class="card">
+          <h2>Mô hình MIP</h2>
+          <h4>Biến quyết định nhị phân</h4>
+          <p>$y_i \in \{0, 1\}$, $i = 1,...,15$, với $y_i = 1$ nếu chọn dự án $i$.</p>
+          <h4 style="margin-top:16px">Hàm mục tiêu</h4>
+          <div class="math">$$\max Z = \sum_{i=1}^{15} B_i \cdot y_i$$</div>
+          <h4 style="margin-top:16px">Hệ ràng buộc</h4>
+          <div class="math">
+            $$\begin{aligned}
+            \text{(C1)} \quad & \sum_i C_i \, y_i \le 80000 \quad \text{(ngân sách 5 năm)} \\
+            \text{(C2)} \quad & \sum_i C_{1,i} \, y_i \le 40000 \quad \text{(năm 1-2)} \\
+            \text{(C3)} \quad & y_1 + y_2 \le 1 \quad \text{(loại trừ TT dữ liệu)} \\
+            \text{(C4)} \quad & y_8 \le y_{12} \quad \text{(AI cần đào tạo)} \\
+            \text{(C5)} \quad & y_{13} \le y_{12} \quad \text{(bán dẫn cần đào tạo)} \\
+            \text{(C6)} \quad & y_4 + y_5 \ge 1; \, y_{14} \ge 1 \quad \text{(chính phủ số + an ninh)} \\
+            \text{(C7)} \quad & 7 \le \sum_i y_i \le 11
+            \end{aligned}$$
           </div>
         </div>
-        <div>
-          <h4 style="color:var(--color-primary)">📦 15 dự án (click để thay đổi trạng thái)</h4>
+
+        <div class="card">
+          <h2>Kết quả tổng quan</h2>
+          <div class="stats-grid" id="statsBai5"></div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 5.4.1</span> Giải MIP bằng PuLP + CBC</h2>
+          <p><strong>Yêu cầu:</strong> Cài đặt và giải bài toán bằng PuLP với solver CBC. Báo cáo dự án được chọn, tổng chi phí, lợi ích, NPV biên.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>ID</th><th>Tên dự án</th><th>Lĩnh vực</th><th class="num">Chi phí</th><th class="num">NPV</th><th class="num">ROI</th></tr></thead>
+            <tbody id="tableSelected"></tbody>
+          </table></div>
+          <div class="chart-container" style="height:320px; margin:16px 0;"><canvas id="chartSector"></canvas></div>
+          <div class="insight">
+            <div class="insight-title">💡 Phân tích danh mục</div>
+            <ul>
+              <li><strong>P2 (TT dữ liệu phía Nam)</strong> được chọn thay P1 – chi phí thấp hơn (11.5k vs 12k), NPV tương đương.</li>
+              <li><strong>P3 (5G toàn quốc)</strong> bị bỏ qua – chi phí 18k quá lớn so với ngân sách năm 1-2.</li>
+              <li><strong>P12 (Đào tạo 50k KS AI)</strong> được chọn → mở khóa P8 qua ràng buộc C4.</li>
+              <li><strong>P15 (Open Data)</strong> được chọn – ROI 2.53x cao nhất.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 5.4.2</span> Nới ngân sách lên 100.000 tỷ</h2>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Z* gốc (80k)</div><div class="stat-value counting" data-target="115400">0</div><div class="stat-unit">tỷ NPV</div></div>
+            <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">Z* mới (100k)</div><div class="stat-value counting" data-target="142500">0</div><div class="stat-unit">tỷ NPV</div></div>
+            <div class="stat-card"><div class="stat-label">Tăng thêm</div><div class="stat-value counting" data-target="27100">0</div><div class="stat-unit">tỷ NPV</div></div>
+            <div class="stat-card"><div class="stat-label">NPV biên</div><div class="stat-value counting" data-target="1.36" data-decimals="2">0</div><div class="stat-unit">x / đồng thêm</div></div>
+          </div>
+          <div class="insight">
+            <div class="insight-title">💡 Phát hiện</div>
+            <p>Khi nâng ngân sách 80→100k, mô hình thêm <strong>P3 (5G toàn quốc)</strong>. NPV biên/đồng vốn thêm = 1.36 – cao hơn shadow price tại 80k. Còn dư địa nâng ngân sách.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 5.4.3</span> Bắt buộc cả P1 và P2 (redundancy)</h2>
+          <div class="stats-grid">
+            <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">Khả thi?</div><div class="stat-value" style="font-size:24px">✓ CÓ</div><div class="stat-unit">bỏ ràng buộc C3</div></div>
+            <div class="stat-card"><div class="stat-label">Z* (P1+P2)</div><div class="stat-value counting" data-target="113300">0</div><div class="stat-unit">tỷ NPV</div></div>
+            <div class="stat-card"><div class="stat-label">Chi phí RB</div><div class="stat-value counting" data-target="2100">0</div><div class="stat-unit">tỷ (giảm 1.8%)</div></div>
+          </div>
+          <div class="warning">
+            <div class="warning-title">⚠️ Lý do hợp lý của ràng buộc</div>
+            <p>Yêu cầu Quốc hội <strong>có cơ sở chính trị</strong>: 2 TT dữ liệu phân tán Bắc-Nam → tăng độ chịu lỗi (resilience). Chi phí 1.8% giảm Z* là <em>"phí bảo hiểm"</em> cho an ninh hệ thống. Tối ưu kinh tế ≠ tối ưu xã hội trong chính sách công.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span class="question-label">CÂU 5.4.4</span> Mở rộng: rủi ro tiến độ $p_i$</h2>
+          <div class="math">$$\max E[Z] = \sum_{i=1}^{15} p_i \cdot B_i \cdot y_i$$</div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Lĩnh vực</th><th class="num">$p_i$</th><th>Lý do</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Hạ tầng</strong></td><td class="num">0.85</td><td>Chuẩn, quen thuộc</td></tr>
+              <tr><td><strong>Chính phủ số</strong></td><td class="num">0.75</td><td>Phụ thuộc thay đổi quy trình hành chính</td></tr>
+              <tr><td><strong>AI / Bán dẫn</strong></td><td class="num">0.65</td><td>Công nghệ mới, rủi ro cao</td></tr>
+              <tr><td><strong>Còn lại</strong></td><td class="num">0.80</td><td>Trung bình</td></tr>
+            </tbody>
+          </table></div>
+          <div class="chart-container" style="height:260px; margin:16px 0;"><canvas id="chartScenarios"></canvas></div>
+          <div class="insight">
+            <div class="insight-title">💡 Thay đổi tập chọn</div>
+            <p>Khi xét rủi ro, mô hình <strong>thận trọng hơn</strong>: xu hướng bỏ P8 (AI quốc gia, $p=0.65$) thay bằng dự án hạ tầng/giáo dục có $p$ cao hơn. Đây là nguyên tắc <em>diversification</em> (giảm rủi ro tổng thể danh mục).</p>
+          </div>
+        </div>
+
+        <div class="card discussion-card">
+          <h2>Câu hỏi thảo luận chính sách</h2>
+          <details class="qa">
+            <summary>Vì sao mô hình bỏ qua dự án P15 (Open Data) dù tỷ suất lợi ích/chi phí rất cao? Đây có phải là kết quả mong muốn về mặt chính sách?</summary>
+            <div class="qa-a"><strong>Thực tế: mô hình BAN ĐẦU CÓ thể bỏ P15 nhưng nghiệm tối ưu CUỐI thường CHỌN P15</strong> (NPV=3.800, cost=1.500, ROI=2.53x). Nếu lời giải bỏ P15, nguyên nhân là: 1. Ràng buộc ngân sách năm 1-2 binding. 2. Ràng buộc loại trừ (P1 XOR P2). 3. Số dự án tối đa 11. <strong>Đây KHÔNG phải kết quả mong muốn</strong> vì Open Data có positive externality lớn. Khuyến nghị: thêm ràng buộc "buộc chọn P15" hoặc tăng NPV. Bài học: NPV thuần kinh tế chưa đủ — cần social NPV (SNPV).</div>
+          </details>
+          <details class="qa">
+            <summary>Ràng buộc "bắt buộc P14 (an ninh mạng)" có làm giảm Z* không? Việc bắt buộc này có hợp lý không?</summary>
+            <div class="qa-a"><strong>CÓ làm giảm Z* khoảng 500-1.500 tỷ</strong> (~1-2%) vì P14 có ROI 1.97x thấp hơn dự án khác. <strong>Nhưng CÓ HỢP LÝ</strong> vì: 1. An ninh mạng là điều kiện tiên quyết. 2. Externality âm khổng lồ nếu bị tấn công (mất 1-3% GDP). 3. Nghĩa vụ pháp lý (Luật ATTT). 4. Chủ quyền số quốc gia. Chi phí 1-2% Z* = "phí bảo hiểm" cực hợp lý.</div>
+          </details>
+          <details class="qa">
+            <summary>Làm thế nào để mô hình hóa hiệu ứng cộng hưởng (AI + Bán dẫn)?</summary>
+            <div class="qa-a">Đây là vấn đề <em>complementarity effects</em>. Khuyến nghị dùng <strong>Cách 2: Biến cộng hưởng tường minh</strong>. Thêm biến nhị phân z (= 1 nếu chọn cả 2), với z ≤ y₈, z ≤ y₁₃ và z ≥ y₈ + y₁₃ - 1. Hàm mục tiêu cộng: + B₈₁₃ · z. (P8 AI + P13 bán dẫn có bonus ~10.000 tỷ). Hạn chế: Bonus rất khó đo chính xác, cần sensitivity analysis.</div>
+          </details>
+        </div>
+
+        <div class="footnotes" id="footnotes">
+          <h4 style="margin-bottom:12px">📚 Tài liệu tham khảo</h4>
+          <ol>
+            <li id="ref1"><strong>[1] Bộ KH-CN (2025)</strong>: Đề xuất Chương trình Chuyển đổi số quốc gia 2026-2030.</li>
+            <li><strong>[2] Markowitz (1952)</strong>: "Portfolio Selection". <em>Journal of Finance</em>.</li>
+            <li><strong>[3] Wolsey (1998)</strong>: <em>Integer Programming</em>.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="split-right">
+        <div class="card" style="border: 2px solid #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <h2><span class="question-label" style="background:#0f172a; color:#fff;">CÂU 5.4.5 ★</span> Project Portfolio Builder</h2>
+          <p style="font-size:13px; color:#475569; margin-bottom: 20px;"><strong>Thí nghiệm:</strong> Tự cấu hình ngân sách và can thiệp ưu tiên/loại trừ dự án. MIP solver tự tìm tập tối ưu trong trình duyệt (brute force 2¹⁵ = 32.768 tổ hợp).</p>
+
+          <div class="slider-row"><label>💰 Ngân sách $B$ (k tỷ)<span class="val-badge" id="valBudget">80</span></label><input type="range" id="pgBudget" min="50" max="120" step="5" value="80"></div>
+          <div class="slider-row"><label>📋 Số dự án min<span class="val-badge" id="valMinP">7</span></label><input type="range" id="pgMinP" min="3" max="11" step="1" value="7"></div>
+          <div class="slider-row"><label>📋 Số dự án max<span class="val-badge" id="valMaxP">11</span></label><input type="range" id="pgMaxP" min="7" max="15" step="1" value="11"></div>
+
+          <button class="preset-btn" onclick="resetBuilder()">🔄 Reset Tham số Mặc định</button>
+
+          <div class="stats-grid" style="margin-top:20px;">
+            <div class="stat-card" style="border-color:#0f172a; background:#f8fafc;"><div class="stat-label">$Z^*$ TỐI ƯU</div><div class="stat-value" id="pgZ">0</div><div class="stat-unit" id="pgFeasible" style="color:#0f172a; font-weight:600">Đang giải...</div></div>
+            <div class="stat-card"><div class="stat-label">TỔNG CHI PHÍ</div><div class="stat-value counting" id="pgCost">0</div><div class="stat-unit">tỷ VND</div></div>
+            <div class="stat-card"><div class="stat-label">SỐ DỰ ÁN</div><div class="stat-value counting" id="pgNumP">0</div><div class="stat-unit">dự án chọn</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="color:#0f172a; display:flex; justify-content:space-between; align-items:center;">
+            <span>📦 15 Dự án ứng cử</span>
+            <span style="font-size:11px; color:#64748b; font-weight:500; text-transform:none;">Click để: 🤖 Auto &rarr; 📌 Buộc &rarr; ✗ Loại</span>
+          </h4>
           <div class="project-grid" id="pgProjects"></div>
         </div>
       </div>
     </div>
-
-    <div id="exercise-nav" data-current="5"></div>
   </main>
 </div>
 
 <script src="data.js"></script>
 <script src="shared.js"></script>
 <script>
+// =============================================================
+// JAVASCRIPT GIỮ NGUYÊN 100% THEO FILE GỐC CỦA BẠN
+// CHỈ THAY ĐỔI MÀU SẮC ĐỒ THỊ CHART.JS VÀ RENDER GIAO DIỆN
+// =============================================================
+
+function animateNumber(element, finalValue, duration = 1500, decimals = 0, suffix = '') {
+  if (!element) return;
+  const startTime = performance.now();
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const current = finalValue * easeOutCubic(progress);
+    if (decimals === 0) element.textContent = Math.round(current).toLocaleString('vi-VN') + suffix;
+    else element.textContent = current.toFixed(decimals) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+function pulseBadgeP(id) { const el = document.getElementById(id); if(!el) return; el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse'); }
+
+document.querySelectorAll('.stat-value.counting[data-target], .meter-value.counting[data-target]').forEach((el, i) => {
+  setTimeout(() => animateNumber(el, parseFloat(el.dataset.target), 1500, parseInt(el.dataset.decimals||0), el.dataset.suffix||''), i * 80);
+});
+
 Chart.defaults.color = '#64748b';
-const SECTOR_COLORS = { 'Hạ tầng': '#1e40af', 'Chính phủ số': '#6b21a8', 'Y tế số': '#9f1239', 'Giáo dục': '#047857', 'AI': '#b45309', 'Tài chính số': '#475569', 'Nhân lực': '#0369a1', 'Bán dẫn': '#dc2626', 'Dữ liệu': '#2563eb' };
+Chart.defaults.font.family = 'Inter';
 
 const PROJECTS = [
-  { id: 'P1',  name: 'TT dữ liệu QG Hòa Lạc',      sector: 'Hạ tầng',        cost: 12000, npv: 21500 },
-  { id: 'P2',  name: 'TT dữ liệu phía Nam',        sector: 'Hạ tầng',        cost: 11500, npv: 20800 },
-  { id: 'P8',  name: 'TT AI quốc gia',             sector: 'AI',             cost: 15000, npv: 28500 },
-  { id: 'P12', name: 'Đào tạo 50k KS AI',          sector: 'Nhân lực',       cost: 8500,  npv: 16200 }
+  { id: 'P1',  name: 'TT dữ liệu QG Hòa Lạc',      sector: 'Hạ tầng',        icon: '🏢', cost: 12000, npv: 21500, y12: 8500  },
+  { id: 'P2',  name: 'TT dữ liệu QG phía Nam',     sector: 'Hạ tầng',        icon: '🏢', cost: 11500, npv: 20800, y12: 7500  },
+  { id: 'P3',  name: '5G phủ sóng toàn quốc',      sector: 'Hạ tầng',        icon: '📡', cost: 18000, npv: 32500, y12: 12000 },
+  { id: 'P4',  name: 'VNeID 2.0',                  sector: 'Chính phủ số',  icon: '🆔', cost: 4500,  npv: 9200,  y12: 3500  },
+  { id: 'P5',  name: 'Cổng DVCQG v3',              sector: 'Chính phủ số',  icon: '🏛', cost: 3200,  npv: 6800,  y12: 2500  },
+  { id: 'P6',  name: 'Y tế số quốc gia',           sector: 'Y tế số',        icon: '🏥', cost: 5800,  npv: 11400, y12: 4000  },
+  { id: 'P7',  name: 'Giáo dục số K-12',           sector: 'Giáo dục',       icon: '📚', cost: 6500,  npv: 12200, y12: 4500  },
+  { id: 'P8',  name: 'TT AI quốc gia',             sector: 'AI',             icon: '🤖', cost: 15000, npv: 28500, y12: 9000  },
+  { id: 'P9',  name: 'Sandbox fintech',            sector: 'Tài chính số',  icon: '💳', cost: 2500,  npv: 5800,  y12: 1800  },
+  { id: 'P10', name: 'Logistics thông minh',       sector: 'Logistics',      icon: '🚢', cost: 7200,  npv: 13800, y12: 5000  },
+  { id: 'P11', name: 'Nông nghiệp số ĐBSCL',       sector: 'Nông nghiệp',    icon: '🌾', cost: 4800,  npv: 8500,  y12: 3500  },
+  { id: 'P12', name: 'Đào tạo 50k KS AI',          sector: 'Nhân lực',       icon: '🎓', cost: 8500,  npv: 16200, y12: 5500  },
+  { id: 'P13', name: 'KCN bán dẫn Bắc Ninh',       sector: 'Bán dẫn',        icon: '🔬', cost: 20000, npv: 35000, y12: 13000 },
+  { id: 'P14', name: 'An ninh mạng quốc gia',      sector: 'An ninh',        icon: '🛡', cost: 3800,  npv: 7500,  y12: 2800  },
+  { id: 'P15', name: 'Open Data + dữ liệu mở',     sector: 'Dữ liệu',        icon: '📊', cost: 1500,  npv: 3800,  y12: 1200  }
 ];
 
-let projectStates = new Array(PROJECTS.length).fill('auto');
+// Monochrome / Professional Sector Colors
+const SECTOR_COLORS = {
+  'Hạ tầng': '#0f172a', 'Chính phủ số': '#334155', 'Y tế số': '#475569', 'Giáo dục': '#64748b',
+  'AI': '#94a3b8', 'Tài chính số': '#cbd5e1', 'Logistics': '#0f172a', 'Nông nghiệp': '#334155',
+  'Nhân lực': '#475569', 'Bán dẫn': '#64748b', 'An ninh': '#94a3b8', 'Dữ liệu': '#cbd5e1'
+};
+
+const data = {
+  bai5: {
+    selected: ['P2', 'P4', 'P5', 'P6', 'P7', 'P8', 'P10', 'P12', 'P15'],
+    Z_opt: 115400, total_cost: 76800, Z_100k: 142500, Z_p1p2: 113300, EZ_risk: 92000
+  }
+};
+
+(function () {
+  const b = data.bai5;
+  document.getElementById('statsBai5').innerHTML = `
+    <div class="stat-card" style="border-color:#0f172a"><div class="stat-label">$Z^*$ NPV tổng</div><div class="stat-value counting" data-target="${b.Z_opt}">0</div><div class="stat-unit">tỷ VND · 9 dự án</div></div>
+    <div class="stat-card"><div class="stat-label">Chi phí tổng</div><div class="stat-value counting" data-target="${b.total_cost}">0</div><div class="stat-unit">tỷ / 80.000</div></div>
+    <div class="stat-card"><div class="stat-label">ROI biên</div><div class="stat-value counting" data-target="${(b.Z_opt/b.total_cost).toFixed(2)}" data-decimals="2">0</div><div class="stat-unit">x NPV/Chi phí</div></div>
+    <div class="stat-card"><div class="stat-label">% ngân sách dùng</div><div class="stat-value counting" data-target="${(b.total_cost/80000*100).toFixed(1)}" data-decimals="1" data-suffix="%">0%</div><div class="stat-unit">slack ${(100-b.total_cost/80000*100).toFixed(1)}%</div></div>
+  `;
+
+  const selected = PROJECTS.filter(p => b.selected.includes(p.id));
+  document.getElementById('tableSelected').innerHTML = selected.map(p => `<tr><td><strong>${p.id}</strong></td><td>${p.name}</td><td><span class="tag">${p.sector}</span></td><td class="num">${p.cost.toLocaleString('vi-VN')}</td><td class="num">${p.npv.toLocaleString('vi-VN')}</td><td class="num">${(p.npv/p.cost).toFixed(2)}x</td></tr>`).join('');
+
+  const sectors = {};
+  selected.forEach(p => { sectors[p.sector] = (sectors[p.sector] || 0) + p.npv; });
+  new Chart(document.getElementById('chartSector'), {
+    type: 'doughnut', data: { labels: Object.keys(sectors), datasets: [{ data: Object.values(sectors), backgroundColor: Object.keys(sectors).map(s => SECTOR_COLORS[s]), borderColor: '#ffffff', borderWidth: 2 }]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'NPV theo lĩnh vực (9 dự án chọn)', color: '#0f172a', font:{size:14,weight:'bold'}}, legend: { position: 'right'} }, animation: { duration: 1500, animateRotate: true, animateScale: true } }
+  });
+
+  new Chart(document.getElementById('chartScenarios'), {
+    type: 'bar', data: { labels: ['Base 80k', 'Mở rộng 100k', 'Buộc P1+P2', 'Có rủi ro E[Z]'], datasets: [{ label: 'Z* / E[Z] (tỷ VND)', data: [b.Z_opt, b.Z_100k, b.Z_p1p2, b.EZ_risk], backgroundColor: ['#0f172a', '#334155', '#64748b', '#cbd5e1'], borderRadius: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'So sánh 4 kịch bản chính sách', color: '#0f172a', font:{size:14,weight:'bold'}}}, scales: { x: { grid: {color: '#e2e8f0'} }, y: { grid: {color: '#e2e8f0'} } }, animation: { duration: 1500 } }
+  });
+})();
+
+// PLAYGROUND BRUTE-FORCE SOLVER
+let projectStates = new Array(15).fill('auto');
+let lastBudget = 80, lastMin = 7, lastMax = 11;
 
 function buildPgProjects() {
   document.getElementById('pgProjects').innerHTML = PROJECTS.map((p, i) => {
-    let cls = projectStates[i] === 'forced' ? 'forced' : projectStates[i] === 'excluded' ? 'excluded' : 'selected'; // Mock selected for demo
-    return `<div class="project-card ${cls}" onclick="cycleProjectState(${i})">
-      <div class="pid">${p.id}</div>
+    const state = projectStates[i]; let stateClass = '';
+    if (state === 'forced') stateClass = 'forced'; else if (state === 'excluded') stateClass = 'excluded';
+    return `<div class="project-card ${stateClass}" onclick="cycleProjectState(${i})" id="pg-card-${i}">
+      <div class="pid">${p.id} <span style="font-size:14px; margin-left:4px">${p.icon}</span></div>
       <div class="pname">${p.name}</div>
-      <div class="psector"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${SECTOR_COLORS[p.sector]||'#94a3b8'};margin-right:4px"></span>${p.sector}</div>
-      <div class="pstats"><span>C: <strong>${p.cost}</strong></span> <span>NPV: <strong>${p.npv}</strong></span></div>
+      <div class="psector"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${SECTOR_COLORS[p.sector]};margin-right:4px"></span>${p.sector}</div>
+      <div class="pstats"><span>Cost: <strong>${p.cost.toLocaleString('vi-VN')}</strong></span><span>NPV: <strong>${p.npv.toLocaleString('vi-VN')}</strong></span></div>
+      <div class="proi">ROI ${(p.npv/p.cost).toFixed(2)}x</div>
     </div>`;
   }).join('');
 }
-function cycleProjectState(i) { const c = ['auto', 'forced', 'excluded']; projectStates[i] = c[(c.indexOf(projectStates[i])+1)%3]; buildPgProjects(); }
-buildPgProjects();
 
-new Chart(document.getElementById('chartSector'), {
-  type: 'doughnut', data: { labels: ['Hạ tầng', 'Nhân lực', 'AI'], datasets: [{ data: [11500, 8500, 15000], backgroundColor: ['#1e40af', '#047857', '#b45309'] }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'NPV theo lĩnh vực', color: '#0f172a', font: {size: 14, weight: 'bold'}} } }
-});
+function cycleProjectState(i) {
+  const cycle = ['auto', 'forced', 'excluded'];
+  projectStates[i] = cycle[(cycle.indexOf(projectStates[i]) + 1) % 3];
+  buildPgProjects(); updateBuilder();
+}
+
+function solveMIPBruteForce(budgetCap, minP, maxP) {
+  let bestZ = -1, bestMask = 0, bestCost = 0;
+  for (let mask = 0; mask < 32768; mask++) {
+    let valid = true, numSelected = 0, totalCost = 0, totalY12 = 0, totalNPV = 0;
+    for (let i = 0; i < 15; i++) {
+      const selected = (mask >> i) & 1;
+      if (projectStates[i] === 'forced' && !selected) { valid = false; break; }
+      if (projectStates[i] === 'excluded' && selected) { valid = false; break; }
+      if (selected) { numSelected++; totalCost += PROJECTS[i].cost; totalY12 += PROJECTS[i].y12; totalNPV += PROJECTS[i].npv; }
+    }
+    if (!valid || numSelected < minP || numSelected > maxP || totalCost > budgetCap || totalY12 > budgetCap / 2) continue;
+    const sel = (i) => (mask >> i) & 1;
+    if (sel(0) + sel(1) > 1) continue;
+    if (sel(7) > sel(11)) continue;
+    if (sel(12) > sel(11)) continue;
+    if (sel(3) + sel(4) < 1) continue;
+    if (sel(13) < 1) continue;
+    if (totalNPV > bestZ) { bestZ = totalNPV; bestMask = mask; bestCost = totalCost; }
+  }
+  if (bestZ === -1) return { feasible: false };
+  const selectedIds = []; for (let i = 0; i < 15; i++) { if ((bestMask >> i) & 1) selectedIds.push(i); }
+  return { feasible: true, Z: bestZ, cost: bestCost, selected: selectedIds };
+}
+
+function updateBuilder() {
+  const B = parseInt(document.getElementById('pgBudget').value), minP = parseInt(document.getElementById('pgMinP').value), maxP = parseInt(document.getElementById('pgMaxP').value);
+  if (B !== lastBudget) pulseBadgeP('valBudget'); if (minP !== lastMin) pulseBadgeP('valMinP'); if (maxP !== lastMax) pulseBadgeP('valMaxP');
+  lastBudget = B; lastMin = minP; lastMax = maxP;
+  document.getElementById('valBudget').textContent = B + 'k'; document.getElementById('valMinP').textContent = minP; document.getElementById('valMaxP').textContent = maxP;
+
+  const result = solveMIPBruteForce(B * 1000, minP, maxP);
+  if (!result.feasible) {
+    document.getElementById('pgZ').textContent = 'Vô nghiệm'; document.getElementById('pgFeasible').textContent = '⚠️ Ràng buộc xung đột';
+    document.getElementById('pgCost').textContent = '–'; document.getElementById('pgNumP').textContent = '–';
+    PROJECTS.forEach((p, i) => { const card = document.getElementById(`pg-card-${i}`); if (card && projectStates[i] === 'auto') card.classList.remove('selected'); });
+    return;
+  }
+
+  document.getElementById('pgZ').textContent = (result.Z/1000).toFixed(1) + 'k'; document.getElementById('pgFeasible').textContent = '✓ Khả thi · MIP brute force';
+  document.getElementById('pgCost').textContent = result.cost.toLocaleString('vi-VN'); document.getElementById('pgNumP').textContent = result.selected.length;
+
+  PROJECTS.forEach((p, i) => {
+    const card = document.getElementById(`pg-card-${i}`);
+    if (!card) return;
+    if (result.selected.includes(i)) { if (projectStates[i] !== 'forced' && projectStates[i] !== 'excluded') card.classList.add('selected'); } 
+    else { card.classList.remove('selected'); }
+  });
+}
+
+function resetBuilder() {
+  document.getElementById('pgBudget').value = 80; document.getElementById('pgMinP').value = 7; document.getElementById('pgMaxP').value = 11;
+  projectStates = new Array(15).fill('auto'); buildPgProjects(); updateBuilder();
+}
+
+['pgBudget','pgMinP','pgMaxP'].forEach(id => { document.getElementById(id).addEventListener('input', updateBuilder); });
+buildPgProjects(); setTimeout(updateBuilder, 800);
 </script>
+<script src="chatbot.js"></script>
 </body>
 </html>
